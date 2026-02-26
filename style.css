@@ -1208,9 +1208,9 @@ h1 {
     transform: scale(0.9);
 }
 
-.fab-camera i {
-    width: 28px;
-    height: 28px;
+.fab-camera svg {
+    width: 24px;
+    height: 24px;
 }
 
 /* Overlay plein écran de la caméra */
