@@ -18,7 +18,7 @@
 body {
     background-color: var(--bg-color);
     color: var(--text-dark);
-    padding: 20px;
+    padding: 20px 20px 20px 20px;
 }
 
 /* =========================================
@@ -285,7 +285,7 @@ h1 {
 .top-overlay {
     position: relative;
     z-index: 10;
-    padding: 50px 20px 20px 20px; /* Padding top large pour les encoches iPhone */
+    padding: 20px 20px 20px 20px; /* Padding top large pour les encoches iPhone */
     background: linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%);
 }
 
@@ -543,7 +543,7 @@ h1 {
 }
 
 .page-header {
-    padding: 60px 24px 20px 24px; /* Espace pour la barre de statut iOS */
+    padding: 20px 20px 20px 20px;
     border-bottom: 1px solid #f3f4f6;
 }
 
