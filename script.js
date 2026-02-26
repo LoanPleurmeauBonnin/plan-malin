@@ -87,6 +87,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             btnWebsite.style.display = 'none';
                         }
 
+                        // ==========================================
+                        // NOUVEAU : GESTION DU BOUTON "Y ALLER"
+                        // ==========================================
+                        const btnItinerary = document.getElementById('btn-itinerary');
+                        if (btnItinerary) {
+                            // On remplace l'action du clic par l'ouverture du lien Google Maps
+                            btnItinerary.onclick = () => {
+                                // Ouvre un nouvel onglet vers l'itinéraire GPS précis
+                                const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lieu.lat},${lieu.lng}`;
+                                window.open(mapsUrl, '_blank');
+                            };
+                        }
+
                         document.getElementById('sheet-category').innerHTML = `<i data-lucide="${lieu.icon}"></i> <span id="sheet-category-text" style="margin-left:5px;">${lieu.category}</span>`;
                         lucide.createIcons();
 
