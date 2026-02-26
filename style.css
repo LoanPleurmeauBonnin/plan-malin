@@ -598,7 +598,7 @@ h1 {
 }
 
 .status-dot.online {
-    background-color: var(--primary-color);
+    background-color: #07AD41;
 }
 
 .status-dot.offline {
@@ -640,7 +640,7 @@ h1 {
 /* On réactive le clic uniquement sur le bouton lui-même */
 .floating-action-container .btn-primary {
     pointer-events: auto;
-    width: auto;
+    width: 100%;
     min-width: 200px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }

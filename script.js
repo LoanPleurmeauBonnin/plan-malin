@@ -325,14 +325,17 @@ document.addEventListener('DOMContentLoaded', () => {
             // On lance l'animation au démarrage de l'appli (si on est déjà sur l'onglet)
             animateJaugeAndPoints();
 
-            // BONUS : Re-déclencher l'animation à chaque fois qu'on clique sur l'onglet "Récompenses"
-            document.querySelector('[data-target-view="view-recompenses"]').addEventListener('click', () => {
-                // Remise à zéro
-                progressFill.style.strokeDashoffset = circumference;
-                pointsText.innerText = '0';
-                // On relance
-                animateJaugeAndPoints();
-            });
+            // BONUS : Sécurisé pour éviter de faire planter le script si l'onglet n'est pas trouvé
+            const tabRecompenses = document.querySelector('[data-target-view="view-recompenses"]');
+            if (tabRecompenses) {
+                tabRecompenses.addEventListener('click', () => {
+                    // Remise à zéro
+                    progressFill.style.strokeDashoffset = circumference;
+                    pointsText.innerText = '0';
+                    // On relance
+                    animateJaugeAndPoints();
+                });
+            }
         }
     }
 
