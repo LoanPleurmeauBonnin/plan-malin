@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">    <title>Plan Malin - Mes Récompenses</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="app-body white-bg">
+
+    <div class="app-container">
+        
+        <header class="page-header header-with-icon">
+            <h1>Mes récompenses</h1>
+            <i data-lucide="info" class="icon-dark" id="btn-info-rewards"></i>
+        </header>
+
+        <div class="rewards-scroll-container">
+            
+            <div class="progress-section">
+                <svg class="progress-ring" width="160" height="160">
+                    <circle class="progress-ring-bg" stroke="#d1d5db" stroke-width="16" fill="transparent" r="70" cx="80" cy="80"/>
+                    <circle class="progress-ring-fill" stroke="var(--primary-green)" stroke-width="16" fill="transparent" r="70" cx="80" cy="80"/>
+                </svg>
+            </div>
+
+            <div class="filters-container rewards-filters" style="margin-bottom: 24px;">
+                <div class="filter-pill active" data-reward-cat="Tout"><i data-lucide="map"></i> Tout</div>
+                <div class="filter-pill" data-reward-cat="Bar"><i data-lucide="wine"></i> Bar</div>
+                <div class="filter-pill" data-reward-cat="Boîte de nuit"><i data-lucide="music-4"></i> Boîte de nuit</div>
+                <div class="filter-pill" data-reward-cat="Restaurants"><i data-lucide="utensils-crossed"></i> Restaurants</div>
+                <div class="filter-pill" data-reward-cat="Activités/Loisirs"><i data-lucide="party-popper"></i> Activités/Loisirs</div>
+                <div class="filter-pill" data-reward-cat="Culture"><i data-lucide="book-open"></i> Culture</div>
+                <div class="filter-pill" data-reward-cat="Sport"><i data-lucide="volleyball"></i> Sport</div>
+            </div>
+
+            <div class="rewards-list-container" id="rewards-dynamic-list"></div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item" data-target="app.html">
+                <i data-lucide="globe"></i><span>Map</span>
+            </div>
+            <div class="nav-item" data-target="amis.html">
+                <i data-lucide="users"></i><span>Amis</span>
+            </div>
+            <div class="nav-item active" data-target="recompenses.html">
+                <i data-lucide="trophy"></i><span>Récompenses</span>
+            </div>
+            <div class="nav-item" data-target="profil.html">
+                <i data-lucide="circle"></i><span>Profil</span>
+            </div>
+        </nav>
+
+    </div>
+
+    <div class="modal-backdrop" id="info-rewards-backdrop"></div>
+        <div class="center-modal" id="info-rewards-modal">
+            <h2 class="center-modal-title">Comment utiliser tes<br>points ?</h2>
+            
+            <div class="timeline">
+                <div class="timeline-step">
+                    <div class="timeline-icon green-icon"><i data-lucide="gift"></i></div>
+                    <div class="timeline-content">
+                        <h4>1. Va dans "Récompenses"</h4>
+                        <p>Consulte ton solde et les offres disponibles.</p>
+                    </div>
+                </div>
+                <div class="timeline-step">
+                    <div class="timeline-icon red-icon"><i data-lucide="list-filter"></i></div>
+                    <div class="timeline-content">
+                        <h4>2. Choisis ton offre</h4>
+                        <p>Filtre par Resto, Culture, Loisirs... selon tes envies.</p>
+                    </div>
+                </div>
+                <div class="timeline-step">
+                    <div class="timeline-icon green-icon"><i data-lucide="gift"></i></div>
+                    <div class="timeline-content">
+                        <h4>3. Convertis tes points</h4>
+                        <p>Clique sur "Utiliser" pour générer ton bon digital instantané.</p>
+                    </div>
+                </div>
+                <div class="timeline-step">
+                    <div class="timeline-icon red-icon"><i data-lucide="gift"></i></div>
+                    <div class="timeline-content">
+                        <h4>4. Présente ton bon</h4>
+                        <p>Montre ton écran au partenaire pour profiter de l'avantage !</p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary" id="btn-close-info">C'est parti !</button>
+        </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="script.js"></script>
+</body>
+</html>

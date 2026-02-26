@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">    <title>Plan Malin - Carte</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="app-body">
+
+    <div class="app-container">
+        
+        <div id="map"></div>
+
+        <button class="fab-camera" id="btn-open-camera" aria-label="Ouvrir la caméra">
+                <i data-lucide="camera"></i>
+        </button>
+
+            <div class="camera-overlay" id="camera-overlay">
+                <video id="camera-stream" autoplay playsinline></video>
+                
+                <div class="camera-controls-top">
+                    <button class="icon-btn-camera" id="btn-close-camera">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                
+                <div class="camera-controls-bottom">
+                    <button class="capture-btn" id="btn-capture-photo">
+                        <div class="capture-btn-inner"></div>
+                    </button>
+                </div>
+            </div>
+
+        <div class="top-overlay">
+            <div class="search-bar">
+                <i data-lucide="search" class="icon-grey"></i>
+                <input type="text" id="search-input" placeholder="Recherchez un nom, un lieu...">
+                <div class="divider"></div>
+                <i data-lucide="filter" class="icon-grey"></i>
+            </div>
+            <div class="filters-container">
+                <div class="filter-pill active" data-filter="Tout">
+                    <i data-lucide="map"></i> Tout
+                </div>
+                <div class="filter-pill" data-filter="Vêtements">
+                    <i data-lucide="shopping-bag"></i> Vêtements
+                </div>
+                <div class="filter-pill" data-filter="Nourriture">
+                    <i data-lucide="pizza"></i> Nourriture
+                </div>
+                <div class="filter-pill" data-filter="Divers">
+                    <i data-lucide="package"></i> Divers
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active" data-target="app.html"><i data-lucide="globe"></i><span>Map</span></div>
+            <div class="nav-item" data-target="amis.html"><i data-lucide="users"></i><span>Amis</span></div>
+            <div class="nav-item" data-target="recompenses.html"><i data-lucide="trophy"></i><span>Récompenses</span></div>
+            <div class="nav-item" data-target="profil.html"><i data-lucide="circle-user"></i><span>Profil</span></div>
+        </nav>
+
+        <div class="modal-backdrop" id="modal-backdrop"></div>
+        <div class="bottom-sheet" id="bottom-sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+                <div class="sheet-category" id="sheet-category">
+                    <i data-lucide="shopping-bag" id="sheet-icon"></i>
+                    <span id="sheet-category-text">Vêtements</span>
+                </div>
+                <button class="close-btn" id="close-sheet"><i data-lucide="x"></i></button>
+            </div>
+            <h2 id="sheet-title" class="sheet-title">Nom du Magasin</h2>
+            <div class="sheet-info-grid">
+                <div class="info-row"><i data-lucide="map-pin" class="text-green"></i><span id="sheet-address">Adresse</span></div>
+                <div class="info-row"><i data-lucide="clock" class="text-green"></i><span id="sheet-hours">Horaires</span></div>
+                <div class="info-row"><i data-lucide="tag" class="text-green"></i><span id="sheet-price" class="font-bold">Prix</span></div>
+            </div>
+            <div class="sheet-desc-container">
+                <h3>À propos</h3>
+                <p id="sheet-desc">Description...</p>
+            </div>
+            <div class="sheet-actions">
+                <button class="btn-primary" id="btn-itinerary"><i data-lucide="navigation"></i> Y aller</button>
+                <a href="#" target="_blank" class="btn-secondary-outline" id="btn-website"><i data-lucide="external-link"></i> Site web</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

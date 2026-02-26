@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">    <title>Plan Malin - Mon Profil</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="app-body white-bg">
+
+    <div class="app-container">
+        
+        <header class="profile-top-bar">
+            <h1>Mon profil</h1>
+            <div class="top-bar-actions">
+                <i data-lucide="user-plus"></i>
+                <i data-lucide="settings"></i>
+            </div>
+        </header>
+
+        <div class="profile-picture-section">
+            <button class="icon-btn" aria-label="Partager le profil">
+                <i data-lucide="upload" class="icon-light"></i>
+            </button>
+            
+            <div class="avatar-large-wrapper">
+                <img src="https://i.pravatar.cc/300?img=11" alt="Photo de profil">
+            </div>
+
+            <button class="icon-btn" aria-label="Modifier le profil">
+                <i data-lucide="pencil" class="icon-light"></i>
+            </button>
+        </div>
+
+        <div class="profile-stats">
+            <div class="stat-item">
+                <span class="stat-num">15</span>
+                <span class="stat-label">VISITES</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">42</span>
+                <span class="stat-label">TROUVAILLES</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-num">120</span>
+                <span class="stat-label">POINTS</span>
+            </div>
+        </div>
+
+        <div class="profile-tabs">
+            <div class="tab active">
+                <i data-lucide="grid-3x3"></i>
+                Album
+            </div>
+            <div class="tab">
+                <i data-lucide="heart"></i>
+                Favoris
+            </div>
+        </div>
+
+        <div class="photo-grid-container">
+            <div class="photo-item placeholder-img"></div>
+            <div class="photo-item placeholder-img"></div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item" data-target="app.html">
+                <i data-lucide="globe"></i>
+                <span>Map</span>
+            </div>
+            <div class="nav-item" data-target="amis.html">
+                <i data-lucide="users"></i>
+                <span>Amis</span>
+            </div>
+            <div class="nav-item" data-target="recompenses.html">
+                <i data-lucide="trophy"></i>
+                <span>Récompenses</span>
+            </div>
+            <div class="nav-item active" data-target="profil.html">
+                <i data-lucide="circle"></i>
+                <span>Profil</span>
+            </div>
+        </nav>
+
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="script.js"></script>
+</body>
+</html>

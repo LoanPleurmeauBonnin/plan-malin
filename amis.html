@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">    <title>Plan Malin - Mes Amis</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="app-body white-bg">
+
+    <div class="app-container">
+        
+        <header class="page-header">
+            <h1>Mes amis</h1>
+        </header>
+
+        <div class="friends-list-container">
+            
+            <div class="friend-item">
+                <div class="avatar-wrapper">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="Lucas Martel">
+                    <span class="status-dot online"></span>
+                </div>
+                <div class="friend-info">
+                    <span class="friend-name">Lucas Martel</span>
+                    <span class="friend-status">En ligne</span>
+                </div>
+            </div>
+
+            <div class="friend-item">
+                <div class="avatar-wrapper">
+                    <img src="https://i.pravatar.cc/150?img=5" alt="Inès Carvalho">
+                    <span class="status-dot online"></span>
+                </div>
+                <div class="friend-info">
+                    <span class="friend-name">Inès Carvalho</span>
+                    <span class="friend-status">En ligne</span>
+                </div>
+            </div>
+
+            <div class="friend-item">
+                <div class="avatar-wrapper">
+                    <img src="https://i.pravatar.cc/150?img=12" alt="Théo Bianchi">
+                    <span class="status-dot offline"></span>
+                </div>
+                <div class="friend-info">
+                    <span class="friend-name">Théo Bianchi</span>
+                    <span class="friend-status offline-text">Inactif depuis 3 jours</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="floating-action-container">
+            <button class="btn-primary" id="btn-add-friend">Ajouter des amis</button>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-item" data-target="app.html">
+                <i data-lucide="globe"></i>
+                <span>Map</span>
+            </div>
+            <div class="nav-item active" data-target="amis.html">
+                <i data-lucide="users"></i>
+                <span>Amis</span>
+            </div>
+            <div class="nav-item" data-target="recompenses.html">
+                <i data-lucide="trophy"></i>
+                <span>Récompenses</span>
+            </div>
+            <div class="nav-item" data-target="profil.html">
+                <i data-lucide="circle-user"></i>
+                <span>Profil</span>
+            </div>
+        </nav>
+
+    </div>
+
+    <div class="modal-backdrop" id="add-friend-backdrop"></div>
+        <div class="bottom-sheet" id="add-friend-sheet">
+            <div class="sheet-handle" id="add-friend-close"></div>
+
+            <div class="search-bar modal-search">
+                <i data-lucide="search" class="icon-grey"></i>
+                <input type="text" id="search-friend-input" placeholder="Recherchez par nom ou pseudo...">
+            </div>
+
+            <h3 class="suggestions-title">Suggestions</h3>
+
+            <div class="suggestions-list" id="suggestions-list-container">
+                </div>
+
+            <button class="btn-invite-link">
+                <i data-lucide="plus"></i> Inviter un contact par lien
+            </button>
+        </div>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="script.js"></script>
+</body>
+</html>
