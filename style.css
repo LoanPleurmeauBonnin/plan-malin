@@ -1,6 +1,6 @@
 :root {
     --bg-color: #ffffff;
-    --primary-green: #501282;
+    --primary-color: #501282;
     --text-dark: #111827;
     --text-grey: #9ca3af;
     --bg-grey: #f3f4f6;
@@ -83,7 +83,7 @@ h1 {
 }
 
 .text-green {
-    color: var(--primary-green);
+    color: var(--primary-color);
 }
 
 .description {
@@ -106,7 +106,7 @@ h1 {
     align-items: center;
     gap: 8px;
     background-color: var(--bg-grey);
-    color: var(--primary-green);
+    color: var(--primary-color);
     padding: 8px 16px;
     border-radius: 999px;
     font-size: 0.9rem;
@@ -131,7 +131,7 @@ h1 {
     align-items: center;
     justify-content: center;
     gap: 10px;
-    background-color: var(--primary-green);
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 16px;
@@ -288,7 +288,7 @@ h1 {
 
 /* Couleurs selon les catégories */
 .pin-food { background-color: #f59e0b; }
-.pin-clothes { background-color: var(--primary-green); }
+.pin-clothes { background-color: var(--primary-color); }
 .pin-misc { background-color: #3b82f6; }
 
 /* Assurer que l'interface est au-dessus de la carte Leaflet */
@@ -367,7 +367,7 @@ h1 {
 }
 
 .filter-pill.active {
-    background-color: var(--primary-green);
+    background-color: var(--primary-color);
     color: white;
     border: none;
 }
@@ -408,12 +408,12 @@ h1 {
 }
 
 .nav-item.active {
-    color: var(--primary-green);
+    color: var(--primary-color);
 }
 
 /* Couleurs des catégories sur la carte */
 .food-pin { background-color: #f59e0b; } /* Orange pour nourriture */
-.clothes-pin { background-color: var(--primary-green); } /* Vert pour vêtements */
+.clothes-pin { background-color: var(--primary-color); } /* Vert pour vêtements */
 .misc-pin { background-color: #3b82f6; } /* Bleu pour divers */
 
 /* =========================================
@@ -472,7 +472,7 @@ h1 {
     gap: 6px;
     font-size: 0.85rem;
     font-weight: 700;
-    color: var(--primary-green);
+    color: var(--primary-color);
     background-color: #dcfce7;
     padding: 6px 12px;
     border-radius: 8px;
@@ -611,7 +611,7 @@ h1 {
 }
 
 .status-dot.online {
-    background-color: var(--primary-green);
+    background-color: var(--primary-color);
 }
 
 .status-dot.offline {
@@ -758,7 +758,7 @@ h1 {
     gap: 8px;
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--primary-green);
+    color: var(--primary-color);
     cursor: pointer;
     opacity: 0.6; /* Un peu transparent quand inactif */
     transition: opacity 0.2s ease;
@@ -902,7 +902,7 @@ h1 {
     font-size: 1.1rem;
     font-weight: 700;
     margin: 0;
-    color: var(--primary-green);
+    color: var(--primary-color);
 }
 
 .reward-address {
@@ -1009,7 +1009,7 @@ h1 {
 }
 
 .btn-add-small {
-    background-color: var(--primary-green);
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 8px 16px;
@@ -1138,7 +1138,7 @@ h1 {
     bottom: 10px;
     left: 19px; /* Centré par rapport à l'icône qui fait 40px (19px = 40/2 - 1px épaisseur) */
     width: 0;
-    border-left: 2px dashed var(--primary-green);
+    border-left: 2px dashed var(--primary-color);
     z-index: 1;
 }
 
@@ -1167,7 +1167,7 @@ h1 {
     height: 20px;
 }
 
-.green-icon { background-color: var(--primary-green); }
+.green-icon { background-color: var(--primary-color); }
 .red-icon { background-color: var(--badge-red-text); } /* On réutilise ton corail ! */
 
 .timeline-content h4 {
@@ -1194,7 +1194,7 @@ h1 {
     right: 20px;
     width: 60px;
     height: 60px;
-    background-color: var(--primary-green);
+    background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 50%;
