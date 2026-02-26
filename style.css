@@ -30,7 +30,6 @@ body {
     justify-content: space-between;
     align-items: center;
     padding-bottom: 10px; 
-    padding-top: 10px;
 }
 
 /* Taille propre pour ton logo image */
@@ -127,7 +126,7 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    margin-bottom: 60px;
+    margin-bottom: 30px;
 }
 
 .btn-primary {
