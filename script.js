@@ -244,12 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h3>${reward.name}</h3>
                             <p class="reward-address">${reward.address}</p>
                             <p class="reward-offer">${reward.offer}</p>
-                            <p class="reward-points"><i data-lucide="gem" style="width:14px; height:14px; display:inline-block; vertical-align:middle;"></i> ${reward.points} points</p>
+                            <p class="reward-points">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-bottom:2px;"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3v19"/><path d="M2 9h20"/></svg> 
+                                ${reward.points} points
+                            </p>
                         </div>
                     </div>
                 `);
             });
-            lucide.createIcons();
         };
 
         const rewardFilterPills = document.querySelectorAll('.rewards-filters .filter-pill');
