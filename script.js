@@ -226,25 +226,25 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (rewardsListContainer) {
         const rewardsDatabase = [
-            { category: "Bar", name: "La Canaille", address: "6 allée d'Orléans, Nantes", points: 20, offer: "1 shot acheté = 1 shot gratuit", img: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=150&q=80" },
-            { category: "Bar", name: "Coté Plage", address: "14 Quai Turenne, Nantes", points: 40, offer: "1 verre acheté = 1 verre gratuit", img: "https://images.unsplash.com/photo-1575037614876-c38db4ce8456?auto=format&fit=crop&w=150&q=80" },
-            { category: "Bar", name: "Espit Chupitos", address: "Rue de la Paix, Nantes", points: 100, offer: "50% de réduction sur la note totale", img: "https://images.unsplash.com/photo-1560508180-03f285f67ded?auto=format&fit=crop&w=150&q=80" },
-            { category: "Boîte de nuit", name: "New factory", address: "2 Rue de Rieux, Nantes", points: 50, offer: "Entrée gratuite pour 1 soirée", img: "https://images.unsplash.com/photo-1574391884720-bbc3740c51d1?auto=format&fit=crop&w=150&q=80" },
-            { category: "Boîte de nuit", name: "Moda", address: "32 Rue Crucy, Nantes", points: 120, offer: "1 boisson offerte", img: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=150&q=80" },
-            { category: "Boîte de nuit", name: "WareHouse", address: "21 Quai des Antilles, Nantes", points: 200, offer: "1 entrée pour un showcase", img: "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=150&q=80" },
-            { category: "Restaurants", name: "Feeling Good Bakery", address: "1 Rue de la Marne, Nantes", points: 30, offer: "1 cookie acheté = 1 cookie offert", img: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=150&q=80" },
-            { category: "Restaurants", name: "Roadside", address: "1 All. Flesselles, Nantes", points: 80, offer: "1 menu pour 2 à 20€ au lieu de 42€", img: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=150&q=80" },
-            { category: "Restaurants", name: "Myoko", address: "8 Rue J.J. Rousseau, Nantes", points: 180, offer: "1 plat acheté = 1 plat offert", img: "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=150&q=80" },
-            { category: "Activités/Loisirs", name: "Bowlcenter", address: "151 Rue du Moulin, Saint-Herblain", points: 60, offer: "1 partie achetée = 1 partie offerte", img: "https://images.unsplash.com/photo-1553105659-f0411130d8d7?auto=format&fit=crop&w=150&q=80" },
-            { category: "Activités/Loisirs", name: "John Doe Escape Game", address: "13 Rue des Olivettes, Nantes", points: 110, offer: "1 entrée pour 2 au prix de 1", img: "https://images.unsplash.com/photo-1518972559570-7cc1309f3229?auto=format&fit=crop&w=150&q=80" },
-            { category: "Activités/Loisirs", name: "Planet park", address: "5 rue de la Garde, Nantes", points: 170, offer: "1 entrée achetée = 1 entrée offerte", img: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=150&q=80" },
-            { category: "Culture", name: "Pathé Nantes", address: "12 Pl. du Commerce, Nantes", points: 70, offer: "1 place achetée = 1 place offerte", img: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?auto=format&fit=crop&w=150&q=80" },
-            { category: "Culture", name: "Musée de l'illusion", address: "3 Rue Contrescarpe, Nantes", points: 140, offer: "Billet d’entrée gratuit", img: "https://images.unsplash.com/photo-1518998053401-878c730cd534?auto=format&fit=crop&w=150&q=80" },
-            { category: "Culture", name: "Théâtre Graslin", address: "Place Graslin, Nantes", points: 190, offer: "1 entrée achetée = 1 entrée gratuite", img: "https://images.unsplash.com/photo-1507676184212-e034ebc2e92c?auto=format&fit=crop&w=150&q=80" },
-            { category: "Culture", name: "Le Stéréolux", address: "4 Bd Léon Bureau, Nantes", points: 200, offer: "Billet à -50%", img: "https://images.unsplash.com/photo-1470229722913-7c090be5c520?auto=format&fit=crop&w=150&q=80" },
-            { category: "Sport", name: "Makadam fitness", address: "70 Bd du Massacre, Saint-Herblain", points: 130, offer: "5 séances gratuites", img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=150&q=80" },
-            { category: "Sport", name: "Stade de la Beaujoire", address: "333 Rte de Saint-Joseph, Nantes", points: 150, offer: "3 places à 30€", img: "https://images.unsplash.com/photo-1508344928928-7165b67de128?auto=format&fit=crop&w=150&q=80" },
-            { category: "Sport", name: "HBC Nantes", address: "Rue René Viviani, Nantes", points: 160, offer: "2 places gratuites", img: "https://images.unsplash.com/photo-1505666287802-931dc83948e9?auto=format&fit=crop&w=150&q=80" }
+            { category: "Bar", name: "La Canaille", address: "6 allée d'Orléans, Nantes", points: 20, offer: "1 shot acheté = 1 shot gratuit", img: "assets/img/la_canaille.webp" },
+            { category: "Bar", name: "Coté Plage", address: "14 Quai Turenne, Nantes", points: 40, offer: "1 verre acheté = 1 verre gratuit", img: "assets/img/cote-plage.webp" },
+            { category: "Bar", name: "Espit Chupitos", address: "Rue de la Paix, Nantes", points: 100, offer: "50% de réduction sur la note totale", img: "assets/img/espit_chupitos_nantes.webp" },
+            { category: "Boîte de nuit", name: "New factory", address: "2 Rue de Rieux, Nantes", points: 50, offer: "Entrée gratuite pour 1 soirée", img: "assets/img/new_factory.png" },
+            { category: "Boîte de nuit", name: "Moda", address: "32 Rue Crucy, Nantes", points: 120, offer: "1 boisson offerte", img: "assets/img/moda.webp" },
+            { category: "Boîte de nuit", name: "WareHouse", address: "21 Quai des Antilles, Nantes", points: 200, offer: "1 entrée pour un showcase", img: "assets/img/warehouse.webp" },
+            { category: "Restaurants", name: "Feeling Good Bakery", address: "1 Rue de la Marne, Nantes", points: 30, offer: "1 cookie acheté = 1 cookie offert", img: "assets/img/feeling_good_bakery.jpg" },
+            { category: "Restaurants", name: "Roadside", address: "1 All. Flesselles, Nantes", points: 80, offer: "1 menu pour 2 à 20€ au lieu de 42€", img: "assets/img/roadside.jpg" },
+            { category: "Restaurants", name: "Myoko", address: "8 Rue J.J. Rousseau, Nantes", points: 180, offer: "1 plat acheté = 1 plat offert", img: "assets/img/myoko.jpg" },
+            { category: "Activités/Loisirs", name: "Bowlcenter", address: "151 Rue du Moulin, Saint-Herblain", points: 60, offer: "1 partie achetée = 1 partie offerte", img: "assets/img/bowling_center.jpg" },
+            { category: "Activités/Loisirs", name: "John Doe Escape Game", address:"13 Rue des Olivettes, Nantes", points : 110 , offer : 'Entrée pour deux au prix d\'une', img : 'assets/img/accueil-john-doe-escape.jpg'},
+            { category:"Activités/Loisirs" , name:"Planet park" , address:"5 rue de la Garde, Nantes" , points : 170 , offer : 'Entrée achetée = Entrée offerte' , img : 'assets/img/planet_park_nantes.jpg'},
+            { category:"Culture" , name:"Pathé Nantes" , address:"12 Pl. du Commerce, Nantes" , points : 70 , offer : 'Place achetée = Place offerte' , img : 'assets/img/cinema_pathe.png'},
+            { category: "Culture", name: "Musée de l'illusion", address: "3 Rue Contrescarpe, Nantes", points: 140, offer: "Billet d’entrée gratuit", img: "assets/img/musee_illusion.jpg" },
+            { category: "Culture", name: "Théâtre Graslin", address: "Place Graslin, Nantes", points: 190, offer: "1 entrée achetée = 1 entrée gratuite", img: "assets/img/theatre_place_graslin.jpg" },
+            { category: "Culture", name: "Le Stéréolux", address: "4 Bd Léon Bureau, Nantes", points: 200, offer: "Billet à -50%", img: "assets/img/stereolux.webp" },
+            { category: "Sport", name: "Makadam fitness", address: "70 Bd du Massacre, Saint-Herblain", points: 130, offer: "5 séances gratuites", img: "assets/img/makadam_fitness.jpg" },
+            { category: "Sport", name: "Stade de la Beaujoire", address: "333 Rte de Saint-Joseph, Nantes", points: 150, offer: "3 places à 30€", img: "assets/img/stade_de_la_beaujoire.jpg" },
+            { category: "Sport", name: "HBC Nantes", address: "Rue René Viviani, Nantes", points: 160, offer: "2 places gratuites", img: "assets/img/hbc_nantes.png" }
         ];
 
         const renderRewards = (categoryFilter = 'Tout') => {
