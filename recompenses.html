@@ -23,11 +23,16 @@
 
         <div class="rewards-scroll-container">
             
-            <div class="progress-section">
+            <div class="progress-section" style="position: relative; width: 160px; margin: 30px auto 40px auto;">
                 <svg class="progress-ring" width="160" height="160">
                     <circle class="progress-ring-bg" stroke="#d1d5db" stroke-width="16" fill="transparent" r="70" cx="80" cy="80"/>
-                    <circle class="progress-ring-fill" stroke="var(--primary-green)" stroke-width="16" fill="transparent" r="70" cx="80" cy="80"/>
+                    <circle id="dynamic-progress-fill" class="progress-ring-fill" stroke="var(--primary-color)" stroke-width="16" fill="transparent" r="70" cx="80" cy="80"/>
                 </svg>
+                
+                <div class="points-display">
+                    <span id="current-points-text" class="points-number">0</span>
+                    <span class="points-label">pts</span>
+                </div>
             </div>
 
             <div class="filters-container rewards-filters" style="margin-bottom: 24px;">

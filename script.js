@@ -279,6 +279,61 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         renderRewards();
+
+        // --- JAUGE DYNAMIQUE ET ANIMATION DES POINTS ---
+        const userPoints = 120; // Tes points actuels
+        const maxPoints = 200;  // Le palier pour une jauge à 100%
+        
+        const progressFill = document.getElementById('dynamic-progress-fill');
+        const pointsText = document.getElementById('current-points-text');
+
+        if (progressFill && pointsText) {
+            
+            // 1. Calcul mathématique du périmètre du cercle (2 * PI * Rayon)
+            const radius = progressFill.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            
+            // On prépare le SVG (totalement vide au départ)
+            progressFill.style.strokeDasharray = `${circumference} ${circumference}`;
+            progressFill.style.strokeDashoffset = circumference;
+
+            // Fonction pour lancer l'animation (appelée quand on clique sur l'onglet)
+            const animateJaugeAndPoints = () => {
+                // Animation de la jauge (Remplissage fluide)
+                setTimeout(() => {
+                    const percent = Math.min((userPoints / maxPoints) * 100, 100);
+                    const offset = circumference - (percent / 100) * circumference;
+                    progressFill.style.strokeDashoffset = offset;
+                }, 100);
+
+                // Animation du texte (Compteur qui défile)
+                let currentDisplay = 0;
+                const duration = 1000; // 1 seconde d'animation
+                const interval = 20; // Mise à jour toutes les 20ms
+                const step = (userPoints / (duration / interval));
+
+                const counter = setInterval(() => {
+                    currentDisplay += step;
+                    if (currentDisplay >= userPoints) {
+                        currentDisplay = userPoints;
+                        clearInterval(counter);
+                    }
+                    pointsText.innerText = Math.round(currentDisplay);
+                }, interval);
+            };
+
+            // On lance l'animation au démarrage de l'appli (si on est déjà sur l'onglet)
+            animateJaugeAndPoints();
+
+            // BONUS : Re-déclencher l'animation à chaque fois qu'on clique sur l'onglet "Récompenses"
+            document.querySelector('[data-target-view="view-recompenses"]').addEventListener('click', () => {
+                // Remise à zéro
+                progressFill.style.strokeDashoffset = circumference;
+                pointsText.innerText = '0';
+                // On relance
+                animateJaugeAndPoints();
+            });
+        }
     }
 
 // ==========================================
