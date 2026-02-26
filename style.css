@@ -148,10 +148,6 @@ h1 {
     transform: scale(0.98);
 }
 
-.btn-primary:hover {
-    background-color: #0c9142;
-}
-
 .btn-secondary {
     display: flex;
     align-items: center;
