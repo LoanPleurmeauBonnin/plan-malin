@@ -1353,3 +1353,52 @@ h1 {
     color: var(--text-grey);
     margin-top: 4px;
 }
+
+/* =========================================
+   MODALE PROFIL AMI
+   ========================================= */
+.friend-profile-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.friend-profile-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.friend-profile-avatar-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.friend-profile-avatar-wrapper img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.friend-profile-stats {
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 24px;
+    margin-bottom: 24px;
+}
+
+.album-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-color); /* Ton beau violet ! */
+    margin-bottom: 16px;
+    padding: 0 20px;
+}
+
+#friend-profile-sheet .photo-grid-container {
+    padding: 0 20px 40px 20px;
+}

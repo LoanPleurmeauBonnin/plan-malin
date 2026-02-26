@@ -99,6 +99,43 @@
             </button>
         </div>
 
+        <div class="modal-backdrop" id="friend-profile-backdrop"></div>
+        <div class="bottom-sheet" id="friend-profile-sheet">
+            <div class="sheet-handle" id="friend-profile-close"></div>
+            
+            <div class="friend-profile-header">
+                <h2 id="fp-name">Nom de l'Ami</h2>
+            </div>
+            
+            <div class="friend-profile-avatar-wrapper">
+                <img id="fp-avatar" src="" alt="Avatar Ami">
+            </div>
+            
+            <div class="profile-stats friend-profile-stats">
+                <div class="stat-item">
+                    <span class="stat-num" id="fp-visites">0</span>
+                    <span class="stat-label">VISITES</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num" id="fp-trouvailles">0</span>
+                    <span class="stat-label">TROUVAILLES</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num" id="fp-points">0</span>
+                    <span class="stat-label">POINTS</span>
+                </div>
+            </div>
+            
+            <div class="friend-profile-album-section">
+                <h3 class="album-title">
+                    <i data-lucide="grid-3x3" class="text-primary"></i> Album
+                </h3>
+                <div class="photo-grid-container" id="fp-album-grid">
+                    <div class="photo-item placeholder-img" style="background-color: #f3f4f6; background-image: radial-gradient(#d1d5db 2px, transparent 2px); background-size: 10px 10px;"></div>
+                </div>
+            </div>
+        </div>
+
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="script.js"></script>
 </body>

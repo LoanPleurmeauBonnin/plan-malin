@@ -504,4 +504,59 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // ==========================================
+    // 10. MODALE PROFIL AMI (Au clic sur un ami)
+    // ==========================================
+    const friendItems = document.querySelectorAll('.friends-list-container .friend-item');
+    const friendProfileSheet = document.getElementById('friend-profile-sheet');
+    const friendProfileBackdrop = document.getElementById('friend-profile-backdrop');
+    const friendProfileClose = document.getElementById('friend-profile-close');
+
+    // Les éléments texte et image à mettre à jour dans la modale
+    const fpName = document.getElementById('fp-name');
+    const fpAvatar = document.getElementById('fp-avatar');
+    const fpVisites = document.getElementById('fp-visites');
+    const fpTrouvailles = document.getElementById('fp-trouvailles');
+    const fpPoints = document.getElementById('fp-points');
+
+    if (friendItems.length > 0 && friendProfileSheet) {
+        
+        // On écoute le clic sur chaque ami de la liste
+        friendItems.forEach(item => {
+            // S'assure de ne pas écouter les clics sur d'éventuels boutons (ex: supprimer)
+            item.addEventListener('click', (e) => {
+                
+                // 1. On récupère les infos depuis le HTML de l'ami cliqué
+                const name = item.querySelector('.friend-name').innerText;
+                const imgSrc = item.querySelector('img').src;
+
+                // 2. On met à jour l'interface de la modale
+                fpName.innerText = name;
+                fpAvatar.src = imgSrc;
+                
+                // 3. On génère des statistiques aléatoires pour la démo
+                fpVisites.innerText = Math.floor(Math.random() * 15) + 1;    // Entre 1 et 15
+                fpTrouvailles.innerText = Math.floor(Math.random() * 30) + 5; // Entre 5 et 35
+                fpPoints.innerText = Math.floor(Math.random() * 150) + 20;   // Entre 20 et 170
+
+                // 4. On s'assure que les icônes (le quadrillage violet) sont bien chargées
+                lucide.createIcons();
+
+                // 5. On affiche la modale
+                friendProfileSheet.classList.add('active');
+                friendProfileBackdrop.classList.add('active');
+            });
+        });
+
+        // Fonction pour fermer la modale (glissement vers le bas)
+        const closeFriendProfile = () => {
+            friendProfileSheet.classList.remove('active');
+            friendProfileBackdrop.classList.remove('active');
+        };
+
+        // Fermeture au clic sur le fond noir ou la petite poignée grise
+        if(friendProfileBackdrop) friendProfileBackdrop.addEventListener('click', closeFriendProfile);
+        if(friendProfileClose) friendProfileClose.addEventListener('click', closeFriendProfile);
+    }
 });
