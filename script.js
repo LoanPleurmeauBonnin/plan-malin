@@ -297,31 +297,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnOpenCamera = document.getElementById('btn-open-camera');
     const cameraOverlay = document.getElementById('camera-overlay');
     const btnCloseCamera = document.getElementById('btn-close-camera');
-    const btnSwitchCamera = document.getElementById('btn-switch-camera');
+    const btnSwitchCamera = document.getElementById('btn-switch-camera'); // Le nouveau bouton
     const btnCapturePhoto = document.getElementById('btn-capture-photo');
     const videoElement = document.getElementById('camera-stream');
     
     let currentStream = null;
-    let currentFacingMode = 'environment'; // Par défaut : caméra arrière
+    let currentFacingMode = 'environment'; // 'environment' = arrière, 'user' = avant (selfie)
 
     if (btnOpenCamera && cameraOverlay && videoElement) {
         
-        // Fonction pour démarrer ou redémarrer la caméra avec la bonne lentille
+        // Fonction qui allume la caméra selon le mode choisi
         const startCamera = async () => {
-            // Si une caméra tourne déjà, on l'arrête avant d'en lancer une autre
+            // Si une caméra tourne déjà, on l'éteint d'abord
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
             }
 
             try {
-                // On demande l'accès avec la lentille actuelle ('environment' ou 'user')
+                // On demande l'accès avec la lentille actuelle
                 currentStream = await navigator.mediaDevices.getUserMedia({ 
                     video: { facingMode: currentFacingMode },
                     audio: false
                 });
                 videoElement.srcObject = currentStream;
                 
-                // Effet miroir si on est sur la caméra avant (pour que le selfie soit naturel)
+                // Astuce : Effet miroir si on est sur la caméra avant pour que le selfie soit naturel
                 if (currentFacingMode === 'user') {
                     videoElement.style.transform = 'scaleX(-1)';
                 } else {
@@ -338,14 +338,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ouvrir l'overlay
         btnOpenCamera.addEventListener('click', () => {
             cameraOverlay.classList.add('active');
-            currentFacingMode = 'environment'; // On remet l'arrière par défaut à chaque ouverture
+            currentFacingMode = 'environment'; // On remet toujours l'arrière par défaut à l'ouverture
             startCamera();
         });
 
-        // Basculer la caméra (Avant/Arrière)
+        // ACTION DU BOUTON SWITCH (Retourner la caméra)
         if (btnSwitchCamera) {
             btnSwitchCamera.addEventListener('click', () => {
-                // On inverse le mode
+                // On inverse le mode actuel
                 currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
                 // On relance la caméra avec le nouveau mode
                 startCamera();
