@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         this.style.color = '#fff';
                     } else {
                         this.innerText = 'Ajouter';
-                        this.style.backgroundColor = 'var(--primary-green)';
+                        this.style.backgroundColor = 'var(--primary-color)';
                     }
                 });
             });
