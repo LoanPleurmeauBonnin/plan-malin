@@ -414,4 +414,36 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+
+    // ==========================================
+    // 9. LOGIQUE DU PROFIL (Onglets Album / Favoris)
+    // ==========================================
+    const profileTabs = document.querySelectorAll('.profile-tabs .tab');
+    
+    if (profileTabs.length > 0) {
+        profileTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 1. On retire la classe 'active' de tous les onglets
+                profileTabs.forEach(t => t.classList.remove('active'));
+                
+                // 2. On ajoute 'active' à l'onglet cliqué
+                tab.classList.add('active');
+                
+                // 3. On récupère la cible (content-album ou content-favoris)
+                const targetId = tab.getAttribute('data-target');
+                
+                // 4. On cache les deux contenus
+                document.getElementById('content-album').style.display = 'none';
+                document.getElementById('content-favoris').style.display = 'none';
+                
+                // 5. On affiche uniquement le bon contenu
+                const targetContent = document.getElementById(targetId);
+                if (targetId === 'content-album') {
+                    targetContent.style.display = 'grid'; // L'album utilise CSS Grid
+                } else {
+                    targetContent.style.display = 'flex'; // La liste favoris utilise Flex
+                }
+            });
+        });
+    }
 });

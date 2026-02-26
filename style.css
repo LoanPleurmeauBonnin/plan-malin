@@ -1303,3 +1303,21 @@ h1 {
 .capture-btn:active .capture-btn-inner {
     transform: scale(0.9);
 }
+
+/* =========================================
+   COMPLÉMENT PAGE PROFIL (Album & Favoris)
+   ========================================= */
+
+/* Pour que les images respectent l'arrondi des carrés de l'album */
+.photo-item {
+    overflow: hidden;
+}
+
+/* Conteneur de la liste des favoris (même style que les récompenses) */
+.favorites-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0 24px 120px 24px;
+    overflow-y: auto;
+}
