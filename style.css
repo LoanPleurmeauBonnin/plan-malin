@@ -378,14 +378,13 @@ h1 {
 
 /* Navigation du bas adaptée aux écrans avec encoche/barre iOS */
 .bottom-nav {
-    position: absolute;
+    position: fixed; /* <--- C'est le seul mot à changer ! */
     bottom: 0;
     left: 0;
     width: 100%;
     background: white;
     display: flex;
     justify-content: space-around;
-    /* On ajoute env(safe-area-inset-bottom) pour repousser les icônes au-dessus de la barre iOS */
     padding: 16px 10px calc(16px + env(safe-area-inset-bottom)) 10px;
     border-top: 1px solid #f3f4f6;
     z-index: 1000;
