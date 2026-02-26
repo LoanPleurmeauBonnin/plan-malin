@@ -1,6 +1,6 @@
 :root {
     --bg-color: #ffffff;
-    --primary-color: #501282;
+    --primary-color: #501282; /* Ton nouveau violet ! */
     --text-dark: #111827;
     --text-grey: #9ca3af;
     --bg-grey: #f3f4f6;
@@ -29,15 +29,15 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 40px; 
+    padding-bottom: 10px; 
     padding-top: 10px;
 }
 
-.logo-placeholder {
-    width: 80px;
-    height: 40px;
-    background: repeating-conic-gradient(#f0f0f0 0% 25%, transparent 0% 50%) 50% / 10px 10px;
-    opacity: 0.5;
+/* Taille propre pour ton logo image */
+.logo-img {
+    height: 70px;
+    width: auto;
+    object-fit: contain;
 }
 
 .menu-btn {
@@ -61,7 +61,7 @@ body {
     color: var(--badge-red-text);
     padding: 8px 16px;
     border-radius: 999px;
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     font-weight: 600;
     margin-bottom: 32px;
 }
@@ -75,20 +75,21 @@ body {
 }
 
 h1 {
-    font-size: 2.4rem;
+    font-size: 1.375rem;
     letter-spacing: -0.02em;
     line-height: 1.15;
     font-weight: 800;
     margin-bottom: 24px;
 }
 
-.text-green {
+/* Nouvelle classe pour le violet */
+.text-primary {
     color: var(--primary-color);
 }
 
 .description {
     color: #6b7280;
-    font-size: 1.05rem;
+    font-size: 0.875rem;
     line-height: 1.6;
     margin-bottom: 40px;
     font-weight: 400;
@@ -101,16 +102,19 @@ h1 {
     flex-wrap: wrap;
 }
 
+/* Ajout d'une très légère bordure pour faire ressortir les pilules comme sur ta maquette */
 .perk-pill {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background-color: var(--bg-grey);
+    background-color: var(--bg-color); /* Fond blanc */
+    border: 1px solid #e5e7eb; /* Bordure grise */
     color: var(--primary-color);
     padding: 8px 16px;
     border-radius: 999px;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     font-weight: 600;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
 }
 
 .lucide {
@@ -136,16 +140,20 @@ h1 {
     border: none;
     padding: 16px;
     border-radius: 12px;
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.875rem;
+    font-weight: 600;
     cursor: pointer;
     width: 100%;
-    box-shadow: 0 4px 6px -1px rgba(14, 37, 169, 0.2);
+    box-shadow: 0 8px 16px -4px rgba(80, 18, 130, 0.3); /* Ombre violette */
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .btn-primary:active {
     transform: scale(0.98);
+}
+
+.btn-primary:hover {
+    background-color: #3b0d61; /* Violet plus foncé au survol (au lieu du vert d'avant) */
 }
 
 .btn-secondary {
@@ -154,69 +162,51 @@ h1 {
     justify-content: center;
     gap: 10px;
     color: var(--text-dark);
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 0.875rem;
+    font-weight: 600;
     cursor: default;
     padding: 10px;
 }
 
-/* --- NOUVEAU CSS POUR LE MOCKUP TÉLÉPHONE --- */
+/* --- MOCKUP TÉLÉPHONE --- */
 
-/* 1. Le conteneur global qui positionne le tout sur la page */
 .app-mockup-container {
     width: 100%;
     display: flex;
     justify-content: center;
-    position: relative; /* Nécessaire pour le fondu blanc ::after */
-    margin-top: 40px; /* Espace au-dessus du téléphone */
-    padding-bottom: 20px; /* Espace en bas */
+    position: relative;
+    padding-bottom: 20px;
 }
 
-/* 2. Le châssis physique du téléphone (la bordure) */
 .phone-frame {
-    /* --- GESTION DE LA TAILLE --- */
-    width: 100%;
-    /* C'est ici qu'on gère la taille max pour que ça ne soit pas énorme sur tablette/ordi.
-       340px à 380px est une bonne taille réaliste. */
+    width: 220px;
     max-width: 350px; 
     height: auto;
-    
-    /* --- ESTHÉTIQUE DU TÉLÉPHONE --- */
-    background-color: #1c1c1e; /* Couleur sombre type iPhone Pro titane noir */
-    /* Le padding crée l'épaisseur de la bordure noire autour de l'écran */
+    background-color: #1c1c1e;
     padding: 12px; 
-    /* Coins très arrondis pour le châssis extérieur */
     border-radius: 55px; 
-    /* Ombre portée réaliste pour donner de la profondeur */
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    
     position: relative;
-    z-index: 2; /* Pour être au-dessus du fondu blanc */
+    z-index: 2;
 }
 
-/* 3. L'écran à l'intérieur (ton image) */
 .phone-screen {
-    width: 100%;
+    width: 197px;
     height: auto;
-    display: block; /* Supprime les petits espaces sous les images */
-    /* Coins arrondis intérieurs, légèrement plus petits que le châssis */
+    display: block;
     border-radius: 43px; 
-    background-color: #fff; /* Fond blanc au cas où l'image tarde à charger */
+    background-color: #fff;
 }
 
-/* 4. Le fondu blanc en bas de page (Effet "Waouh") */
 .app-mockup-container::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    /* Hauteur du fondu, ajuste si tu veux qu'il monte plus ou moins haut sur le téléphone */
     height: 150px; 
-    /* Dégradé du transparent vers le blanc pur */
     background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 85%);
-    pointer-events: none; /* Permet de cliquer au travers si besoin */
-    z-index: 3; /* Par-dessus le bas du téléphone */
+    pointer-events: none;
+    z-index: 3;
 }
 
 /* =========================================
