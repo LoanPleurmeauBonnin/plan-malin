@@ -264,33 +264,33 @@ document.addEventListener('DOMContentLoaded', () => {
         renderRewards();
     }
 
-    // ==========================================
+// ==========================================
     // 7. MODALE INFO RÉCOMPENSES (Centrée)
     // ==========================================
-    const btnInfoRewards = document.getElementById('btn-info-rewards');
     const infoRewardsModal = document.getElementById('info-rewards-modal');
     const infoRewardsBackdrop = document.getElementById('info-rewards-backdrop');
     const btnCloseInfo = document.getElementById('btn-close-info');
 
-    // On s'assure que les éléments existent sur la page avant d'ajouter le clic
-    if (btnInfoRewards && infoRewardsModal && infoRewardsBackdrop) {
-        
-        btnInfoRewards.addEventListener('click', () => {
-            infoRewardsModal.classList.add('active');
-            infoRewardsBackdrop.classList.add('active');
-        });
-
-        const closeInfoModal = () => {
-            infoRewardsModal.classList.remove('active');
-            infoRewardsBackdrop.classList.remove('active');
-        };
-
-        infoRewardsBackdrop.addEventListener('click', closeInfoModal);
-        if (btnCloseInfo) {
-            btnCloseInfo.addEventListener('click', closeInfoModal);
+    // DÉLÉGATION D'ÉVÉNEMENT : On écoute les clics sur tout le document
+    document.addEventListener('click', (event) => {
+        // On vérifie si l'élément cliqué (ou son parent) possède l'ID 'btn-info-rewards'
+        if (event.target.closest('#btn-info-rewards')) {
+            if (infoRewardsModal && infoRewardsBackdrop) {
+                infoRewardsModal.classList.add('active');
+                infoRewardsBackdrop.classList.add('active');
+            }
         }
-    }
+    });
 
+    // Fonction pour fermer la modale
+    const closeInfoModal = () => {
+        if (infoRewardsModal) infoRewardsModal.classList.remove('active');
+        if (infoRewardsBackdrop) infoRewardsBackdrop.classList.remove('active');
+    };
+
+    // On garde les écouteurs classiques pour fermer (car ces éléments ne sont pas écrasés par Lucide)
+    if (infoRewardsBackdrop) infoRewardsBackdrop.addEventListener('click', closeInfoModal);
+    if (btnCloseInfo) btnCloseInfo.addEventListener('click', closeInfoModal);
     // ==========================================
     // 8. LOGIQUE DE LA CAMÉRA (Preuve de visite)
     // ==========================================
