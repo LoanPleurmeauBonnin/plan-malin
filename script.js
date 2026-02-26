@@ -297,36 +297,64 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnOpenCamera = document.getElementById('btn-open-camera');
     const cameraOverlay = document.getElementById('camera-overlay');
     const btnCloseCamera = document.getElementById('btn-close-camera');
+    const btnSwitchCamera = document.getElementById('btn-switch-camera');
     const btnCapturePhoto = document.getElementById('btn-capture-photo');
     const videoElement = document.getElementById('camera-stream');
     
-    let currentStream = null; // Stockera le flux vidéo pour pouvoir l'éteindre
+    let currentStream = null;
+    let currentFacingMode = 'environment'; // Par défaut : caméra arrière
 
     if (btnOpenCamera && cameraOverlay && videoElement) {
         
-        // Ouvrir la caméra
-        btnOpenCamera.addEventListener('click', async () => {
-            cameraOverlay.classList.add('active');
-            
+        // Fonction pour démarrer ou redémarrer la caméra avec la bonne lentille
+        const startCamera = async () => {
+            // Si une caméra tourne déjà, on l'arrête avant d'en lancer une autre
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+
             try {
-                // On demande l'accès à la caméra avec facingMode: 'environment' (caméra arrière)
+                // On demande l'accès avec la lentille actuelle ('environment' ou 'user')
                 currentStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' },
+                    video: { facingMode: currentFacingMode },
                     audio: false
                 });
-                // On envoie le flux dans la balise vidéo
                 videoElement.srcObject = currentStream;
+                
+                // Effet miroir si on est sur la caméra avant (pour que le selfie soit naturel)
+                if (currentFacingMode === 'user') {
+                    videoElement.style.transform = 'scaleX(-1)';
+                } else {
+                    videoElement.style.transform = 'scaleX(1)';
+                }
+                
             } catch (err) {
                 console.error("Erreur d'accès à la caméra : ", err);
-                alert("Impossible d'accéder à la caméra. Vérifie les permissions de ton navigateur.");
+                alert("Impossible d'accéder à la caméra. Vérifie les permissions.");
                 cameraOverlay.classList.remove('active');
             }
+        };
+
+        // Ouvrir l'overlay
+        btnOpenCamera.addEventListener('click', () => {
+            cameraOverlay.classList.add('active');
+            currentFacingMode = 'environment'; // On remet l'arrière par défaut à chaque ouverture
+            startCamera();
         });
 
-        // Fonction pour fermer proprement la caméra
+        // Basculer la caméra (Avant/Arrière)
+        if (btnSwitchCamera) {
+            btnSwitchCamera.addEventListener('click', () => {
+                // On inverse le mode
+                currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
+                // On relance la caméra avec le nouveau mode
+                startCamera();
+            });
+        }
+
+        // Fermer proprement
         const closeCamera = () => {
             cameraOverlay.classList.remove('active');
-            // Il faut absolument arrêter les "tracks" sinon la LED verte du téléphone reste allumée
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
                 currentStream = null;
@@ -336,10 +364,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (btnCloseCamera) btnCloseCamera.addEventListener('click', closeCamera);
 
-        // Simuler la prise de photo
+        // Simulation de la capture
         if (btnCapturePhoto) {
             btnCapturePhoto.addEventListener('click', () => {
-                // Créer un effet visuel de "Flash" d'appareil photo
                 const flash = document.createElement('div');
                 flash.style.position = 'absolute';
                 flash.style.inset = '0';
@@ -348,14 +375,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 flash.style.transition = 'opacity 0.2s ease-out';
                 cameraOverlay.appendChild(flash);
                 
-                // Animer le flash puis le supprimer
                 setTimeout(() => { flash.style.opacity = '0'; }, 50);
                 setTimeout(() => { flash.remove(); }, 250);
 
-                // Simulation pour la démo client
                 setTimeout(() => {
-                    alert("✅ Photo validée ! Tu viens de gagner 5 points pour ta visite !");
-                    closeCamera(); // On ferme la caméra
+                    alert("✅ Photo validée ! Tu viens de gagner des points !");
+                    closeCamera();
                 }, 400);
             });
         }
