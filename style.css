@@ -1402,21 +1402,3 @@ h1 {
 #friend-profile-sheet .photo-grid-container {
     padding: 0 20px 40px 20px;
 }
-
-.transition-screen {
-    display: none; /* Caché par défaut */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--primary-color); /* Ton violet, ou blanc selon ton design */
-    z-index: 9999; /* Par-dessus tout le reste */
-    justify-content: center;
-    align-items: center;
-}
-
-.transition-screen img {
-    width: 150px; /* À ajuster selon ton animation */
-    height: auto;
-}

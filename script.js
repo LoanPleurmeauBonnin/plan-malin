@@ -2,25 +2,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. INITIALISATION GLOBALE
     lucide.createIcons();
 
-    // 2. REDIRECTION LANDING PAGE AVEC ANIMATION
+    // 2. REDIRECTION LANDING PAGE
     const downloadBtn = document.getElementById('btn-download');
-    const transitionOverlay = document.getElementById('transition-overlay');
-
     if (downloadBtn) {
-        downloadBtn.addEventListener('click', (e) => {
-            e.preventDefault(); // On bloque la redirection immédiate
-            
-            // 1. On affiche l'écran d'animation
-            if (transitionOverlay) {
-                transitionOverlay.style.display = 'flex';
-            }
-
-            // 2. On attend la fin de l'animation (ex: 3000 millisecondes = 3 secondes)
-            // Ajuste ce chiffre selon la durée exacte de ton animation Figma !
-            setTimeout(() => {
-                window.location.href = 'app.html';
-            }, 4200); 
-        });
+        downloadBtn.addEventListener('click', () => { window.location.href = 'app.html'; });
     }
 
     // 3. NAVIGATION MULTI-PAGES
