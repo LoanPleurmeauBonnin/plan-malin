@@ -140,7 +140,7 @@ h1 {
     font-weight: 700;
     cursor: pointer;
     width: 100%;
-    box-shadow: 0 4px 6px -1px rgba(14, 169, 77, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(14, 37, 169, 0.2);
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
@@ -473,7 +473,7 @@ h1 {
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--primary-color);
-    background-color: #dcfce7;
+    background-color: #e8dcfc;
     padding: 6px 12px;
     border-radius: 8px;
 }
@@ -1201,7 +1201,6 @@ h1 {
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 8px 20px rgba(14, 169, 77, 0.4);
     cursor: pointer;
     z-index: 900; /* Au-dessus de la carte Leaflet */
     transition: transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);
