@@ -556,10 +556,12 @@ h1 {
 .friends-list-container {
     display: flex;
     flex-direction: column;
-    padding: 0 24px;
+    gap: 16px;
+    padding: 20px 24px;
+    /* On ajoute un gros padding en bas pour que le dernier ami remonte au-dessus du bouton flottant */
+    padding-bottom: calc(160px + env(safe-area-inset-bottom)); 
     overflow-y: auto;
-    /* On laisse de l'espace en bas pour le bouton et la nav */
-    padding-bottom: 150px; 
+    height: 100%;
 }
 
 .friend-item {
@@ -622,15 +624,25 @@ h1 {
     color: #9ca3af;
 }
 
-/* Conteneur du bouton Ajouter (Fixé au-dessus de la navigation) */
+/* Conteneur du bouton Ajouter un ami */
 .floating-action-container {
-    position: absolute;
-    bottom: 90px; /* Juste au-dessus de la nav bar */
+    position: fixed;
+    bottom: calc(95px + env(safe-area-inset-bottom)); /* Exactement le même calcul */
     left: 0;
     width: 100%;
-    padding: 0 24px;
-    background: linear-gradient(to top, rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%);
-    z-index: 10;
+    display: flex;
+    justify-content: center; /* Centre le bouton horizontalement */
+    padding: 0 20px;
+    z-index: 900;
+    pointer-events: none; /* Permet de cliquer à côté du bouton sans bloquer la liste */
+}
+
+/* On réactive le clic uniquement sur le bouton lui-même */
+.floating-action-container .btn-primary {
+    pointer-events: auto;
+    width: auto;
+    min-width: 200px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* =========================================
@@ -642,7 +654,7 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 60px 24px 20px 24px; /* Padding pour iOS notch */
+    padding: 20px 20px 20px 20px; /* Padding pour iOS notch */
 }
 
 .profile-top-bar h1 {
@@ -1174,20 +1186,21 @@ h1 {
 
 /* Bouton Caméra (Floating Action Button) */
 .fab-camera {
-    position: absolute;
-    bottom: 110px; /* Juste au-dessus de la barre de navigation du bas */
+    position: fixed; /* Fixé à l'écran, pas au conteneur */
+    bottom: calc(95px + env(safe-area-inset-bottom)); /* S'adapte magiquement à tous les téléphones */
     right: 20px;
     width: 60px;
     height: 60px;
-    background-color: var(--primary-color);
+    background-color: var(--primary-color); /* (Ou primary-color si tu l'as passé en violet) */
     color: white;
     border: none;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    z-index: 900; /* Au-dessus de la carte Leaflet */
+    z-index: 900;
     transition: transform 0.2s cubic-bezier(0.1, 0.8, 0.2, 1);
 }
 
