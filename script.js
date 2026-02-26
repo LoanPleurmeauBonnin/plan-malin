@@ -306,32 +306,44 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnOpenCamera && cameraOverlay && videoElement) {
         
-        // Fonction qui allume la caméra selon le mode choisi
+// Fonction qui allume la caméra selon le mode choisi (Spécial iOS Safari)
         const startCamera = async () => {
-            // Si une caméra tourne déjà, on l'éteint d'abord
+            // 1. Éteindre la caméra actuelle
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
+                // Astuce iOS : attendre 100ms pour que le téléphone libère vraiment la caméra
+                await new Promise(resolve => setTimeout(resolve, 100)); 
             }
 
             try {
-                // On demande l'accès avec la lentille actuelle
+                // 2. Tenter l'accès avec la contrainte STRICTE (Requis pour l'iPhone)
                 currentStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: currentFacingMode },
+                    video: { facingMode: { exact: currentFacingMode } },
                     audio: false
                 });
-                videoElement.srcObject = currentStream;
-                
-                // Astuce : Effet miroir si on est sur la caméra avant pour que le selfie soit naturel
-                if (currentFacingMode === 'user') {
-                    videoElement.style.transform = 'scaleX(-1)';
-                } else {
-                    videoElement.style.transform = 'scaleX(1)';
-                }
-                
             } catch (err) {
-                console.error("Erreur d'accès à la caméra : ", err);
-                alert("Impossible d'accéder à la caméra. Vérifie les permissions.");
-                cameraOverlay.classList.remove('active');
+                // 3. Fallback (Plan B) : Si 'exact' échoue (ex: test sur ordinateur portable où 'environment' n'existe pas)
+                try {
+                    currentStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: { facingMode: currentFacingMode },
+                        audio: false
+                    });
+                } catch (errFallback) {
+                    console.error("Erreur de caméra : ", errFallback);
+                    alert("Impossible de changer de caméra.");
+                    cameraOverlay.classList.remove('active');
+                    return; // On arrête tout si ça plante
+                }
+            }
+
+            // 4. Connecter le flux vidéo à l'écran
+            videoElement.srcObject = currentStream;
+            
+            // 5. Effet miroir automatique pour les selfies
+            if (currentFacingMode === 'user') {
+                videoElement.style.transform = 'scaleX(-1)';
+            } else {
+                videoElement.style.transform = 'scaleX(1)';
             }
         };
 
