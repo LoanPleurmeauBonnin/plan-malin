@@ -272,9 +272,14 @@ h1 {
 }
 
 /* Couleurs selon les catégories */
-.pin-food { background-color: #f59e0b; }
 .pin-clothes { background-color: var(--primary-color); }
-.pin-misc { background-color: #3b82f6; }
+.pin-food { background-color: #f59e0b; }
+.pin-hygiene { background-color: #14b8a6; }
+.pin-logement { background-color: #3b82f6; }
+.pin-numerique { background-color: #8b5cf6; }
+.pin-etude { background-color: #10b981; }
+.pin-sociale { background-color: #ec4899; }
+.pin-multiservice { background-color: #14b8a6; }
 
 /* Assurer que l'interface est au-dessus de la carte Leaflet */
 .top-overlay, .bottom-nav, .modal-backdrop, .bottom-sheet {

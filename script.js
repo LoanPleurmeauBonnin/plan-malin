@@ -36,17 +36,77 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Tes données
         const lieux = [
-            { name: "StudHelp", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2184, lng: -1.5536, address: "En France (selon disponibilité des dons)", hours: "Selon disponibilité des dons", price: "0 €", link: "https://www.studhelp.fr/l-association-studhelp", desc: "Met en relation des étudiants en difficulté avec des donateurs afin de fournir gratuitement des paniers alimentaires et produits essentiels." },
-            { name: "Cop1", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2066, lng: -1.5591, address: "10 Rue de l’Île Mabon 44200 Nantes - Selon permanences (voir site)", hours: "Selon créneaux d’accompagnement", price: "0 €", link: "https://cop1.fr/a-propos/", desc: "Propose des paniers alimentaires gratuits ainsi qu’un accompagnement étudiant : aide à l’emploi, stages, alternance et accès aux services essentiels." },
-            { name: "Nous Anti-gaspi", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2246, lng: -1.5493, address: "3 Rue Pitre Chevalier, 44000 Nantes", hours: "Selon magasin", price: "2 € - 4 €", link: "https://www.nousantigaspi.com/", desc: "Produits sauvés du gaspillage alimentaire vendus à prix réduits. -10% pour les étudiants les mardis et jeudis." },
-            { name: "Delivraide", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2012, lng: -1.5703, address: "8 Rue de St-Domingue, 44200 Nantes - Livraison à domicile", hours: "Sur demande via l'application", price: "0 €", link: "https://equipagesolidaire.fr/delivraide", desc: "Application solidaire proposant des kits alimentaires gratuits livrés à domicile pour les étudiants vulnérables." },
+            /* =========================
+            VÊTEMENTS
+            ========================= */
             { name: "Dernière main", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2154, lng: -1.5509, address: "5 Rue de Strasbourg, Nantes", hours: "Mar-Sam : 14h-19h", price: "2 € - 25 €", link: "https://dernieremain.fr/", desc: "Friperie de seconde main proposant des vêtements pour tous à petits prix en centre-ville." },
             { name: "Ding Fring", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2157, lng: -1.5583, address: "10 Rue de l'Arche Sèche, Nantes", hours: "Lun : 14h-19h / Mar-Sam : 10h-19h", price: "2 € - 25 €", link: "https://www.instagram.com/dingfring_friperie/", desc: "Vêtements et accessoires de seconde main à prix accessibles dans une démarche économique, écologique et solidaire." },
             { name: "Frip'in Shop", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2091, lng: -1.5691, address: "5 Rue Charles Brunellière", hours: "Lun-Sam : 10h30-19h", price: "1,50 € - 30 €", link: "https://fripinshop.com/", desc: "Friperie proposant des vêtements de seconde main à prix très accessibles, des basiques aux pièces de marque." },
             { name: "Frip'in Shop", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2414, lng: -1.5319, address: "15 Rue des Marsauderies", hours: "Lun-Sam : 10h30-19h", price: "1,50 € - 30 €", link: "https://fripinshop.com/", desc: "Friperie proposant des vêtements de seconde main à prix très accessibles, des basiques aux pièces de marque." },
             { name: "Frip'in Shop", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.1905, lng: -1.5695, address: "Rezé", hours: "Lun-Sam : 10h30-19h", price: "1,50 € - 30 €", link: "https://fripinshop.com/", desc: "Friperie proposant des vêtements de seconde main à prix très accessibles, des basiques aux pièces de marque." },
             { name: "KILO SHOP NANTES", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2151, lng: -1.5589, address: "15-17 Rue des Vieilles Douves, 44000 Nantes", hours: "Lun-Sam : 10h30-19h", price: "20 € - 60 €/kg", link: "https://www.kilo-shop.com/shop/kawaii-nantes/", desc: "Friperie vendant les vêtements au poids (20 € à 60 €/kg), soit environ 4 à 5 pièces par kilo." },
-            { name: "C'est deux euros", category: "Divers", icon: "package", class: "pin-misc", lat: 47.2162, lng: -1.5588, address: "Rue Guépin, 44000 Nantes", hours: "Lun : 14h-19h / Mar-Sam : 10h30-19h", price: "2 €", link: "https://www.cestdeuxeuros.com/concept", desc: "Magasin proposant une large gamme de produits du quotidien à prix unique et fixe de 2 €." }
+            { name: "TransiStore", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2664, lng: -1.5510, address: "14 Rue Kepler, 44240 La Chapelle-sur-Erdre", hours: "Non précisé", price: "Variable", link: "", desc: "Boutique solidaire : vêtements, linge, équipements maison et objets culturels." },
+            { name: "La Boîte à Récup", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2057, lng: -1.5833, address: "112 Boulevard des Anglais, 44100 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Objets déco et articles solidaires, chaque achat soutient une économie sociale." },
+            { name: "L’Autre Cantine – Friperies solidaires", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2179, lng: -1.5424, address: "18 Rue de Cornulier, 44000 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Friperie solidaire proposant des vêtements à prix accessibles." },
+
+            /* =========================
+            NOURRITURE
+            ========================= */
+            { name: "StudHelp", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2184, lng: -1.5536, address: "En France (selon disponibilité des dons)", hours: "Selon disponibilité des dons", price: "0 €", link: "https://www.studhelp.fr/l-association-studhelp", desc: "Met en relation des étudiants en difficulté avec des donateurs afin de fournir gratuitement des paniers alimentaires et produits essentiels." },
+            { name: "Cop1", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2066, lng: -1.5591, address: "10 Rue de l’Île Mabon 44200 Nantes - Selon permanences (voir site)", hours: "Selon créneaux d’accompagnement", price: "0 €", link: "https://cop1.fr/a-propos/", desc: "Propose des paniers alimentaires gratuits ainsi qu’un accompagnement étudiant : aide à l’emploi, stages, alternance et accès aux services essentiels." },
+            { name: "Nous Anti-gaspi", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2246, lng: -1.5493, address: "3 Rue Pitre Chevalier, 44000 Nantes", hours: "Selon magasin", price: "2 € - 4 €", link: "https://www.nousantigaspi.com/", desc: "Produits sauvés du gaspillage alimentaire vendus à prix réduits. -10% pour les étudiants les mardis et jeudis." },
+            { name: "Delivraide", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2012, lng: -1.5703, address: "8 Rue de St-Domingue, 44200 Nantes - Livraison à domicile", hours: "Sur demande via l'application", price: "0 €", link: "https://equipagesolidaire.fr/delivraide", desc: "Application solidaire proposant des kits alimentaires gratuits livrés à domicile pour les étudiants vulnérables." },
+            { name: "La SurpreNantes Épicerie", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2460, lng: -1.5560, address: "Chemin de la Censive du Tertre, 44300 Nantes", hours: "Lundi : 17h00 - 18h45", price: "Solidaire", link: "", desc: "Épicerie solidaire étudiante proposant des produits alimentaires." },
+            { name: "Linkee", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2173, lng: -1.5534, address: "37 Rue Saint Léonard, 44000 Nantes", hours: "Selon distributions", price: "Gratuit", link: "", desc: "Organise des distributions alimentaires ouvertes à tous.tes les étudiant.e.s." },
+            { name: "CampuSolidaire", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2135, lng: -1.5850, address: "5 Avenue Pajot, 44100 Nantes", hours: "Mensuel", price: "Gratuit", link: "", desc: "Soutient les étudiants en difficulté en fournissant des ressources essentielles." },
+
+            /* =========================
+            HYGIÈNE
+            ========================= */
+            { name: "Distributeurs gratuits (Ville de Nantes)", category: "Hygiène", icon: "droplets", class: "pin-hygiene", lat: 47.2184, lng: -1.5536, address: "Lieux publics à Nantes", hours: "Selon lieux", price: "Gratuit", link: "", desc: "Distributeurs 'Nouvelles Règles' proposant gratuitement tampons et serviettes." },
+            { name: "InterAsso Nantes", category: "Hygiène", icon: "droplets", class: "pin-hygiene", lat: 47.2460, lng: -1.5560, address: "Chemin de la Censive du Tertre, 44300 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Fédération associative étudiante nantaise." },
+
+            /* =========================
+            LOGEMENT / HÉBERGEMENT
+            ========================= */
+            { name: "100 pour 1", category: "Logement", icon: "home", class: "pin-logement", lat: 47.2445, lng: -1.5428, address: "23 Rue de la Bouquinière, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Apporte des solutions d’hébergement aux personnes en difficulté." },
+            { name: "DAL 44 (Droit au Logement)", category: "Logement", icon: "home", class: "pin-logement", lat: 47.2148, lng: -1.5435, address: "28 Rue Fouré, 44000 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Association défendant le droit au logement." },
+            { name: "Association Lazare", category: "Logement", icon: "home", class: "pin-logement", lat: 47.2186, lng: -1.5482, address: "3 Rue du Refuge, 44000 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Colocations solidaires entre sans-abri et jeunes actifs." },
+            { name: "Nantes’Renoue", category: "Logement", icon: "home", class: "pin-logement", lat: 47.2167, lng: -1.5483, address: "1 Cours des Francs Tireurs, 44000 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Accompagnement social et solidaire." },
+            { name: "AISL (Insertion Solidarité Logement)", category: "Logement", icon: "home", class:"pin-logement" , lat : 47.2314 , lng : -1.5480 , address :"4 Rue François Hennebique, 44300 Nantes" , hours :"Non précisé" , price :"Solidaire" , link :"https://www.aisl.fr/" , desc :"Favorise l’insertion par le logement et l’hébergement." },
+            { name:"La R'source" , category:"Logement" , icon:"home" , class:"pin-logement" , lat : 47.2160 , lng : -1.5525 , address :"5 Rue de Bréa, 44000 Nantes" , hours :"Non précisé" , price :"Gratuit" , link :"https://www.larsource.fr/" , desc :"Lieu dédié aux 16-25 ans sans hébergement stable." },
+
+            /* =========================
+            NUMÉRIQUE
+            ========================= */
+            { name: "ALIS 44", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2318, lng: -1.5238, address: "60 Rue de la Bottière, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Association favorisant l’accès au numérique solidaire." },
+            { name: "Ping", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2095, lng: -1.5858, address: "5 Allée Frida Kahlo, 44100 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Association nantaise autour des cultures numériques." },
+            { name: "Les Nantais Solidaires", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2315, lng: -1.5260, address: "82 Boulevard Gabriel Lauriol, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Initiative solidaire locale." },
+            { name: "Repair-Café Numérique (Maison du Libre)", category: "Numerique", icon: "laptop", class:"pin-numerique" , lat : 47.2102 , lng : -1.5850 , address :"52 Rue du Breil, 44100 Nantes" , hours :"Selon événements" , price :"Gratuit" , link :"https://www.maisondulibre.fr/" , desc :"Ateliers de réparation numérique collaboratifs." },
+
+            /* =========================
+            ETUDE / ACCOMPAGNEMENT
+            ========================= */
+            { name: "La Ressourcerie Culturelle", category: "Etude", icon: "book-open", class: "pin-etude", lat: 47.1370, lng: -1.3070, address: "184 Rue Joseph Gaillard, 85600 Montaigu-Vendée", hours: "Non précisé", price: "Solidaire", link: "", desc: "Structure culturelle solidaire." },
+            { name: "CEMÉA – Pépinière Jeunesse Centre Sud", category: "Etude", icon: "book-open", class: "pin-etude", lat: 47.1980, lng: -1.5620, address: "12 Rue Anatole de Monzie, 44200 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Lieu ressource d'information et d’accompagnement pour les 16-25 ans." },
+            { name: "Info Jeunes Pays de la Loire", category: "Etude", icon: "book-open", class: "pin-etude", lat: 47.2173, lng: -1.5534, address: "37 Rue Saint Léonard, 44000 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Information, orientation et accompagnement des jeunes." },            
+            
+            /* =========================
+            VIE SOCIALE & ENGAGÉE
+            ========================= */
+            { name: "Ecossolies", category: "VieSociale", icon: "users", class: "pin-sociale", lat: 47.2015, lng: -1.5700, address: "8 Rue Saint-Domingue, 44200 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Réseau de l’économie sociale et solidaire à Nantes." },
+            { name: "CSC Laetitia", category: "VieSociale", icon: "users", class: "pin-sociale", lat: 47.2058, lng: -1.5845, address: "49 Rue Chanoine Larose, 44100 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Centre socioculturel proposant des activités et accompagnements." },
+
+            /* =========================
+            MULTISERVICE & DIVERS
+            ========================= */
+            { name: "La Frat’", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2125, lng: -1.5835, address: "3 Rue Amiral du Chaffault, 44100 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Lieu solidaire multi-services." },
+            { name: "Les Eaux Vives Emmaüs – Village solidaire 5 Ponts", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2017, lng: -1.5708, address: "12 Allée Nicole Girard Mangin, 44200 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Village solidaire et accompagnement social." },
+            { name: "Boutique Solidaire / Ressourcerie des Dervallières", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2130, lng: -1.5925, address: "40 Boulevard Jean Ingres, 44100 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Ressourcerie et boutique solidaire." },
+            { name: "Récup’Halveque", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2314, lng: -1.5480, address: "6 Rue François Hennebique, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Structure de réemploi et économie circulaire." },
+            { name: "Coup de Pouce", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2328, lng: -1.5285, address: "80 Rue du Port Boyer, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Association d’accompagnement solidaire." },
+            { name: "CROUS Nantes (Service Social)", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2459, lng: -1.5563, address: "2 Boulevard Guy Mollet, 44300 Nantes", hours: "Horaires administratifs", price: "Gratuit", link: "", desc: "Service social accompagnant les étudiants dans leurs démarches." },
+            { name: "C'est deux euros", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2162, lng: -1.5588, address: "Rue Guépin, 44000 Nantes", hours: "Lun : 14h-19h / Mar-Sam : 10h30-19h", price: "2 €", link: "https://www.cestdeuxeuros.com/concept", desc: "Magasin proposant une large gamme de produits du quotidien à prix unique et fixe de 2 €." }
         ];
 
         const bottomSheet = document.getElementById('bottom-sheet');
