@@ -600,10 +600,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 fpTrouvailles.innerText = Math.floor(Math.random() * 30) + 5; // Entre 5 et 35
                 fpPoints.innerText = Math.floor(Math.random() * 150) + 20;   // Entre 20 et 170
 
-                // 4. On s'assure que les icônes (le quadrillage violet) sont bien chargées
-                lucide.createIcons();
+                // ==========================================
+                // 4. NOUVEAU : ALBUM DYNAMIQUE SELON L'AMI
+                // ==========================================
+                const fpAlbumGrid = document.getElementById('fp-album-grid');
+                if (fpAlbumGrid) {
+                    fpAlbumGrid.innerHTML = ''; // On vide l'album précédent
 
-                // 5. On affiche la modale
+                    let photos = [];
+
+                    // On définit les photos selon le nom de l'ami
+                    if (name === "Lucas Martel") {
+                        photos = [
+                            "assets/img/trouvaille1.jpg",
+                            "assets/img/tee_shirt_noir.jpg",
+                            "assets/img/la_canaille.webp"
+                        ];
+                    } else if (name === "Inès Carvalho") {
+                        photos = [
+                            "assets/img/ticket_tenu.jpg"
+                        ];
+                    } else {
+                        // Photos par défaut pour les autres amis (ex: Théo Bianchi)
+                        photos = [
+                            "assets/img/trouvaille2.jpg",
+                            "assets/img/stade.jpg"
+                        ];
+                    }
+
+                    // On injecte chaque photo dans la grille HTML
+                    photos.forEach(photoUrl => {
+                        fpAlbumGrid.insertAdjacentHTML('beforeend', `
+                            <div class="photo-item">
+                                <img src="${photoUrl}" alt="Trouvaille de ${name}" style="width:100%; height:100%; object-fit:cover;">
+                            </div>
+                        `);
+                    });
+                }
+
+                // 5. On rafraîchit les icônes et on ouvre la modale
+                lucide.createIcons();
                 friendProfileSheet.classList.add('active');
                 friendProfileBackdrop.classList.add('active');
             });
