@@ -27,24 +27,19 @@ La carte doit inclure :
 
 Pour garantir une utilisation fluide et pertinente, l'outil doit intégrer les fonctionnalités suivantes :
 
-* 
-**Géolocalisation :** Affichage des acteurs les moins chers pratiquant le réemploi ou le glanage.
+* **Géolocalisation :** Affichage des acteurs les moins chers pratiquant le réemploi ou le glanage.
 
 
-* 
-**Système de filtres :** Possibilité de trier les résultats par catégorie de produits, de services ou par prix.
+* **Système de filtres :** Possibilité de trier les résultats par catégorie de produits, de services ou par prix.
 
 
-* 
-**Moteur de recherche :** Recherche textuelle par nom d'établissement ou par type d'activité.
+* **Moteur de recherche :** Recherche textuelle par nom d'établissement ou par type d'activité.
 
 
-* 
-**Consultation simplifiée :** Un accès facile et rapide aux informations détaillées de chaque acteur.
+* **Consultation simplifiée :** Un accès facile et rapide aux informations détaillées de chaque acteur.
 
 
-* 
-**Crowdsourcing :** Une fonctionnalité permettant aux utilisateurs de suggérer un nouveau lieu afin d'alimenter la carte à l'avenir et de la modifier en temps réel.
+* **Crowdsourcing :** Une fonctionnalité permettant aux utilisateurs de suggérer un nouveau lieu afin d'alimenter la carte à l'avenir et de la modifier en temps réel.
 
 
 
@@ -52,16 +47,13 @@ Pour garantir une utilisation fluide et pertinente, l'outil doit intégrer les f
 
 La conception visuelle et ergonomique est au centre du projet:
 
-* 
-**Mobile First :** La priorité absolue est donnée au format mobile (smartphone). L'outil doit être pensé pour une consultation en mobilité, avec une navigation tactile facilitée et une excellente lisibilité sur petit écran.
+* **Mobile First :** La priorité absolue est donnée au format mobile (smartphone). L'outil doit être pensé pour une consultation en mobilité, avec une navigation tactile facilitée et une excellente lisibilité sur petit écran.
 
 
-* 
-**Ergonomie :** L'interface de la carte doit être intuitive, ergonomique et visuellement attractive.
+* **Ergonomie :** L'interface de la carte doit être intuitive, ergonomique et visuellement attractive.
 
 
-* 
-**Direction Artistique :** L'identité visuelle de l'outil doit être claire, engageante et en totale cohérence avec la D.A et les valeurs de l'association "Dernière Main".
+* **Direction Artistique :** L'identité visuelle de l'outil doit être claire, engageante et en totale cohérence avec la D.A et les valeurs de l'association "Dernière Main".
 
 
 
