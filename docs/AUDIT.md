@@ -63,5 +63,5 @@ Statut : **C** confirmé, **S** suspecté. Effort : F / M / E (faible, moyen, é
 2. Si le projet évolue : un backend pour les suggestions, les points, les bons et les amis (aujourd'hui tout est local à l'appareil).
 3. Éventuellement remplacer avatars et photos tierces par des images locales (A-15).
 4. Poursuivre l'accessibilité : piège de focus dans les feuilles modales, contrastes restants, test au lecteur d'écran (A-12).
-5. Choisir une licence.
+5. Vérifier les droits d'utilisation des images de `assets/img/` (photos de lieux partenaires, maquette) : la licence MIT ajoutée ne couvre que le code.
 6. Si un backend est ajouté : revoir l'échappement, l'authentification, CORS et la validation côté serveur.

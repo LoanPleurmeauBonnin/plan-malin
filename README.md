@@ -127,4 +127,6 @@ docs/             cahier des charges, audit, récapitulatif, captures (docs/imag
 - [docs/IMPROVEMENTS.md](docs/IMPROVEMENTS.md) : récapitulatif des améliorations.
 - [docs/CAHIER-DES-CHARGES.md](docs/CAHIER-DES-CHARGES.md) : énoncé d'origine.
 
-Aucune licence n'est définie dans le dépôt ; elle reste à choisir par l'auteur.
+## Licence
+
+Code sous licence [MIT](LICENSE) © 2026 Loan Pleurmeau Bonnin. La licence ne couvre pas les contenus tiers : photos et visuels des partenaires (`assets/img/`), logo, avatars et photos distantes (pravatar, Unsplash), fond de carte © OpenStreetMap, et les marques citées appartiennent à leurs propriétaires respectifs.
