@@ -129,7 +129,7 @@ docs/             cahier des charges, audit, récapitulatif, captures (docs/imag
 - **Données de lieux** : 14 lieux sur 39 n'ont pas d'horaires, 6 horaires sont à confirmer (mention « à vérifier »), 5 lieux n'ont pas de site et 3 structures sont signalées « informations non confirmées » (introuvables dans les sources consultées). Les horaires et sites ajoutés proviennent de recherches web (annuaire de Nantes Métropole, sites des structures) et peuvent être périmés. Plusieurs coordonnées sont approximatives. Détail dans [docs/AUDIT.md](docs/AUDIT.md).
 - **Statistiques du profil** : « visites » (15) et « trouvailles » (42) sont fixes ; seuls les points évoluent.
 - **Landing page** : certaines formulations (« #1 », « boutiques partenaires ») relèvent du discours de présentation.
-- Avatars d'amis et photos de profil chargés depuis des sites tiers (`pravatar.cc`, `unsplash.com`), choix conservé pour la démo.
+- Seules deux photos de l'album de démonstration du profil sont chargées depuis un site tiers (Unsplash, licence libre) ; tous les avatars sont locaux.
 - Fonctionne uniquement en ligne. Les tuiles OpenStreetMap publiques conviennent à un prototype ; une mise en production demanderait un fournisseur de tuiles dédié (voir [docs/AUDIT.md](docs/AUDIT.md), A-13).
 
 ## Documentation
@@ -141,4 +141,4 @@ docs/             cahier des charges, audit, récapitulatif, captures (docs/imag
 
 ## Licence
 
-Code sous licence [MIT](LICENSE) © 2026 Loan Pleurmeau Bonnin. La licence ne couvre pas les contenus tiers : images restantes (`assets/img/`), logo, avatars et photos distantes (pravatar, Unsplash), fond de carte © OpenStreetMap, et les marques citées appartiennent à leurs propriétaires respectifs. L'origine et le statut de chaque image sont détaillés dans [docs/IMAGES.md](docs/IMAGES.md) : les photos de partenaires ont été retirées ; les images locales restantes sont des illustrations créées pour le projet, hormis le logo et la maquette de la landing page dont les droits restent à confirmer par l'auteur.
+Code sous licence [MIT](LICENSE) © 2026 Loan Pleurmeau Bonnin. La licence ne couvre pas les contenus tiers : images restantes (`assets/img/`), logo, photos distantes d'Unsplash, fond de carte © OpenStreetMap, et les marques citées appartiennent à leurs propriétaires respectifs. L'origine et le statut de chaque image sont détaillés dans [docs/IMAGES.md](docs/IMAGES.md) : les photos de partenaires ont été retirées ; les images locales restantes sont des illustrations créées pour le projet, hormis le logo et la maquette de la landing page dont les droits restent à confirmer par l'auteur.

@@ -49,7 +49,7 @@ Un test vérifie que les fichiers retirés ne reviennent pas.
 | Fichier | Statut |
 |---|---|
 | `logo.png`, `Accueil - Map.png` | Créations présumées de l'équipe : **droits à confirmer par l'auteur** |
-| `avatar-*.svg`, `trouvaille-*.svg` (9 fichiers) | Illustrations vectorielles créées pour le projet, sans image tierce |
+| `avatar-*.svg`, `trouvaille-*.svg` (14 fichiers) | Illustrations vectorielles créées pour le projet, sans image tierce |
 
 Les trois avatars `perso*.jpg` ont été retirés du projet et **purgés de l'historique Git** (troisième réécriture + `push --force`, 12 octobre 2026), ainsi que les anciennes versions de la capture `amis.png` qui les montraient. Aucune sauvegarde locale n'a été conservée.
 
@@ -58,7 +58,7 @@ Les trois avatars `perso*.jpg` ont été retirés du projet et **purgés de l'hi
 | Source | Usage | Conditions |
 |---|---|---|
 | `images.unsplash.com` | Deux photos de l'album du profil | Licence Unsplash : utilisation libre, attribution non obligatoire |
-| `i.pravatar.cc` | Avatars des 6 suggestions d'amis | Service d'avatars de démonstration (photos de personnes réelles) ; ses conditions d'utilisation n'ont pas été vérifiées, à remplacer par des avatars locaux pour un usage durable |
+| `i.pravatar.cc` | *(retiré)* | Les 6 avatars de suggestions d'amis, qui étaient des photos de personnes réelles chargées depuis ce service, sont remplacés par des avatars locaux (`avatar-emma.svg`, `avatar-hugo.svg`, `avatar-chloe.svg`, `avatar-nathan.svg`, `avatar-manon.svg`, `avatar-thomas.svg`) ; le domaine est retiré de la CSP |
 | OpenStreetMap | Fond de carte | © OpenStreetMap contributors (ODbL), attribution déjà affichée sur la carte |
 
 ## Risque et options

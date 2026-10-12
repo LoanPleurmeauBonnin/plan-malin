@@ -20,7 +20,7 @@ Il s'agit d'un projet étudiant maintenu par une personne : les délais sont ind
 **Dans le périmètre** : le code du dépôt (HTML, CSS, JavaScript), sa configuration de sécurité (politique CSP des pages, dépendances chargées depuis des CDN), la gestion des données stockées dans le navigateur.
 
 **Hors périmètre** :
-- les services tiers : GitHub Pages, unpkg, OpenStreetMap, Google Fonts, Unsplash, pravatar ;
+- les services tiers : GitHub Pages, unpkg, OpenStreetMap, Google Fonts, Unsplash ;
 - les attaques par déni de service et les tests intrusifs sur l'hébergement ;
 - les données de démonstration (amis, offres, points) : elles sont fictives ;
 - les informations des lieux (horaires, adresses) : une erreur de contenu n'est pas une vulnérabilité, mais tu peux la signaler dans une issue publique.
@@ -30,7 +30,7 @@ Il s'agit d'un projet étudiant maintenu par une personne : les délais sont ind
 - **Aucune donnée n'est envoyée à un serveur.** Points, photos, favoris, amis, bons, suggestions et profil sont enregistrés dans le `localStorage` du navigateur, **sans chiffrement** : toute personne ayant accès à ton appareil et à ton navigateur peut les lire. Ne saisis pas de données sensibles.
 - **Pas d'authentification.** Il n'y a ni compte ni mot de passe ; les « amis » et les « bons » sont des démonstrations sans valeur réelle.
 - **Caméra et position** : demandées uniquement quand tu utilises les boutons concernés, utilisées localement, jamais transmises. Les photos sont réduites et gardées dans le navigateur.
-- **Requêtes vers des tiers** : le navigateur charge les bibliothèques (unpkg), la police (Google Fonts), le fond de carte (OpenStreetMap) et quelques images (Unsplash, pravatar). Ces services voient donc ton adresse IP, comme pour tout site web.
+- **Requêtes vers des tiers** : le navigateur charge les bibliothèques (unpkg), la police (Google Fonts), le fond de carte (OpenStreetMap) et deux images de démonstration (Unsplash). Ces services voient donc ton adresse IP, comme pour tout site web.
 
 ## Mesures en place
 

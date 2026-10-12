@@ -970,7 +970,7 @@ h1 {
 }
 
 .suggestions-title {
-    color: #d1d5db; /* Gris clair */
+    color: var(--text-grey);
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 16px;
@@ -1040,7 +1040,7 @@ h1 {
     gap: 10px;
     background: transparent;
     border: 2px dashed #e5e7eb;
-    color: #d1d5db;
+    color: var(--text-grey);
     padding: 16px;
     border-radius: 12px;
     font-size: 1rem;

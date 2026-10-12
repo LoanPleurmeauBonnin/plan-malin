@@ -413,12 +413,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (addFriendClose) addFriendClose.addEventListener('click', closeFriendModal);
 
         const mockFriends = [
-            { id: 1, name: "Emma Dubois", sub: "Étudiante en design", avatar: "https://i.pravatar.cc/150?img=1" },
-            { id: 2, name: "Hugo Martin", sub: "Campus Tertre", avatar: "https://i.pravatar.cc/150?img=13" },
-            { id: 3, name: "Chloé Leroy", sub: "Adore les friperies", avatar: "https://i.pravatar.cc/150?img=5" },
-            { id: 4, name: "Nathan Roux", sub: "Nantes Centre", avatar: "https://i.pravatar.cc/150?img=11" },
-            { id: 5, name: "Manon Peeters", sub: "Fan de bons plans", avatar: "https://i.pravatar.cc/150?img=9" },
-            { id: 6, name: "Thomas Morel", sub: "Polytech Nantes", avatar: "https://i.pravatar.cc/150?img=8" }
+            { id: 1, name: "Emma Dubois", sub: "Étudiante en design", avatar: "assets/img/avatar-emma.svg" },
+            { id: 2, name: "Hugo Martin", sub: "Campus Tertre", avatar: "assets/img/avatar-hugo.svg" },
+            { id: 3, name: "Chloé Leroy", sub: "Adore les friperies", avatar: "assets/img/avatar-chloe.svg" },
+            { id: 4, name: "Nathan Roux", sub: "Nantes Centre", avatar: "assets/img/avatar-nathan.svg" },
+            { id: 5, name: "Manon Peeters", sub: "Fan de bons plans", avatar: "assets/img/avatar-manon.svg" },
+            { id: 6, name: "Thomas Morel", sub: "Polytech Nantes", avatar: "assets/img/avatar-thomas.svg" }
         ];
 
         const searchFriendInput = document.getElementById('search-friend-input');
