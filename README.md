@@ -88,7 +88,7 @@ Prérequis : Node.js 20 ou plus.
 npm test
 ```
 
-Les 17 tests, exécutés aussi par GitHub Actions à chaque envoi sur `main`, vérifient l'intégrité des données et des pages : champs obligatoires des lieux, catégories reliées à un filtre, coordonnées dans la zone nantaise, liens `https`, ressources locales existantes, navigation, CDN versionnées avec SRI, zoom non bloqué, identifiants utilisés par `script.js` présents dans les pages, boutons icônes nommés, nombre de lieux annoncé sur la landing page, CSP stricte et favicon sur chaque page, aucun script inline, `rel="noopener"` sur les liens externes, non-retour des images retirées. Il n'existe pas de test automatisé du comportement dans le navigateur : ce comportement a été vérifié par des scripts Chromium ponctuels (voir [docs/AUDIT.md](docs/AUDIT.md)).
+Les 18 tests, exécutés aussi par GitHub Actions à chaque envoi sur `main`, vérifient l'intégrité des données et des pages : champs obligatoires des lieux, catégories reliées à un filtre, coordonnées dans la zone nantaise, liens `https`, ressources locales existantes, navigation, CDN versionnées avec SRI, zoom non bloqué, identifiants utilisés par `script.js` présents dans les pages, boutons icônes nommés, nombre de lieux annoncé sur la landing page, CSP stricte et favicon sur chaque page, aucun script inline, `rel="noopener"` sur les liens externes, non-retour des images retirées, absence d'image distante. Il n'existe pas de test automatisé du comportement dans le navigateur : ce comportement a été vérifié par des scripts Chromium ponctuels (voir [docs/AUDIT.md](docs/AUDIT.md)).
 
 ## Sécurité et accessibilité
 
@@ -129,7 +129,7 @@ docs/             cahier des charges, audit, récapitulatif, captures (docs/imag
 - **Données de lieux** : 14 lieux sur 39 n'ont pas d'horaires, 6 horaires sont à confirmer (mention « à vérifier »), 5 lieux n'ont pas de site et 3 structures sont signalées « informations non confirmées » (introuvables dans les sources consultées). Les horaires et sites ajoutés proviennent de recherches web (annuaire de Nantes Métropole, sites des structures) et peuvent être périmés. Plusieurs coordonnées sont approximatives. Détail dans [docs/AUDIT.md](docs/AUDIT.md).
 - **Statistiques du profil** : « visites » (15) et « trouvailles » (42) sont fixes ; seuls les points évoluent.
 - **Landing page** : certaines formulations (« #1 », « boutiques partenaires ») relèvent du discours de présentation.
-- Seules deux photos de l'album de démonstration du profil sont chargées depuis un site tiers (Unsplash, licence libre) ; tous les avatars sont locaux.
+- Toutes les images de l'interface sont locales (aucune image tierce chargée à distance) ; seuls la police, les bibliothèques et le fond de carte viennent de services externes.
 - Fonctionne uniquement en ligne. Les tuiles OpenStreetMap publiques conviennent à un prototype ; une mise en production demanderait un fournisseur de tuiles dédié (voir [docs/AUDIT.md](docs/AUDIT.md), A-13).
 
 ## Documentation
@@ -141,4 +141,4 @@ docs/             cahier des charges, audit, récapitulatif, captures (docs/imag
 
 ## Licence
 
-Code sous licence [MIT](LICENSE) © 2026 Loan Pleurmeau Bonnin. La licence ne couvre pas les contenus tiers : images restantes (`assets/img/`), logo, photos distantes d'Unsplash, fond de carte © OpenStreetMap, et les marques citées appartiennent à leurs propriétaires respectifs. L'origine et le statut de chaque image sont détaillés dans [docs/IMAGES.md](docs/IMAGES.md) : les photos de partenaires ont été retirées ; les images locales restantes sont des illustrations créées pour le projet, hormis le logo et la maquette de la landing page dont les droits restent à confirmer par l'auteur.
+Code sous licence [MIT](LICENSE) © 2026 Loan Pleurmeau Bonnin. La licence ne couvre pas les contenus tiers : images restantes (`assets/img/`), logo, fond de carte © OpenStreetMap, et les marques citées appartiennent à leurs propriétaires respectifs. L'origine et le statut de chaque image sont détaillés dans [docs/IMAGES.md](docs/IMAGES.md) : les photos de partenaires ont été retirées ; les images locales restantes sont des illustrations créées pour le projet, hormis le logo et la maquette de la landing page dont les droits restent à confirmer par l'auteur.

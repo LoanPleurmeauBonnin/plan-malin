@@ -717,7 +717,7 @@ h1 {
 }
 
 .icon-light {
-    color: #cbd5e1; /* Gris très clair pour les petites icônes upload/edit */
+    color: var(--text-grey); /* icônes upload/édition : contraste ≥ 3:1 (WCAG 1.4.11) */
     width: 24px;
     height: 24px;
 }

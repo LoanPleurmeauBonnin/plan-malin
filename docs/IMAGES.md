@@ -49,17 +49,19 @@ Un test vérifie que les fichiers retirés ne reviennent pas.
 | Fichier | Statut |
 |---|---|
 | `logo.png`, `Accueil - Map.png` | Créations présumées de l'équipe : **droits à confirmer par l'auteur** |
-| `avatar-*.svg`, `trouvaille-*.svg` (14 fichiers) | Illustrations vectorielles créées pour le projet, sans image tierce |
+| `avatar-*.svg`, `trouvaille-*.svg` (15 fichiers) | Illustrations vectorielles créées pour le projet, sans image tierce |
 
 Les trois avatars `perso*.jpg` ont été retirés du projet et **purgés de l'historique Git** (troisième réécriture + `push --force`, 12 octobre 2026), ainsi que les anciennes versions de la capture `amis.png` qui les montraient. Aucune sauvegarde locale n'a été conservée.
 
-## E. Images distantes (non versionnées)
+## E. Services externes
+
+Plus aucune image de l'interface n'est chargée depuis un site tiers (un test le vérifie) :
 
 | Source | Usage | Conditions |
 |---|---|---|
-| `images.unsplash.com` | Deux photos de l'album du profil | Licence Unsplash : utilisation libre, attribution non obligatoire |
-| `i.pravatar.cc` | *(retiré)* | Les 6 avatars de suggestions d'amis, qui étaient des photos de personnes réelles chargées depuis ce service, sont remplacés par des avatars locaux (`avatar-emma.svg`, `avatar-hugo.svg`, `avatar-chloe.svg`, `avatar-nathan.svg`, `avatar-manon.svg`, `avatar-thomas.svg`) ; le domaine est retiré de la CSP |
-| OpenStreetMap | Fond de carte | © OpenStreetMap contributors (ODbL), attribution déjà affichée sur la carte |
+| `images.unsplash.com` | *(retiré)* | Les deux photos de l'album de démonstration du profil sont remplacées par `trouvaille-vetement.svg` et `trouvaille-repas.svg` ; le domaine est retiré de la CSP |
+| `i.pravatar.cc` | *(retiré)* | Avatars remplacés par des avatars locaux à initiales ; domaine retiré de la CSP |
+| OpenStreetMap | Fond de carte | © OpenStreetMap contributors (ODbL), attribution déjà affichée sur la carte ; ce sont des tuiles de carte, pas des images de l'interface |
 
 ## Risque et options
 

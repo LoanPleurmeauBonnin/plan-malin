@@ -143,3 +143,11 @@ test('les liens target="_blank" portent rel="noopener"', () => {
     for (const m of html.matchAll(/<a\s[^>]*target="_blank"[^>]*>/g)) assert.match(m[0], /rel="[^"]*noopener/, `${p}: ${m[0]}`);
   }
 });
+
+test('aucune image distante : toutes les images de l\'interface sont locales', () => {
+  for (const f of [...pages, 'script.js', 'data.js']) {
+    const content = fs.readFileSync(path.join(root, f), 'utf8');
+    assert.ok(!/<img[^>]+src="https?:/.test(content), `${f}: image distante dans le HTML`);
+    assert.ok(!/(unsplash|pravatar)/i.test(content), `${f}: référence à un service d'images tiers`);
+  }
+});
