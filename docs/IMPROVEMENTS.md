@@ -23,4 +23,4 @@ Récapitulatif des changements (identifiants et détails dans [AUDIT.md](AUDIT.m
 | `.gitignore`, suppression des `.DS_Store` (A-18) | `.gitignore` | Dépôt plus propre | — |
 | Nouveau README avec 5 captures réelles ; énoncé d'origine déplacé | `README.md`, `docs/CAHIER-DES-CHARGES.md`, `docs/images/` | Présentation fidèle du projet réel | Chiffres et commandes du README vérifiés ; captures relues |
 
-Les éléments non corrigés (données restant à vérifier, persistance serveur, ressources tierces conservées, licence) sont listés dans la section 5 de [AUDIT.md](AUDIT.md).
+Les éléments non corrigés (données restant à vérifier, persistance serveur, ressources tierces conservées, droits des images) sont listés dans la section 5 de [AUDIT.md](AUDIT.md).
