@@ -86,3 +86,28 @@ test('les CDN externes sont versionnées et protégées par SRI', () => {
 test('les pages ne bloquent pas le zoom (WCAG 1.4.4)', () => {
   for (const p of pages) assert.ok(!/user-scalable=no/.test(fs.readFileSync(path.join(root, p), 'utf8')), p);
 });
+
+test('chaque id utilisé par script.js existe dans une page (ou est créé par le script)', () => {
+  const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
+  const allHtml = pages.map((p) => fs.readFileSync(path.join(root, p), 'utf8')).join('\n');
+  const creeParLeScript = new Set(['toast']);
+  const ids = new Set([...script.matchAll(/getElementById\('([^']+)'\)/g)].map((m) => m[1]));
+  for (const id of ids) {
+    if (creeParLeScript.has(id)) continue;
+    assert.ok(allHtml.includes(`id="${id}"`), `id "${id}" utilisé dans script.js mais absent des pages`);
+  }
+});
+
+test('le nombre de lieux annoncé sur la landing page correspond aux données', () => {
+  const landing = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  assert.ok(landing.includes(`${lieux.length} lieux`), `la landing page doit annoncer ${lieux.length} lieux`);
+});
+
+test('les boutons icônes des pages applicatives ont un nom accessible', () => {
+  for (const p of pages.filter((f) => f !== 'index.html')) {
+    const html = fs.readFileSync(path.join(root, p), 'utf8');
+    for (const m of html.matchAll(/<button\b([^>]*)>\s*<i data-lucide[^>]*><\/i>\s*<\/button>/g)) {
+      assert.match(m[1], /aria-label=/, `${p}: bouton icône sans aria-label`);
+    }
+  }
+});

@@ -35,7 +35,87 @@ document.addEventListener('DOMContentLoaded', () => {
     const getPoints = () => store.get('points', DEFAULT_POINTS);
 
     // Comparaison de texte insensible à la casse et aux accents ("etudiant" trouve "Étudiant").
-    const normalize = (str) => str.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+    // Message bref et non bloquant (remplace alert)
+    let toastTimer = null;
+    const toast = (message) => {
+        let el = document.getElementById('toast');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'toast';
+            el.className = 'toast';
+            el.setAttribute('role', 'status');
+            el.setAttribute('aria-live', 'polite');
+            document.body.appendChild(el);
+        }
+        el.textContent = message;
+        el.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+    };
+
+    // Fenêtre (feuille du bas ou modale centrée) : ouverture, fermeture par fond, poignée ou Échap.
+    const setupSheet = (sheetId, backdropId) => {
+        const sheet = document.getElementById(sheetId);
+        const backdrop = document.getElementById(backdropId);
+        if (!sheet || !backdrop) return null;
+        const close = () => {
+            sheet.classList.remove('active');
+            backdrop.classList.remove('active');
+        };
+        const open = () => {
+            sheet.classList.add('active');
+            backdrop.classList.add('active');
+            sheet.tabIndex = -1;
+            sheet.focus({ preventScroll: true });
+        };
+        backdrop.addEventListener('click', close);
+        const handle = sheet.querySelector('.sheet-handle');
+        if (handle) handle.addEventListener('click', close);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+        return { sheet, backdrop, open, close };
+    };
+
+    // Partage du lien de l'appli : menu natif du téléphone si disponible, sinon copie dans le presse-papiers.
+    const shareLink = async (title, text) => {
+        const url = new URL('index.html', window.location.href).href;
+        if (navigator.share) {
+            try {
+                await navigator.share({ title, text, url });
+                return;
+            } catch (e) {
+                if (e.name === 'AbortError') return;
+            }
+        }
+        try {
+            await navigator.clipboard.writeText(url);
+            toast('Lien copié dans le presse-papiers !');
+        } catch (e) {
+            toast('Copie ce lien : ' + url);
+        }
+    };
+
+    // Valeur stable dérivée d'un texte (statistiques de démonstration identiques à chaque ouverture)
+    const seeded = (str, modulo) => {
+        let h = 0;
+        for (const c of str) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+        return h % modulo;
+    };
+
+    // Menu de la landing page (mobile)
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+    if (menuToggle && navLinks) {
+        const setMenu = (open) => {
+            navLinks.classList.toggle('open', open);
+            menuToggle.setAttribute('aria-expanded', String(open));
+            menuToggle.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+        };
+        menuToggle.addEventListener('click', () => setMenu(!navLinks.classList.contains('open')));
+        navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+    }
 
     // 2. REDIRECTION LANDING PAGE
     const downloadBtn = document.getElementById('btn-download');
@@ -53,8 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (targetPage) {
                 window.location.href = targetPage;
             } else {
-                const pageName = this.querySelector('span').innerText;
-                alert(`La page ${pageName} sera bientôt disponible !`);
+                toast(`La page ${this.querySelector('span').innerText} sera bientôt disponible !`);
             }
         });
     });
@@ -71,24 +150,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const markerGroup = L.layerGroup().addTo(map);
 
-        // Tes données
-        // Données : voir data.js (const lieux)
+        const lieuKey = (l) => `${l.name}|${l.address}`;
+        const isFree = (l) => /^(0\s?€|gratuit)/i.test(l.price.trim());
+        const getFavorites = () => store.get('favorites', []);
 
         const bottomSheet = document.getElementById('bottom-sheet');
         const backdrop = document.getElementById('modal-backdrop');
         const closeBtn = document.getElementById('close-sheet');
         const noResults = document.getElementById('no-results');
+        const favBtn = document.getElementById('btn-favorite');
 
         let categorieActuelle = 'Tout';
         let rechercheActuelle = '';
+        const filtres = { gratuit: false, site: false, favoris: false };
+        let lieuOuvert = null;
+
+        const updateFavBtn = () => {
+            if (!favBtn || !lieuOuvert) return;
+            const on = getFavorites().includes(lieuKey(lieuOuvert));
+            favBtn.classList.toggle('active', on);
+            favBtn.setAttribute('aria-pressed', String(on));
+            favBtn.setAttribute('aria-label', on ? 'Retirer des favoris' : 'Ajouter aux favoris');
+        };
+
+        const openLieu = (lieu) => {
+            lieuOuvert = lieu;
+            document.getElementById('sheet-title').textContent = lieu.name;
+            document.getElementById('sheet-address').textContent = lieu.address;
+            document.getElementById('sheet-hours').textContent = lieu.hours;
+            document.getElementById('sheet-price').textContent = lieu.price;
+            document.getElementById('sheet-desc').textContent = lieu.desc;
+
+            const btnWebsite = document.getElementById('btn-website');
+            if (lieu.link) {
+                btnWebsite.href = lieu.link;
+                btnWebsite.style.display = 'flex';
+            } else {
+                btnWebsite.style.display = 'none';
+            }
+
+            // Bouton "Y aller" : itinéraire GPS vers le lieu dans un nouvel onglet
+            const btnItinerary = document.getElementById('btn-itinerary');
+            if (btnItinerary) {
+                btnItinerary.onclick = () => {
+                    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lieu.lat},${lieu.lng}`, '_blank', 'noopener');
+                };
+            }
+
+            document.getElementById('sheet-category').innerHTML = `<i data-lucide="${lieu.icon}"></i> <span id="sheet-category-text" style="margin-left:5px;"></span>`;
+            document.getElementById('sheet-category-text').textContent = lieu.category;
+            refreshIcons();
+            updateFavBtn();
+
+            if (bottomSheet) bottomSheet.classList.add('active');
+            if (backdrop) backdrop.classList.add('active');
+        };
+
+        // Filtres avancés (icône à droite de la recherche)
+        const filtersBtn = document.getElementById('btn-open-filters');
+        const filterFree = document.getElementById('filter-free');
+        const filterSite = document.getElementById('filter-site');
+        const filterFav = document.getElementById('filter-fav');
+        const filtersApply = document.getElementById('filters-apply');
 
         const renderMarkers = () => {
             markerGroup.clearLayers();
+            const favoris = getFavorites();
             lieux.forEach(lieu => {
                 const matchCategorie = (categorieActuelle === 'Tout' || lieu.category === categorieActuelle);
                 const matchRecherche = normalize(`${lieu.name} ${lieu.category} ${lieu.desc}`).includes(normalize(rechercheActuelle.trim()));
+                const matchFiltres = (!filtres.gratuit || isFree(lieu))
+                    && (!filtres.site || Boolean(lieu.link))
+                    && (!filtres.favoris || favoris.includes(lieuKey(lieu)));
 
-                if (matchCategorie && matchRecherche) {
+                if (matchCategorie && matchRecherche && matchFiltres) {
                     const customIcon = L.divIcon({
                         className: 'custom-pin',
                         html: `<div class="pin-marker ${lieu.class}"></div>`,
@@ -96,47 +231,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     const marker = L.marker([lieu.lat, lieu.lng], { icon: customIcon, title: lieu.name, alt: lieu.name });
-
-                    marker.on('click', () => {
-                        document.getElementById('sheet-title').textContent = lieu.name;
-                        document.getElementById('sheet-category-text').textContent = lieu.category;
-                        document.getElementById('sheet-address').textContent = lieu.address;
-                        document.getElementById('sheet-hours').textContent = lieu.hours;
-                        document.getElementById('sheet-price').textContent = lieu.price;
-                        document.getElementById('sheet-desc').textContent = lieu.desc;
-
-                        const btnWebsite = document.getElementById('btn-website');
-                        if (lieu.link) {
-                            btnWebsite.href = lieu.link;
-                            btnWebsite.style.display = 'flex';
-                        } else {
-                            btnWebsite.style.display = 'none';
-                        }
-
-                        // ==========================================
-                        // NOUVEAU : GESTION DU BOUTON "Y ALLER"
-                        // ==========================================
-                        const btnItinerary = document.getElementById('btn-itinerary');
-                        if (btnItinerary) {
-                            // On remplace l'action du clic par l'ouverture du lien Google Maps
-                            btnItinerary.onclick = () => {
-                                // Ouvre un nouvel onglet vers l'itinéraire GPS précis
-                                const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lieu.lat},${lieu.lng}`;
-                                window.open(mapsUrl, '_blank');
-                            };
-                        }
-
-                        document.getElementById('sheet-category').innerHTML = `<i data-lucide="${lieu.icon}"></i> <span id="sheet-category-text" style="margin-left:5px;"></span>`;
-                        document.getElementById('sheet-category-text').textContent = lieu.category;
-                        refreshIcons();
-
-                        if (bottomSheet) bottomSheet.classList.add('active');
-                        if (backdrop) backdrop.classList.add('active');
-                    });
+                    marker.on('click', () => openLieu(lieu));
                     markerGroup.addLayer(marker);
                 }
             });
-            if (noResults) noResults.hidden = markerGroup.getLayers().length > 0;
+            const count = markerGroup.getLayers().length;
+            if (noResults) noResults.hidden = count > 0;
+            if (filtersBtn) filtersBtn.classList.toggle('has-filters', Object.values(filtres).some(Boolean));
+            if (filtersApply) filtersApply.textContent = `Voir ${count} lieu${count > 1 ? 'x' : ''}`;
         };
 
         const searchInput = document.getElementById('search-input');
@@ -145,6 +247,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 rechercheActuelle = event.target.value;
                 renderMarkers();
             });
+        }
+
+        const filtersSheet = setupSheet('filters-sheet', 'filters-backdrop');
+        if (filtersBtn && filtersSheet) {
+            filtersBtn.addEventListener('click', filtersSheet.open);
+            const syncFilters = () => {
+                filtres.gratuit = filterFree.checked;
+                filtres.site = filterSite.checked;
+                filtres.favoris = filterFav.checked;
+                renderMarkers();
+            };
+            [filterFree, filterSite, filterFav].forEach((box) => box.addEventListener('change', syncFilters));
+            document.getElementById('filters-reset').addEventListener('click', () => {
+                [filterFree, filterSite, filterFav].forEach((box) => { box.checked = false; });
+                syncFilters();
+            });
+            filtersApply.addEventListener('click', filtersSheet.close);
         }
 
         const filterPills = document.querySelectorAll('.filter-pill');
@@ -166,7 +285,54 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Favoris : cœur de la fiche d'un lieu
+        if (favBtn) {
+            favBtn.addEventListener('click', () => {
+                if (!lieuOuvert) return;
+                const key = lieuKey(lieuOuvert);
+                const favoris = getFavorites();
+                const on = favoris.includes(key);
+                store.set('favorites', on ? favoris.filter((k) => k !== key) : [...favoris, key]);
+                updateFavBtn();
+                renderMarkers();
+                toast(on ? 'Retiré de tes favoris' : 'Ajouté à tes favoris');
+            });
+        }
+
+        // Géolocalisation : centre la carte sur la position de l'utilisateur
+        const btnLocate = document.getElementById('btn-locate');
+        let youMarker = null;
+        if (btnLocate) {
+            btnLocate.addEventListener('click', () => {
+                if (!navigator.geolocation) {
+                    toast("La géolocalisation n'est pas disponible sur cet appareil.");
+                    return;
+                }
+                toast('Recherche de ta position…');
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const latlng = [pos.coords.latitude, pos.coords.longitude];
+                    if (youMarker) youMarker.remove();
+                    youMarker = L.marker(latlng, {
+                        icon: L.divIcon({ className: '', html: '<div class="you-are-here"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }),
+                        interactive: false, keyboard: false
+                    }).addTo(map);
+                    map.setView(latlng, 15);
+                }, () => toast('Position indisponible : autorise la localisation (HTTPS ou localhost requis).'),
+                { enableHighAccuracy: true, timeout: 10000 });
+            });
+        }
+
         renderMarkers();
+
+        // Lien direct vers un lieu (depuis les favoris du profil) : app.html?lieu=...
+        const wanted = new URLSearchParams(window.location.search).get('lieu');
+        if (wanted) {
+            const cible = lieux.find((l) => lieuKey(l) === wanted);
+            if (cible) {
+                map.setView([cible.lat, cible.lng], 16);
+                openLieu(cible);
+            }
+        }
 
         const closeModal = () => {
             if (bottomSheet) bottomSheet.classList.remove('active');
@@ -257,17 +423,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const searchFriendInput = document.getElementById('search-friend-input');
         const suggestionsListContainer = document.getElementById('suggestions-list-container');
+        const friendsContainer = document.querySelector('.friends-list-container');
+        const getAddedFriends = () => store.get('friends', []);
+
+        // Amis ajoutés depuis les suggestions : affichés à la suite de la liste
+        const renderAddedFriends = () => {
+            if (!friendsContainer) return;
+            friendsContainer.querySelectorAll('.friend-item[data-added]').forEach((el) => el.remove());
+            getAddedFriends().forEach((id) => {
+                const friend = mockFriends.find((m) => m.id === id);
+                if (!friend) return;
+                const item = document.createElement('div');
+                item.className = 'friend-item';
+                item.dataset.added = '1';
+                item.innerHTML = `
+                    <div class="avatar-wrapper">
+                        <img src="${escapeHtml(friend.avatar)}" alt="${escapeHtml(friend.name)}">
+                        <span class="status-dot offline"></span>
+                    </div>
+                    <div class="friend-info">
+                        <span class="friend-name">${escapeHtml(friend.name)}</span>
+                        <span class="friend-status offline-text">${escapeHtml(friend.sub)}</span>
+                    </div>`;
+                makeActivable(item);
+                friendsContainer.appendChild(item);
+            });
+        };
 
         const renderFriends = (searchQuery = '') => {
             if (!suggestionsListContainer) return;
             suggestionsListContainer.innerHTML = '';
+            const added = getAddedFriends();
 
-            const filteredFriends = mockFriends.filter(friend => 
-                normalize(friend.name).includes(normalize(searchQuery)) || 
+            const filteredFriends = mockFriends.filter(friend =>
+                normalize(friend.name).includes(normalize(searchQuery)) ||
                 normalize(friend.sub).includes(normalize(searchQuery))
             );
 
+            if (filteredFriends.length === 0) {
+                suggestionsListContainer.innerHTML = '<p class="settings-note">Aucun résultat.</p>';
+                return;
+            }
+
             filteredFriends.forEach(friend => {
+                const isAdded = added.includes(friend.id);
                 suggestionsListContainer.insertAdjacentHTML('beforeend', `
                     <div class="suggestion-item">
                         <img src="${escapeHtml(friend.avatar)}" alt="${escapeHtml(friend.name)}" class="suggestion-avatar">
@@ -275,29 +474,44 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="suggestion-name">${escapeHtml(friend.name)}</span>
                             <span class="suggestion-sub">${escapeHtml(friend.sub)}</span>
                         </div>
-                        <button class="btn-add-small">Ajouter</button>
+                        <button type="button" class="btn-add-small${isAdded ? ' added' : ''}" data-id="${friend.id}" aria-pressed="${isAdded}">${isAdded ? 'Ajouté' : 'Ajouter'}</button>
                     </div>
                 `);
             });
-
-            suggestionsListContainer.querySelectorAll('.btn-add-small').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if(this.innerText === 'Ajouter') {
-                        this.innerText = 'Ajouté';
-                        this.style.backgroundColor = '#d1d5db';
-                        this.style.color = '#fff';
-                    } else {
-                        this.innerText = 'Ajouter';
-                        this.style.backgroundColor = 'var(--primary-color)';
-                    }
-                });
-            });
         };
+
+        if (suggestionsListContainer) {
+            suggestionsListContainer.addEventListener('click', (event) => {
+                const btn = event.target.closest('.btn-add-small');
+                if (!btn) return;
+                const id = Number(btn.dataset.id);
+                const added = getAddedFriends();
+                const friend = mockFriends.find((m) => m.id === id);
+                const isAdded = added.includes(id);
+                store.set('friends', isAdded ? added.filter((x) => x !== id) : [...added, id]);
+                renderAddedFriends();
+                renderFriends(searchFriendInput ? searchFriendInput.value : '');
+                toast(isAdded ? `${friend.name} retiré(e) de tes amis` : `${friend.name} ajouté(e) à tes amis`);
+            });
+        }
 
         if (searchFriendInput) {
             searchFriendInput.addEventListener('input', (event) => renderFriends(event.target.value));
         }
+
+        const btnInvite = document.querySelector('.btn-invite-link');
+        if (btnInvite) {
+            btnInvite.addEventListener('click', () => shareLink('Plan Malin', 'Rejoins-moi sur Plan Malin, la carte des bons plans et du réemploi à Nantes !'));
+        }
+
+        renderAddedFriends();
         renderFriends();
+
+        // Arrivée depuis le profil (icône « ajouter un ami »)
+        if (new URLSearchParams(window.location.search).get('ajouter')) {
+            btnAddFriend.click();
+            window.history.replaceState(null, '', window.location.pathname);
+        }
     }
 
     // ==========================================
@@ -373,14 +587,37 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!window.confirm(`Utiliser ${reward.points} points pour « ${reward.offer} » chez ${reward.name} ?`)) return;
 
             store.set('points', getPoints() - reward.points);
+            const code = makeVoucherCode();
+            store.set('vouchers', [{ name: reward.name, offer: reward.offer, code, date: new Date().toISOString() }, ...store.get('vouchers', [])].slice(0, 30));
             document.getElementById('voucher-name').textContent = reward.name;
             document.getElementById('voucher-offer').textContent = reward.offer;
-            document.getElementById('voucher-code').textContent = makeVoucherCode();
+            document.getElementById('voucher-code').textContent = code;
             voucherModal.classList.add('active');
             voucherBackdrop.classList.add('active');
             refreshGauge();
             renderRewards(currentRewardCategory);
         });
+        // Historique : "Mes bons"
+        const vouchersModal = setupSheet('vouchers-modal', 'vouchers-backdrop');
+        const btnMyVouchers = document.getElementById('btn-my-vouchers');
+        if (vouchersModal && btnMyVouchers) {
+            const list = document.getElementById('vouchers-list');
+            btnMyVouchers.addEventListener('click', () => {
+                const vouchers = store.get('vouchers', []);
+                list.innerHTML = '';
+                if (vouchers.length === 0) {
+                    list.innerHTML = '<li class="voucher-empty">Aucun bon pour le moment.</li>';
+                }
+                vouchers.forEach((v) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${escapeHtml(v.name)}</strong>${escapeHtml(v.offer)}<br><code>${escapeHtml(v.code)}</code> <small>· ${escapeHtml(new Date(v.date).toLocaleDateString('fr-FR'))}</small>`;
+                    list.appendChild(li);
+                });
+                vouchersModal.open();
+            });
+            document.getElementById('btn-close-vouchers').addEventListener('click', vouchersModal.close);
+        }
+
         const btnCloseVoucher = document.getElementById('btn-close-voucher');
         if (btnCloseVoucher) btnCloseVoucher.addEventListener('click', closeVoucher);
         if (voucherBackdrop) voucherBackdrop.addEventListener('click', closeVoucher);
@@ -528,7 +765,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 } catch (errFallback) {
                     console.error("Erreur de caméra : ", errFallback);
-                    alert("Impossible d'accéder à la caméra. Vérifie l'autorisation du navigateur (la caméra exige aussi HTTPS ou localhost).");
+                    toast("Impossible d'accéder à la caméra. Vérifie l'autorisation du navigateur (HTTPS ou localhost requis).");
                     cameraOverlay.classList.remove('active');
                     return; // On arrête tout si ça plante
                 }
@@ -612,17 +849,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const photo = grabFrame();
                 setTimeout(() => {
                     if (!photo) {
-                        alert("La caméra n'est pas encore prête, réessaie dans un instant.");
+                        toast("La caméra n'est pas encore prête, réessaie dans un instant.");
                         return;
                     }
                     const photos = [photo, ...store.get('photos', [])].slice(0, 12);
                     const saved = store.set('photos', photos);
                     const total = getPoints() + POINTS_PER_PHOTO;
                     if (saved) store.set('points', total);
-                    alert(saved
-                        ? `✅ Photo enregistrée sur cet appareil ! +${POINTS_PER_PHOTO} points (total : ${total}).`
-                        : "Photo prise, mais l'espace de stockage de l'appareil est plein : elle n'a pas été enregistrée.");
                     closeCamera();
+                    toast(saved
+                        ? `Photo enregistrée ! +${POINTS_PER_PHOTO} points (total : ${total}).`
+                        : "Photo prise, mais l'espace de stockage de l'appareil est plein : elle n'a pas été enregistrée.");
                 }, 400);
             });
         }
@@ -685,93 +922,173 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 10. MODALE PROFIL AMI (Au clic sur un ami)
     // ==========================================
-    const friendItems = document.querySelectorAll('.friends-list-container .friend-item');
     const friendProfileSheet = document.getElementById('friend-profile-sheet');
-    const friendProfileBackdrop = document.getElementById('friend-profile-backdrop');
-    const friendProfileClose = document.getElementById('friend-profile-close');
+    const friendsListEl = document.querySelector('.friends-list-container');
 
-    // Les éléments texte et image à mettre à jour dans la modale
-    const fpName = document.getElementById('fp-name');
-    const fpAvatar = document.getElementById('fp-avatar');
-    const fpVisites = document.getElementById('fp-visites');
-    const fpTrouvailles = document.getElementById('fp-trouvailles');
-    const fpPoints = document.getElementById('fp-points');
+    if (friendsListEl && friendProfileSheet) {
+        const friendSheet = setupSheet('friend-profile-sheet', 'friend-profile-backdrop');
+        const fpAlbumGrid = document.getElementById('fp-album-grid');
 
-    if (friendItems.length > 0 && friendProfileSheet) {
-        
-        // On écoute le clic sur chaque ami de la liste
-        friendItems.forEach(item => {
-            makeActivable(item);
-            // S'assure de ne pas écouter les clics sur d'éventuels boutons (ex: supprimer)
-            item.addEventListener('click', (e) => {
-                
-                // 1. On récupère les infos depuis le HTML de l'ami cliqué
-                const name = item.querySelector('.friend-name').innerText;
-                const imgSrc = item.querySelector('img').src;
+        friendsListEl.querySelectorAll('.friend-item').forEach((item) => makeActivable(item));
 
-                // 2. On met à jour l'interface de la modale
-                fpName.innerText = name;
-                fpAvatar.src = imgSrc;
-                
-                // 3. On génère des statistiques aléatoires pour la démo
-                fpVisites.innerText = Math.floor(Math.random() * 15) + 1;    // Entre 1 et 15
-                fpTrouvailles.innerText = Math.floor(Math.random() * 30) + 5; // Entre 5 et 35
-                fpPoints.innerText = Math.floor(Math.random() * 150) + 20;   // Entre 20 et 170
+        // Délégation : fonctionne aussi pour les amis ajoutés dynamiquement
+        friendsListEl.addEventListener('click', (e) => {
+            const item = e.target.closest('.friend-item');
+            if (!item) return;
+            const name = item.querySelector('.friend-name').innerText;
 
-                // ==========================================
-                // 4. NOUVEAU : ALBUM DYNAMIQUE SELON L'AMI
-                // ==========================================
-                const fpAlbumGrid = document.getElementById('fp-album-grid');
-                if (fpAlbumGrid) {
-                    fpAlbumGrid.innerHTML = ''; // On vide l'album précédent
+            document.getElementById('fp-name').innerText = name;
+            document.getElementById('fp-avatar').src = item.querySelector('img').src;
 
-                    let photos = [];
+            // Statistiques de démonstration, stables pour un même ami
+            document.getElementById('fp-visites').innerText = seeded(name + 'v', 15) + 1;
+            document.getElementById('fp-trouvailles').innerText = seeded(name + 't', 30) + 5;
+            document.getElementById('fp-points').innerText = seeded(name + 'p', 150) + 20;
 
-                    // On définit les photos selon le nom de l'ami
-                    if (name === "Lucas Martel") {
-                        photos = [
-                            "assets/img/trouvaille1.jpg",
-                            "assets/img/tee_shirt_noir.jpg",
-                            "assets/img/la_canaille.webp"
-                        ];
-                    } else if (name === "Inès Carvalho") {
-                        photos = [
-                            "assets/img/ticket_tenu.jpg"
-                        ];
-                    } else {
-                        // Photos par défaut pour les autres amis (ex: Théo Bianchi)
-                        photos = [
-                            "assets/img/trouvaille2.jpg",
-                            "assets/img/stade.jpg"
-                        ];
-                    }
-
-                    // On injecte chaque photo dans la grille HTML
-                    photos.forEach(photoUrl => {
-                        fpAlbumGrid.insertAdjacentHTML('beforeend', `
-                            <div class="photo-item">
-                                <img src="${escapeHtml(photoUrl)}" alt="Trouvaille de ${escapeHtml(name)}" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
-                            </div>
-                        `);
-                    });
+            if (fpAlbumGrid) {
+                fpAlbumGrid.innerHTML = '';
+                let photos;
+                if (name === "Lucas Martel") {
+                    photos = ["assets/img/trouvaille1.jpg", "assets/img/tee_shirt_noir.jpg", "assets/img/la_canaille.webp"];
+                } else if (name === "Inès Carvalho") {
+                    photos = ["assets/img/ticket_tenu.jpg"];
+                } else {
+                    photos = ["assets/img/trouvaille2.jpg", "assets/img/stade.jpg"];
                 }
+                photos.forEach(photoUrl => {
+                    fpAlbumGrid.insertAdjacentHTML('beforeend', `
+                        <div class="photo-item">
+                            <img src="${escapeHtml(photoUrl)}" alt="Trouvaille de ${escapeHtml(name)}" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                    `);
+                });
+            }
 
-                // 5. On rafraîchit les icônes et on ouvre la modale
-                refreshIcons();
-                friendProfileSheet.classList.add('active');
-                friendProfileBackdrop.classList.add('active');
-            });
+            refreshIcons();
+            friendSheet.open();
+        });
+    }
+
+    // ==========================================
+    // 11. PROFIL : nom et photo, partage, favoris, réglages
+    // ==========================================
+    const profileNameEl = document.getElementById('profile-name');
+    const profileAvatarImg = document.querySelector('.avatar-large-wrapper img');
+    if (profileNameEl && profileAvatarImg) {
+        const defaultAvatar = profileAvatarImg.getAttribute('src');
+        const applyProfile = () => {
+            const profile = store.get('profile', {});
+            profileNameEl.textContent = profile.name || 'Moi';
+            profileAvatarImg.src = profile.avatar || defaultAvatar;
+        };
+        applyProfile();
+
+        // Partager le profil / l'application
+        const btnShare = document.getElementById('btn-share-profile');
+        if (btnShare) {
+            btnShare.addEventListener('click', () => shareLink('Plan Malin', "Découvre Plan Malin, la carte des bons plans et du réemploi à Nantes !"));
+        }
+
+        // Modifier le profil : pseudo et photo
+        const editSheet = setupSheet('edit-profile-sheet', 'edit-profile-backdrop');
+        const editName = document.getElementById('edit-name');
+        const editAvatar = document.getElementById('edit-avatar');
+        const editPreview = document.getElementById('edit-avatar-preview');
+        let pendingAvatar = null;
+        document.getElementById('btn-edit-profile').addEventListener('click', () => {
+            const profile = store.get('profile', {});
+            editName.value = profile.name || '';
+            editPreview.src = profile.avatar || defaultAvatar;
+            pendingAvatar = null;
+            editAvatar.value = '';
+            editSheet.open();
+        });
+        editAvatar.addEventListener('change', () => {
+            const file = editAvatar.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                toast('Choisis un fichier image.');
+                return;
+            }
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+                // Recadrage carré 200 px pour garder un stockage léger
+                const size = 200;
+                const side = Math.min(img.width, img.height);
+                const canvas = document.createElement('canvas');
+                canvas.width = canvas.height = size;
+                canvas.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
+                pendingAvatar = canvas.toDataURL('image/jpeg', 0.8);
+                editPreview.src = pendingAvatar;
+                URL.revokeObjectURL(url);
+            };
+            img.onerror = () => { URL.revokeObjectURL(url); toast("Impossible de lire cette image."); };
+            img.src = url;
+        });
+        document.getElementById('edit-profile-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const profile = store.get('profile', {});
+            const name = editName.value.trim().slice(0, 30);
+            const next = { name, avatar: pendingAvatar || profile.avatar || null };
+            if (store.set('profile', next)) {
+                applyProfile();
+                editSheet.close();
+                toast('Profil mis à jour');
+            } else {
+                toast("Impossible d'enregistrer (stockage plein).");
+            }
         });
 
-        // Fonction pour fermer la modale (glissement vers le bas)
-        const closeFriendProfile = () => {
-            friendProfileSheet.classList.remove('active');
-            friendProfileBackdrop.classList.remove('active');
+        // Favoris : liste des lieux enregistrés depuis la carte
+        const favContainer = document.getElementById('content-favoris');
+        const renderFavorites = () => {
+            if (!favContainer || typeof lieux === 'undefined') return;
+            const keys = store.get('favorites', []);
+            favContainer.innerHTML = '';
+            const found = keys.map((k) => lieux.find((l) => `${l.name}|${l.address}` === k)).filter(Boolean);
+            if (found.length === 0) {
+                favContainer.innerHTML = '<p style="text-align: center; color: var(--text-grey); padding: 40px 20px; width: 100%; font-size: 1.1rem;">Aucun lieu favori pour le moment.<br><small>Appuie sur le cœur d\'une fiche de lieu sur la carte.</small></p>';
+                return;
+            }
+            found.forEach((l) => {
+                const row = document.createElement('div');
+                row.className = 'favorite-item';
+                row.innerHTML = `
+                    <a class="fav-info" href="app.html?lieu=${encodeURIComponent(`${l.name}|${l.address}`)}" style="color:inherit; text-decoration:none;">
+                        <strong>${escapeHtml(l.name)}</strong>
+                        <small>${escapeHtml(l.category)} · ${escapeHtml(l.address)}</small>
+                    </a>
+                    <button type="button" class="fav-btn active" aria-label="Retirer ${escapeHtml(l.name)} des favoris"><i data-lucide="heart"></i></button>`;
+                row.querySelector('button').addEventListener('click', () => {
+                    store.set('favorites', store.get('favorites', []).filter((k) => k !== `${l.name}|${l.address}`));
+                    renderFavorites();
+                    toast('Retiré de tes favoris');
+                });
+                favContainer.appendChild(row);
+            });
+            refreshIcons();
         };
+        renderFavorites();
 
-        // Fermeture au clic sur le fond noir ou la petite poignée grise
-        if(friendProfileBackdrop) friendProfileBackdrop.addEventListener('click', closeFriendProfile);
-        if(friendProfileClose) friendProfileClose.addEventListener('click', closeFriendProfile);
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFriendProfile(); });
+        // Réglages : gestion des données enregistrées sur l'appareil
+        const settingsSheet = setupSheet('settings-sheet', 'settings-backdrop');
+        const settingsSummary = document.getElementById('settings-summary');
+        const updateSummary = () => {
+            settingsSummary.textContent = `${getPoints()} points · ${store.get('photos', []).length} photo(s) · ${store.get('favorites', []).length} favori(s) · ${store.get('friends', []).length} ami(s) ajouté(s) · ${store.get('suggestions', []).length} suggestion(s) · ${store.get('vouchers', []).length} bon(s)`;
+        };
+        document.getElementById('btn-settings').addEventListener('click', () => { updateSummary(); settingsSheet.open(); });
+        document.getElementById('settings-clear-photos').addEventListener('click', () => {
+            if (!window.confirm('Supprimer toutes tes photos ?')) return;
+            localStorage.removeItem('pm_photos');
+            toast('Photos supprimées');
+            window.setTimeout(() => window.location.reload(), 700);
+        });
+        document.getElementById('settings-reset-all').addEventListener('click', () => {
+            if (!window.confirm('Réinitialiser toutes les données de démonstration (points, photos, favoris, amis, bons, profil) ?')) return;
+            Object.keys(localStorage).filter((k) => k.startsWith('pm_')).forEach((k) => localStorage.removeItem(k));
+            toast('Données réinitialisées');
+            window.setTimeout(() => window.location.reload(), 700);
+        });
     }
 });

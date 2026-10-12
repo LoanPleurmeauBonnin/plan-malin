@@ -18,6 +18,10 @@
         
         <div id="map"></div>
 
+        <button class="fab-locate" id="btn-locate" aria-label="Me localiser sur la carte">
+            <i data-lucide="locate-fixed"></i>
+        </button>
+
         <button class="fab-camera" id="btn-open-camera" aria-label="Ouvrir la caméra">
                 <i data-lucide="camera"></i>
         </button>
@@ -50,7 +54,7 @@
                 <i data-lucide="search" class="icon-grey"></i>
                 <input type="search" id="search-input" placeholder="Recherchez un nom, un lieu..." aria-label="Rechercher un lieu" autocomplete="off">
                 <div class="divider"></div>
-                <i data-lucide="filter" class="icon-grey"></i>
+                <button type="button" class="search-filter-btn" id="btn-open-filters" aria-label="Filtres avancés"><i data-lucide="filter"></i></button>
             </div>
             <div class="filters-container" role="group" aria-label="Filtrer par catégorie">
                 <div class="filter-pill active" data-filter="Tout">
@@ -93,6 +97,19 @@
             <div class="nav-item" data-target="profil.html"><i data-lucide="circle-user"></i><span>Profil</span></div>
         </nav>
 
+        <div class="modal-backdrop" id="filters-backdrop"></div>
+        <div class="bottom-sheet" id="filters-sheet" role="dialog" aria-modal="true" aria-labelledby="filters-title">
+            <div class="sheet-handle"></div>
+            <h2 class="sheet-title" id="filters-title">Filtres</h2>
+            <label class="option-row"><input type="checkbox" id="filter-free"> Gratuit uniquement</label>
+            <label class="option-row"><input type="checkbox" id="filter-site"> Avec site web</label>
+            <label class="option-row"><input type="checkbox" id="filter-fav"> Mes favoris uniquement</label>
+            <div class="sheet-buttons">
+                <button type="button" class="btn-secondary-outline" id="filters-reset">Réinitialiser</button>
+                <button type="button" class="btn-primary" id="filters-apply">Voir les lieux</button>
+            </div>
+        </div>
+
         <div class="modal-backdrop" id="suggest-backdrop"></div>
         <div class="bottom-sheet" id="suggest-sheet" role="dialog" aria-modal="true" aria-labelledby="suggest-title">
             <div class="sheet-handle" id="suggest-close"></div>
@@ -128,6 +145,7 @@
                     <i data-lucide="shopping-bag" id="sheet-icon"></i>
                     <span id="sheet-category-text">Vêtements</span>
                 </div>
+                <button type="button" class="fav-btn" id="btn-favorite" aria-label="Ajouter aux favoris" aria-pressed="false"><i data-lucide="heart"></i></button>
                 <button class="close-btn" id="close-sheet" aria-label="Fermer la fiche"><i data-lucide="x"></i></button>
             </div>
             <h2 id="sheet-title" class="sheet-title">Nom du Magasin</h2>

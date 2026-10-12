@@ -18,32 +18,39 @@ Projet de cours réalisé pour l'association *Dernière Main* (le cahier des cha
 
 ## Fonctionnalités
 
-Réellement implémentées :
+Réellement implémentées (chaque bouton visible fait quelque chose) :
 
 | Page | Fonctionnalités |
 |---|---|
-| `index.html` | Landing page de présentation ; le bouton « Télécharger » ouvre la carte. |
-| `app.html` | Carte Leaflet avec 39 lieux répartis en 8 catégories, filtres, recherche (insensible à la casse et aux accents), fiche détaillée (adresse, horaires, prix, site) et bouton « Y aller » (itinéraire Google Maps). Formulaire « Suggérer un lieu » (enregistré sur l'appareil) et caméra qui capture une vraie photo (+10 points). |
-| `amis.html` | Liste d'amis, fiche d'un ami (album), ajout d'amis avec recherche dans des suggestions. |
-| `recompenses.html` | Jauge de points animée, 19 offres filtrables par catégorie ; « Utiliser » déduit les points et génère un bon de démonstration ; modale d'explication. |
-| `profil.html` | Statistiques (points à jour), onglets Album (photos prises avec la caméra incluses) / Favoris. |
+| `index.html` | Landing page responsive (deux colonnes sur ordinateur, menu déroulant sur mobile) : présentation, fonctionnalités, à propos ; le bouton ouvre l'application. |
+| `app.html` | Carte Leaflet de 39 lieux en 8 catégories : filtres par catégorie, recherche (sans casse ni accents), **filtres avancés** (gratuit, avec site, favoris), **géolocalisation**, fiche détaillée avec **favori** (cœur), site web et itinéraire « Y aller ». **Suggérer un lieu** (formulaire enregistré sur l'appareil) et **caméra** (vraie photo, +10 points). |
+| `amis.html` | Liste d'amis, fiche d'un ami (album, statistiques stables), **ajout d'amis persistant** depuis les suggestions, **invitation par lien** (partage natif ou copie). |
+| `recompenses.html` | Jauge de points, 19 offres filtrables ; **« Utiliser »** déduit les points et crée un bon de démonstration ; **« Mes bons »** liste l'historique ; modale d'aide. |
+| `profil.html` | Points à jour, **pseudo et photo modifiables**, **partage** de l'appli, onglet **Album** (photos prises) et onglet **Favoris** (lien vers la fiche sur la carte), **ajout d'ami** (raccourci) et **réglages** (résumé des données, suppression des photos, réinitialisation). |
 
-Il n'y a pas de serveur : points, photos et suggestions sont stockés dans le navigateur de l'appareil (`localStorage`) et ne sont jamais envoyés. Les pages Amis, Récompenses et Profil reposent sur **des données de démonstration** (voir [Limites connues](#limites-connues)).
+Il n'y a pas de serveur : points, photos, favoris, amis, bons, suggestions et profil sont stockés dans le navigateur de l'appareil (`localStorage`) et ne sont jamais envoyés. Les amis, avatars, statistiques d'ami et offres reposent sur **des données de démonstration** (voir [Limites connues](#limites-connues)).
+
+**Affichage** : sur mobile, l'application occupe tout l'écran ; sur ordinateur et tablette, elle garde la taille d'un mobile (colonne de 430 px centrée) pour que l'expérience soit identique partout.
 
 ## Aperçu
 
-Captures réelles de l'application, prises en rendu mobile (390 × 844) avec Chromium (Playwright) sur un serveur local.
+Captures réelles prises avec Chromium (Playwright) sur un serveur local : mobile (390 × 844) puis ordinateur (1440 × 900).
 
 <p align="center">
-  <img src="docs/images/accueil.png" alt="Landing page" width="19%">
+  <img src="docs/images/accueil.png" alt="Landing page sur mobile" width="19%">
   <img src="docs/images/carte.png" alt="Carte des lieux avec filtres" width="19%">
-  <img src="docs/images/fiche-lieu.png" alt="Fiche détaillée d'un lieu" width="19%">
+  <img src="docs/images/fiche-lieu.png" alt="Fiche détaillée d'un lieu avec favori" width="19%">
   <img src="docs/images/recompenses.png" alt="Page Récompenses" width="19%">
   <img src="docs/images/amis.png" alt="Page Amis" width="19%">
 </p>
 <p align="center">
   <img src="docs/images/suggestion.png" alt="Formulaire de suggestion d'un lieu" width="19%">
   <img src="docs/images/bon.png" alt="Bon de démonstration après utilisation d'une offre" width="19%">
+  <img src="docs/images/profil-favoris.png" alt="Profil, onglet Favoris" width="19%">
+</p>
+<p align="center">
+  <img src="docs/images/landing-desktop.png" alt="Landing page sur ordinateur" width="48%">
+  <img src="docs/images/app-desktop.png" alt="Application sur ordinateur, en colonne de la taille d'un mobile" width="48%">
 </p>
 
 Le visuel `assets/img/Accueil - Map.png`, affiché dans le téléphone de la landing page, est une maquette de conception et non une capture de l'interface réelle.
@@ -74,7 +81,7 @@ Prérequis : Node.js 20 ou plus.
 npm test
 ```
 
-Les 10 tests vérifient l'intégrité des données et des pages : champs obligatoires des lieux, catégories reliées à un filtre, coordonnées dans la zone nantaise, liens `https`, images et ressources locales existantes, navigation, CDN versionnées avec SRI, zoom non bloqué. Il n'existe pas de test automatisé du comportement dans le navigateur ; ce comportement a été vérifié manuellement (voir [docs/AUDIT.md](docs/AUDIT.md)).
+Les 13 tests vérifient l'intégrité des données et des pages : champs obligatoires des lieux, catégories reliées à un filtre, coordonnées dans la zone nantaise, liens `https`, images et ressources locales existantes, navigation, CDN versionnées avec SRI, zoom non bloqué, identifiants utilisés par `script.js` présents dans les pages, boutons icônes nommés, nombre de lieux annoncé sur la landing page. Il n'existe pas de test automatisé du comportement dans le navigateur ; ce comportement a été vérifié manuellement (voir [docs/AUDIT.md](docs/AUDIT.md)).
 
 ## Structure du dépôt
 
@@ -102,9 +109,10 @@ docs/             cahier des charges, audit, récapitulatif, captures (docs/imag
 
 - **Données de démonstration** : amis, avatars, statistiques de profil (visites, trouvailles) et offres de récompenses sont fictifs et ne sont reliés à aucun partenaire réel. Les statistiques d'un ami sont tirées au hasard à chaque ouverture.
 - **Bons et points** : le bon généré par « Utiliser » n'a aucune valeur chez les partenaires. Les points (120 au départ, +10 par photo) vivent dans le navigateur ; vider les données du site les remet à 120.
-- **Suggestions de lieux** : elles sont enregistrées sur l'appareil uniquement. Aucun envoi ni modération : rien n'alimente la carte (le « temps réel » du cahier des charges demande un backend).
+- **Suggestions de lieux, amis, favoris** : enregistrés sur l'appareil uniquement. Aucun envoi ni modération : rien n'alimente la carte pour les autres utilisateurs, et les amis suggérés sont fictifs (le « temps réel » et le vrai réseau d'amis demandent un backend).
 - **Photos** : la caméra exige HTTPS ou `localhost`. Les photos sont réduites (480 px) et limitées aux 12 dernières ; aucune vérification qu'elles prouvent une visite.
 - **Données de lieux** : 15 lieux sur 39 n'ont pas d'horaires, 6 horaires sont à confirmer (mention « à vérifier »), 5 lieux n'ont pas de site. Les horaires et sites ajoutés proviennent de recherches web (annuaire de Nantes Métropole, sites des structures) et peuvent être périmés. Plusieurs coordonnées sont approximatives. Détail dans [docs/AUDIT.md](docs/AUDIT.md).
+- **Statistiques du profil** : « visites » (15) et « trouvailles » (42) sont fixes ; seuls les points évoluent.
 - **Landing page** : certaines formulations (« #1 », « boutiques partenaires ») relèvent du discours de présentation.
 - Avatars d'amis et photos de profil chargés depuis des sites tiers (`pravatar.cc`, `unsplash.com`), choix conservé pour la démo.
 - Fonctionne uniquement en ligne. Les tuiles OpenStreetMap publiques conviennent à un prototype ; une mise en production demanderait un fournisseur de tuiles dédié (voir [docs/AUDIT.md](docs/AUDIT.md), A-13).
