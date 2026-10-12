@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">    <title>Plan Malin - Mes Récompenses</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    <title>Plan Malin - Mes Récompenses</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,9 +16,14 @@
         
             <header class="page-header header-with-icon">
                 <h1>Mes récompenses</h1>
-                <span id="btn-info-rewards" style="cursor: pointer; display: flex;">
-                    <i data-lucide="info" class="icon-dark"></i>
-                </span>
+                <div class="header-actions">
+                    <button type="button" id="btn-my-vouchers" class="icon-btn" style="margin:0;display:flex;" aria-label="Mes bons">
+                        <i data-lucide="ticket" class="icon-dark"></i>
+                    </button>
+                    <span id="btn-info-rewards" style="cursor: pointer; display: flex;">
+                        <i data-lucide="info" class="icon-dark"></i>
+                    </span>
+                </div>
             </header>
 
         <div class="rewards-scroll-container">
@@ -48,7 +53,7 @@
             <div class="rewards-list-container" id="rewards-dynamic-list"></div>
         </div>
 
-        <nav class="bottom-nav">
+        <nav class="bottom-nav" aria-label="Navigation principale">
             <div class="nav-item" data-target="app.html">
                 <i data-lucide="globe"></i><span>Map</span>
             </div>
@@ -59,15 +64,15 @@
                 <i data-lucide="trophy"></i><span>Récompenses</span>
             </div>
             <div class="nav-item" data-target="profil.html">
-                <i data-lucide="circle"></i><span>Profil</span>
+                <i data-lucide="circle-user"></i><span>Profil</span>
             </div>
         </nav>
 
     </div>
 
     <div class="modal-backdrop" id="info-rewards-backdrop"></div>
-        <div class="center-modal" id="info-rewards-modal">
-            <h2 class="center-modal-title">Comment utiliser tes<br>points ?</h2>
+        <div class="center-modal" id="info-rewards-modal" role="dialog" aria-modal="true" aria-labelledby="info-rewards-title">
+            <h2 class="center-modal-title" id="info-rewards-title">Comment utiliser tes<br>points ?</h2>
             
             <div class="timeline">
                 <div class="timeline-step">
@@ -103,7 +108,25 @@
             <button class="btn-primary" id="btn-close-info">C'est parti !</button>
         </div>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <div class="modal-backdrop" id="vouchers-backdrop"></div>
+    <div class="center-modal" id="vouchers-modal" role="dialog" aria-modal="true" aria-labelledby="vouchers-title">
+        <h2 class="center-modal-title" id="vouchers-title">Mes bons</h2>
+        <ul class="voucher-list" id="vouchers-list"></ul>
+        <button class="btn-primary" id="btn-close-vouchers">Fermer</button>
+    </div>
+
+    <div class="modal-backdrop" id="voucher-backdrop"></div>
+    <div class="center-modal" id="voucher-modal" role="dialog" aria-modal="true" aria-labelledby="voucher-name">
+        <h2 class="center-modal-title">Ton bon</h2>
+        <p class="voucher-partner" id="voucher-name"></p>
+        <p class="voucher-offer" id="voucher-offer"></p>
+        <p class="voucher-code" id="voucher-code" aria-label="Code du bon"></p>
+        <p class="voucher-note">Bon de démonstration : il n'a aucune valeur chez le partenaire.</p>
+        <button class="btn-primary" id="btn-close-voucher">Fermer</button>
+    </div>
+
+    <script src="https://unpkg.com/lucide@1.55.0/dist/umd/lucide.min.js" integrity="sha384-SZUFq9Dx112fyzY/iIBEjyd2gu3jY4XVhp+LUNXSpEMB2IEm/TOoMTNH4BHtQ6Hz" crossorigin="anonymous"></script>
+    <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

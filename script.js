@@ -1,6 +1,121 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. INITIALISATION GLOBALE
-    lucide.createIcons();
+    // Si la CDN est injoignable (hors-ligne), l'app reste utilisable sans icônes ni carte.
+    const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    const refreshIcons = () => { if (window.lucide) window.lucide.createIcons(); };
+    refreshIcons();
+
+    // Rend un élément non-natif (div cliquable) utilisable au clavier et par les lecteurs d'écran.
+    const makeActivable = (el, role = 'button') => {
+        el.setAttribute('role', role);
+        el.tabIndex = 0;
+        el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                el.click();
+            }
+        });
+    };
+
+    // Stockage local (démo sans serveur) : points, photos, suggestions. Tout reste sur l'appareil.
+    const store = {
+        get(key, fallback) {
+            try {
+                const raw = localStorage.getItem('pm_' + key);
+                return raw === null ? fallback : JSON.parse(raw);
+            } catch (e) { return fallback; }
+        },
+        set(key, value) {
+            try { localStorage.setItem('pm_' + key, JSON.stringify(value)); return true; } catch (e) { return false; }
+        }
+    };
+    const DEFAULT_POINTS = 120;
+    const POINTS_PER_PHOTO = 10;
+    const getPoints = () => store.get('points', DEFAULT_POINTS);
+
+    // Comparaison de texte insensible à la casse et aux accents ("etudiant" trouve "Étudiant").
+    const normalize = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+    // Message bref et non bloquant (remplace alert)
+    let toastTimer = null;
+    const toast = (message) => {
+        let el = document.getElementById('toast');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'toast';
+            el.className = 'toast';
+            el.setAttribute('role', 'status');
+            el.setAttribute('aria-live', 'polite');
+            document.body.appendChild(el);
+        }
+        el.textContent = message;
+        el.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+    };
+
+    // Fenêtre (feuille du bas ou modale centrée) : ouverture, fermeture par fond, poignée ou Échap.
+    const setupSheet = (sheetId, backdropId) => {
+        const sheet = document.getElementById(sheetId);
+        const backdrop = document.getElementById(backdropId);
+        if (!sheet || !backdrop) return null;
+        const close = () => {
+            sheet.classList.remove('active');
+            backdrop.classList.remove('active');
+        };
+        const open = () => {
+            sheet.classList.add('active');
+            backdrop.classList.add('active');
+            sheet.tabIndex = -1;
+            sheet.focus({ preventScroll: true });
+        };
+        backdrop.addEventListener('click', close);
+        const handle = sheet.querySelector('.sheet-handle');
+        if (handle) handle.addEventListener('click', close);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+        return { sheet, backdrop, open, close };
+    };
+
+    // Partage du lien de l'appli : menu natif du téléphone si disponible, sinon copie dans le presse-papiers.
+    const shareLink = async (title, text) => {
+        const url = new URL('index.html', window.location.href).href;
+        if (navigator.share) {
+            try {
+                await navigator.share({ title, text, url });
+                return;
+            } catch (e) {
+                if (e.name === 'AbortError') return;
+            }
+        }
+        try {
+            await navigator.clipboard.writeText(url);
+            toast('Lien copié dans le presse-papiers !');
+        } catch (e) {
+            toast('Copie ce lien : ' + url);
+        }
+    };
+
+    // Valeur stable dérivée d'un texte (statistiques de démonstration identiques à chaque ouverture)
+    const seeded = (str, modulo) => {
+        let h = 0;
+        for (const c of str) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+        return h % modulo;
+    };
+
+    // Menu de la landing page (mobile)
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+    if (menuToggle && navLinks) {
+        const setMenu = (open) => {
+            navLinks.classList.toggle('open', open);
+            menuToggle.setAttribute('aria-expanded', String(open));
+            menuToggle.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+        };
+        menuToggle.addEventListener('click', () => setMenu(!navLinks.classList.contains('open')));
+        navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+    }
 
     // 2. REDIRECTION LANDING PAGE
     const downloadBtn = document.getElementById('btn-download');
@@ -11,13 +126,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. NAVIGATION MULTI-PAGES
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
+        makeActivable(item, 'link');
+        if (item.classList.contains('active')) item.setAttribute('aria-current', 'page');
         item.addEventListener('click', function() {
             const targetPage = this.getAttribute('data-target');
             if (targetPage) {
                 window.location.href = targetPage;
             } else {
-                const pageName = this.querySelector('span').innerText;
-                alert(`La page ${pageName} sera bientôt disponible !`);
+                toast(`La page ${this.querySelector('span').innerText} sera bientôt disponible !`);
             }
         });
     });
@@ -26,149 +142,103 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. LOGIQUE DE LA CARTE (app.html)
     // ==========================================
     const mapContainer = document.getElementById('map');
-    if (mapContainer) {
+    if (mapContainer && window.L) {
         const map = L.map('map', { zoomControl: false }).setView([47.2184, -1.5536], 13);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap', maxZoom: 19
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom: 19
         }).addTo(map);
 
         const markerGroup = L.layerGroup().addTo(map);
 
-        // Tes données
-        const lieux = [
-            /* =========================
-            VÊTEMENTS
-            ========================= */
-            { name: "Dernière main", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2154, lng: -1.5509, address: "5 Rue de Strasbourg, Nantes", hours: "Mar-Sam : 14h-19h", price: "2 € - 25 €", link: "https://dernieremain.fr/", desc: "Friperie de seconde main proposant des vêtements pour tous à petits prix en centre-ville." },
-            { name: "Ding Fring", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2157, lng: -1.5583, address: "10 Rue de l'Arche Sèche, Nantes", hours: "Lun : 14h-19h / Mar-Sam : 10h-19h", price: "2 € - 25 €", link: "https://www.instagram.com/dingfring_friperie/", desc: "Vêtements et accessoires de seconde main à prix accessibles dans une démarche économique, écologique et solidaire." },
-            { name: "Frip'in Shop", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2091, lng: -1.5691, address: "5 Rue Charles Brunellière", hours: "Lun-Sam : 10h30-19h", price: "1,50 € - 30 €", link: "https://fripinshop.com/", desc: "Friperie proposant des vêtements de seconde main à prix très accessibles, des basiques aux pièces de marque." },
-            { name: "Frip'in Shop", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2414, lng: -1.5319, address: "15 Rue des Marsauderies", hours: "Lun-Sam : 10h30-19h", price: "1,50 € - 30 €", link: "https://fripinshop.com/", desc: "Friperie proposant des vêtements de seconde main à prix très accessibles, des basiques aux pièces de marque." },
-            { name: "Frip'in Shop", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.1905, lng: -1.5695, address: "Rezé", hours: "Lun-Sam : 10h30-19h", price: "1,50 € - 30 €", link: "https://fripinshop.com/", desc: "Friperie proposant des vêtements de seconde main à prix très accessibles, des basiques aux pièces de marque." },
-            { name: "KILO SHOP NANTES", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2151, lng: -1.5589, address: "15-17 Rue des Vieilles Douves, 44000 Nantes", hours: "Lun-Sam : 10h30-19h", price: "20 € - 60 €/kg", link: "https://www.kilo-shop.com/shop/kawaii-nantes/", desc: "Friperie vendant les vêtements au poids (20 € à 60 €/kg), soit environ 4 à 5 pièces par kilo." },
-            { name: "TransiStore", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2624, lng: -1.5508, address: "14 Rue Kepler, 44240 La Chapelle-sur-Erdre", hours: "Non précisé", price: "Variable", link: "", desc: "Boutique solidaire : vêtements, linge, équipements maison et objets culturels." },
-            { name: "La Boîte à Récup", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2262, lng: -1.5833, address: "112 Boulevard des Anglais, 44100 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Objets déco et articles solidaires, chaque achat soutient une économie sociale." },
-            { name: "L’Autre Cantine – Friperies solidaires", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2148, lng: -1.5401, address: "18 Rue de Cornulier, 44000 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Friperie solidaire proposant des vêtements à prix accessibles." },
-
-            /* =========================
-            NOURRITURE
-            ========================= */
-            { name: "StudHelp", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2184, lng: -1.5536, address: "En France (selon disponibilité des dons)", hours: "Selon disponibilité des dons", price: "0 €", link: "https://www.studhelp.fr/l-association-studhelp", desc: "Met en relation des étudiants en difficulté avec des donateurs afin de fournir gratuitement des paniers alimentaires et produits essentiels." },
-            { name: "Cop1", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2066, lng: -1.5591, address: "10 Rue de l’Île Mabon 44200 Nantes - Selon permanences (voir site)", hours: "Selon créneaux d’accompagnement", price: "0 €", link: "https://cop1.fr/a-propos/", desc: "Propose des paniers alimentaires gratuits ainsi qu’un accompagnement étudiant : aide à l’emploi, stages, alternance et accès aux services essentiels." },
-            { name: "Nous Anti-gaspi", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2246, lng: -1.5493, address: "3 Rue Pitre Chevalier, 44000 Nantes", hours: "Selon magasin", price: "2 € - 4 €", link: "https://www.nousantigaspi.com/", desc: "Produits sauvés du gaspillage alimentaire vendus à prix réduits. -10% pour les étudiants les mardis et jeudis." },
-            { name: "Delivraide", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2012, lng: -1.5703, address: "8 Rue de St-Domingue, 44200 Nantes - Livraison à domicile", hours: "Sur demande via l'application", price: "0 €", link: "https://equipagesolidaire.fr/delivraide", desc: "Application solidaire proposant des kits alimentaires gratuits livrés à domicile pour les étudiants vulnérables." },
-            { name: "La SurpreNantes Épicerie", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2457, lng: -1.5518, address: "Chemin de la Censive du Tertre, 44300 Nantes", hours: "Lundi : 17h00 - 18h45", price: "Solidaire", link: "", desc: "Épicerie solidaire étudiante proposant des produits alimentaires." },
-            { name: "Linkee", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2185, lng: -1.5553, address: "37 Rue Saint Léonard, 44000 Nantes", hours: "Selon distributions", price: "Gratuit", link: "", desc: "Organise des distributions alimentaires ouvertes à tous.tes les étudiant.e.s." },
-            { name: "CampuSolidaire", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2165, lng: -1.5835, address: "5 Avenue Pajot, 44100 Nantes", hours: "Mensuel", price: "Gratuit", link: "", desc: "Soutient les étudiants en difficulté en fournissant des ressources essentielles." },
-
-            /* =========================
-            HYGIÈNE
-            ========================= */
-            { name: "Distributeurs gratuits (Ville de Nantes)", category: "Hygiène", icon: "droplets", class: "pin-hygiene", lat: 47.2184, lng: -1.5536, address: "Lieux publics à Nantes", hours: "Selon lieux", price: "Gratuit", link: "", desc: "Distributeurs 'Nouvelles Règles' proposant gratuitement tampons et serviettes." },
-            { name: "InterAsso Nantes", category: "Hygiène", icon: "droplets", class: "pin-hygiene", lat: 47.2450, lng: -1.5521, address: "Chemin de la Censive du Tertre, 44300 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Fédération associative étudiante nantaise." },
-
-            /* =========================
-            LOGEMENT / HÉBERGEMENT
-            ========================= */
-            { name: "100 pour 1", category: "Logement", icon: "home", class: "pin-logement", lat: 47.1866, lng: -1.5298, address: "23 Rue de la Bouquinière, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Apporte des solutions d’hébergement aux personnes en difficulté." },
-            { name: "DAL 44 (Droit au Logement)", category: "Logement", icon: "home", class: "pin-logement", lat: 47.2124, lng: -1.5467, address: "28 Rue Fouré, 44000 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Association défendant le droit au logement." },
-            { name: "Association Lazare", category: "Logement", icon: "home", class: "pin-logement", lat: 47.2189, lng: -1.5523, address: "3 Rue du Refuge, 44000 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Colocations solidaires entre sans-abri et jeunes actifs." },
-            { name: "Nantes’Renoue", category: "Logement", icon: "home", class: "pin-logement", lat: 47.2244, lng: -1.5653, address: "1 Cours des Francs Tireurs, 44000 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Accompagnement social et solidaire." },
-            { name: "AISL (Insertion Solidarité Logement)", category: "Logement", icon: "home", class:"pin-logement" , lat : 47.2567 , lng : -1.5203 , address :"4 Rue François Hennebique, 44300 Nantes" , hours :"Non précisé" , price :"Solidaire" , link :"https://www.aisl.fr/" , desc :"Favorise l’insertion par le logement et l’hébergement." },
-            { name:"La R'source" , category:"Logement" , icon:"home" , class:"pin-logement" , lat : 47.2113 , lng : -1.5650 , address :"5 Rue de Bréa, 44000 Nantes" , hours :"Non précisé" , price :"Gratuit" , link :"https://www.larsource.fr/" , desc :"Lieu dédié aux 16-25 ans sans hébergement stable." },
-
-            /* =========================
-            NUMÉRIQUE
-            ========================= */
-            { name: "ALIS 44", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2391, lng: -1.5199, address: "60 Rue de la Bottière, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Association favorisant l’accès au numérique solidaire." },
-            { name: "Ping", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2064, lng: -1.5596, address: "5 Allée Frida Kahlo, 44100 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Association nantaise autour des cultures numériques." },
-            { name: "Les Nantais Solidaires", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2401, lng: -1.5591, address: "82 Boulevard Gabriel Lauriol, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Initiative solidaire locale." },
-            { name: "Repair-Café Numérique (Maison du Libre)", category: "Numerique", icon: "laptop", class:"pin-numerique" , lat : 47.2298 , lng : -1.5865 , address :"52 Rue du Breil, 44100 Nantes" , hours :"Selon événements" , price :"Gratuit" , link :"https://www.maisondulibre.fr/" , desc :"Ateliers de réparation numérique collaboratifs." },
-
-            /* =========================
-            ETUDE / ACCOMPAGNEMENT
-            ========================= */
-            { name: "La Ressourcerie Culturelle", category: "Etude", icon: "book-open", class: "pin-etude", lat: 46.9832, lng: -1.3213, address: "184 Rue Joseph Gaillard, 85600 Montaigu-Vendée", hours: "Non précisé", price: "Solidaire", link: "", desc: "Structure culturelle solidaire." },
-            { name: "CEMÉA – Pépinière Jeunesse Centre Sud", category: "Etude", icon: "book-open", class: "pin-etude", lat: 47.2034, lng: -1.5415, address: "12 Rue Anatole de Monzie, 44200 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Lieu ressource d'information et d’accompagnement pour les 16-25 ans." },
-            { name: "Info Jeunes Pays de la Loire", category: "Etude", icon: "book-open", class: "pin-etude", lat: 47.2185, lng: -1.5553, address: "37 Rue Saint Léonard, 44000 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Information, orientation et accompagnement des jeunes." },            
-            
-            /* =========================
-            VIE SOCIALE & ENGAGÉE
-            ========================= */
-            { name: "Ecossolies", category: "VieSociale", icon: "users", class: "pin-sociale", lat: 47.2012, lng: -1.5701, address: "8 Rue Saint-Domingue, 44200 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Réseau de l’économie sociale et solidaire à Nantes." },
-            { name: "CSC Laetitia", category: "VieSociale", icon: "users", class: "pin-sociale", lat: 47.2316, lng: -1.5786, address: "49 Rue Chanoine Larose, 44100 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Centre socioculturel proposant des activités et accompagnements." },
-
-            /* =========================
-            MULTISERVICE & DIVERS
-            ========================= */
-            { name: "La Frat’", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2125, lng: -1.5835, address: "3 Rue Amiral du Chaffault, 44100 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Lieu solidaire multi-services." },
-            { name: "Les Eaux Vives Emmaüs – Village solidaire 5 Ponts", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2034, lng: -1.5535, address: "12 Allée Nicole Girard Mangin, 44200 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Village solidaire et accompagnement social." },
-            { name: "Boutique Solidaire / Ressourcerie des Dervallières", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2225, lng: -1.5977, address: "40 Boulevard Jean Ingres, 44100 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Ressourcerie et boutique solidaire." },
-            { name: "Récup’Halveque", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2572, lng: -1.5201, address: "6 Rue François Hennebique, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Structure de réemploi et économie circulaire." },
-            { name: "Coup de Pouce", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2419, lng: -1.5391, address: "80 Rue du Port Boyer, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Association d’accompagnement solidaire." },
-            { name: "CROUS Nantes (Service Social)", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2445, lng: -1.5561, address: "2 Boulevard Guy Mollet, 44300 Nantes", hours: "Horaires administratifs", price: "Gratuit", link: "", desc: "Service social accompagnant les étudiants dans leurs démarches." },
-            { name: "C'est deux euros", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2162, lng: -1.5588, address: "Rue Guépin, 44000 Nantes", hours: "Lun : 14h-19h / Mar-Sam : 10h30-19h", price: "2 €", link: "https://www.cestdeuxeuros.com/concept", desc: "Magasin proposant une large gamme de produits du quotidien à prix unique et fixe de 2 €." }
-        ];
+        const lieuKey = (l) => `${l.name}|${l.address}`;
+        const isFree = (l) => /^(0\s?€|gratuit)/i.test(l.price.trim());
+        const getFavorites = () => store.get('favorites', []);
 
         const bottomSheet = document.getElementById('bottom-sheet');
         const backdrop = document.getElementById('modal-backdrop');
         const closeBtn = document.getElementById('close-sheet');
+        const noResults = document.getElementById('no-results');
+        const favBtn = document.getElementById('btn-favorite');
 
         let categorieActuelle = 'Tout';
         let rechercheActuelle = '';
+        const filtres = { gratuit: false, site: false, favoris: false };
+        let lieuOuvert = null;
+
+        const updateFavBtn = () => {
+            if (!favBtn || !lieuOuvert) return;
+            const on = getFavorites().includes(lieuKey(lieuOuvert));
+            favBtn.classList.toggle('active', on);
+            favBtn.setAttribute('aria-pressed', String(on));
+            favBtn.setAttribute('aria-label', on ? 'Retirer des favoris' : 'Ajouter aux favoris');
+        };
+
+        const openLieu = (lieu) => {
+            lieuOuvert = lieu;
+            document.getElementById('sheet-title').textContent = lieu.name;
+            document.getElementById('sheet-address').textContent = lieu.address;
+            document.getElementById('sheet-hours').textContent = lieu.hours;
+            document.getElementById('sheet-price').textContent = lieu.price;
+            document.getElementById('sheet-desc').textContent = lieu.desc;
+
+            const btnWebsite = document.getElementById('btn-website');
+            if (lieu.link) {
+                btnWebsite.href = lieu.link;
+                btnWebsite.style.display = 'flex';
+            } else {
+                btnWebsite.style.display = 'none';
+            }
+
+            // Bouton "Y aller" : itinéraire GPS vers le lieu dans un nouvel onglet
+            const btnItinerary = document.getElementById('btn-itinerary');
+            if (btnItinerary) {
+                btnItinerary.onclick = () => {
+                    window.open(`https://www.google.com/maps/dir/?api=1&destination=${lieu.lat},${lieu.lng}`, '_blank', 'noopener');
+                };
+            }
+
+            document.getElementById('sheet-category').innerHTML = `<i data-lucide="${lieu.icon}"></i> <span id="sheet-category-text" style="margin-left:5px;"></span>`;
+            document.getElementById('sheet-category-text').textContent = lieu.category;
+            refreshIcons();
+            updateFavBtn();
+
+            if (bottomSheet) bottomSheet.classList.add('active');
+            if (backdrop) backdrop.classList.add('active');
+        };
+
+        // Filtres avancés (icône à droite de la recherche)
+        const filtersBtn = document.getElementById('btn-open-filters');
+        const filterFree = document.getElementById('filter-free');
+        const filterSite = document.getElementById('filter-site');
+        const filterFav = document.getElementById('filter-fav');
+        const filtersApply = document.getElementById('filters-apply');
 
         const renderMarkers = () => {
             markerGroup.clearLayers();
+            const favoris = getFavorites();
             lieux.forEach(lieu => {
                 const matchCategorie = (categorieActuelle === 'Tout' || lieu.category === categorieActuelle);
-                const matchRecherche = lieu.name.toLowerCase().includes(rechercheActuelle.toLowerCase()) || lieu.desc.toLowerCase().includes(rechercheActuelle.toLowerCase());
+                const matchRecherche = normalize(`${lieu.name} ${lieu.category} ${lieu.desc}`).includes(normalize(rechercheActuelle.trim()));
+                const matchFiltres = (!filtres.gratuit || isFree(lieu))
+                    && (!filtres.site || Boolean(lieu.link))
+                    && (!filtres.favoris || favoris.includes(lieuKey(lieu)));
 
-                if (matchCategorie && matchRecherche) {
+                if (matchCategorie && matchRecherche && matchFiltres) {
                     const customIcon = L.divIcon({
                         className: 'custom-pin',
                         html: `<div class="pin-marker ${lieu.class}"></div>`,
                         iconSize: [24, 24], iconAnchor: [12, 24]
                     });
 
-                    const marker = L.marker([lieu.lat, lieu.lng], { icon: customIcon });
-
-                    marker.on('click', () => {
-                        document.getElementById('sheet-title').textContent = lieu.name;
-                        document.getElementById('sheet-category-text').textContent = lieu.category;
-                        document.getElementById('sheet-address').textContent = lieu.address;
-                        document.getElementById('sheet-hours').textContent = lieu.hours;
-                        document.getElementById('sheet-price').textContent = lieu.price;
-                        document.getElementById('sheet-desc').textContent = lieu.desc;
-
-                        const btnWebsite = document.getElementById('btn-website');
-                        if (lieu.link) {
-                            btnWebsite.href = lieu.link;
-                            btnWebsite.style.display = 'flex';
-                        } else {
-                            btnWebsite.style.display = 'none';
-                        }
-
-                        // ==========================================
-                        // NOUVEAU : GESTION DU BOUTON "Y ALLER"
-                        // ==========================================
-                        const btnItinerary = document.getElementById('btn-itinerary');
-                        if (btnItinerary) {
-                            // On remplace l'action du clic par l'ouverture du lien Google Maps
-                            btnItinerary.onclick = () => {
-                                // Ouvre un nouvel onglet vers l'itinéraire GPS précis
-                                const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lieu.lat},${lieu.lng}`;
-                                window.open(mapsUrl, '_blank');
-                            };
-                        }
-
-                        document.getElementById('sheet-category').innerHTML = `<i data-lucide="${lieu.icon}"></i> <span id="sheet-category-text" style="margin-left:5px;">${lieu.category}</span>`;
-                        lucide.createIcons();
-
-                        if (bottomSheet) bottomSheet.classList.add('active');
-                        if (backdrop) backdrop.classList.add('active');
-                    });
+                    const marker = L.marker([lieu.lat, lieu.lng], { icon: customIcon, title: lieu.name, alt: lieu.name });
+                    marker.on('click', () => openLieu(lieu));
                     markerGroup.addLayer(marker);
                 }
             });
+            const count = markerGroup.getLayers().length;
+            if (noResults) noResults.hidden = count > 0;
+            if (filtersBtn) filtersBtn.classList.toggle('has-filters', Object.values(filtres).some(Boolean));
+            if (filtersApply) filtersApply.textContent = `Voir ${count} lieu${count > 1 ? 'x' : ''}`;
         };
 
         const searchInput = document.getElementById('search-input');
@@ -179,28 +249,144 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        const filtersSheet = setupSheet('filters-sheet', 'filters-backdrop');
+        if (filtersBtn && filtersSheet) {
+            filtersBtn.addEventListener('click', filtersSheet.open);
+            const syncFilters = () => {
+                filtres.gratuit = filterFree.checked;
+                filtres.site = filterSite.checked;
+                filtres.favoris = filterFav.checked;
+                renderMarkers();
+            };
+            [filterFree, filterSite, filterFav].forEach((box) => box.addEventListener('change', syncFilters));
+            document.getElementById('filters-reset').addEventListener('click', () => {
+                [filterFree, filterSite, filterFav].forEach((box) => { box.checked = false; });
+                syncFilters();
+            });
+            filtersApply.addEventListener('click', filtersSheet.close);
+        }
+
         const filterPills = document.querySelectorAll('.filter-pill');
         filterPills.forEach(pill => {
             // Empêche les filtres de la page récompense d'interférer avec la carte
             if(!pill.closest('.rewards-filters')) {
+                makeActivable(pill);
+                pill.setAttribute('aria-pressed', pill.classList.contains('active'));
                 pill.addEventListener('click', () => {
-                    document.querySelectorAll('.filters-container:not(.rewards-filters) .filter-pill').forEach(p => p.classList.remove('active'));
+                    document.querySelectorAll('.filters-container:not(.rewards-filters) .filter-pill').forEach(p => {
+                        p.classList.remove('active');
+                        p.setAttribute('aria-pressed', 'false');
+                    });
                     pill.classList.add('active');
+                    pill.setAttribute('aria-pressed', 'true');
                     categorieActuelle = pill.getAttribute('data-filter');
                     renderMarkers();
                 });
             }
         });
 
+        // Favoris : cœur de la fiche d'un lieu
+        if (favBtn) {
+            favBtn.addEventListener('click', () => {
+                if (!lieuOuvert) return;
+                const key = lieuKey(lieuOuvert);
+                const favoris = getFavorites();
+                const on = favoris.includes(key);
+                store.set('favorites', on ? favoris.filter((k) => k !== key) : [...favoris, key]);
+                updateFavBtn();
+                renderMarkers();
+                toast(on ? 'Retiré de tes favoris' : 'Ajouté à tes favoris');
+            });
+        }
+
+        // Géolocalisation : centre la carte sur la position de l'utilisateur
+        const btnLocate = document.getElementById('btn-locate');
+        let youMarker = null;
+        if (btnLocate) {
+            btnLocate.addEventListener('click', () => {
+                if (!navigator.geolocation) {
+                    toast("La géolocalisation n'est pas disponible sur cet appareil.");
+                    return;
+                }
+                toast('Recherche de ta position…');
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    const latlng = [pos.coords.latitude, pos.coords.longitude];
+                    if (youMarker) youMarker.remove();
+                    youMarker = L.marker(latlng, {
+                        icon: L.divIcon({ className: '', html: '<div class="you-are-here"></div>', iconSize: [16, 16], iconAnchor: [8, 8] }),
+                        interactive: false, keyboard: false
+                    }).addTo(map);
+                    map.setView(latlng, 15);
+                }, () => toast('Position indisponible : autorise la localisation (HTTPS ou localhost requis).'),
+                { enableHighAccuracy: true, timeout: 10000 });
+            });
+        }
+
         renderMarkers();
+
+        // Lien direct vers un lieu (depuis les favoris du profil) : app.html?lieu=...
+        const wanted = new URLSearchParams(window.location.search).get('lieu');
+        if (wanted) {
+            const cible = lieux.find((l) => lieuKey(l) === wanted);
+            if (cible) {
+                map.setView([cible.lat, cible.lng], 16);
+                openLieu(cible);
+            }
+        }
 
         const closeModal = () => {
             if (bottomSheet) bottomSheet.classList.remove('active');
             if (backdrop) backdrop.classList.remove('active');
         };
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
         if (closeBtn) closeBtn.addEventListener('click', closeModal);
         if (backdrop) backdrop.addEventListener('click', closeModal);
+    }
+
+    // ==========================================
+    // 4bis. SUGGESTION D'UN NOUVEAU LIEU (app.html, enregistrée localement)
+    // ==========================================
+    const suggestSheet = document.getElementById('suggest-sheet');
+    const suggestBackdrop = document.getElementById('suggest-backdrop');
+    const suggestForm = document.getElementById('suggest-form');
+    if (suggestSheet && suggestBackdrop && suggestForm) {
+        const suggestStatus = document.getElementById('suggest-status');
+        const openSuggest = () => {
+            suggestStatus.textContent = '';
+            suggestSheet.classList.add('active');
+            suggestBackdrop.classList.add('active');
+            document.getElementById('suggest-name').focus();
+        };
+        const closeSuggest = () => {
+            suggestSheet.classList.remove('active');
+            suggestBackdrop.classList.remove('active');
+        };
+        document.getElementById('btn-open-suggest').addEventListener('click', openSuggest);
+        document.getElementById('suggest-close').addEventListener('click', closeSuggest);
+        suggestBackdrop.addEventListener('click', closeSuggest);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSuggest(); });
+
+        suggestForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const data = new FormData(suggestForm);
+            const suggestion = {
+                name: String(data.get('name')).trim(),
+                address: String(data.get('address')).trim(),
+                category: String(data.get('category')),
+                comment: String(data.get('comment')).trim(),
+                date: new Date().toISOString()
+            };
+            if (!suggestion.name || !suggestion.address) {
+                suggestStatus.textContent = "Le nom et l'adresse sont obligatoires.";
+                return;
+            }
+            const saved = store.set('suggestions', [...store.get('suggestions', []), suggestion]);
+            suggestStatus.textContent = saved
+                ? "Merci ! Ta suggestion est enregistrée sur cet appareil (démo : rien n'est envoyé)."
+                : "Impossible d'enregistrer la suggestion (stockage indisponible).";
+            if (saved) suggestForm.reset();
+        });
     }
 
     // ==========================================
@@ -223,6 +409,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         addFriendBackdrop.addEventListener('click', closeFriendModal);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFriendModal(); });
         if (addFriendClose) addFriendClose.addEventListener('click', closeFriendModal);
 
         const mockFriends = [
@@ -236,47 +423,95 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const searchFriendInput = document.getElementById('search-friend-input');
         const suggestionsListContainer = document.getElementById('suggestions-list-container');
+        const friendsContainer = document.querySelector('.friends-list-container');
+        const getAddedFriends = () => store.get('friends', []);
+
+        // Amis ajoutés depuis les suggestions : affichés à la suite de la liste
+        const renderAddedFriends = () => {
+            if (!friendsContainer) return;
+            friendsContainer.querySelectorAll('.friend-item[data-added]').forEach((el) => el.remove());
+            getAddedFriends().forEach((id) => {
+                const friend = mockFriends.find((m) => m.id === id);
+                if (!friend) return;
+                const item = document.createElement('div');
+                item.className = 'friend-item';
+                item.dataset.added = '1';
+                item.innerHTML = `
+                    <div class="avatar-wrapper">
+                        <img src="${escapeHtml(friend.avatar)}" alt="${escapeHtml(friend.name)}">
+                        <span class="status-dot offline"></span>
+                    </div>
+                    <div class="friend-info">
+                        <span class="friend-name">${escapeHtml(friend.name)}</span>
+                        <span class="friend-status offline-text">${escapeHtml(friend.sub)}</span>
+                    </div>`;
+                makeActivable(item);
+                friendsContainer.appendChild(item);
+            });
+        };
 
         const renderFriends = (searchQuery = '') => {
             if (!suggestionsListContainer) return;
             suggestionsListContainer.innerHTML = '';
+            const added = getAddedFriends();
 
-            const filteredFriends = mockFriends.filter(friend => 
-                friend.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                friend.sub.toLowerCase().includes(searchQuery.toLowerCase())
+            const filteredFriends = mockFriends.filter(friend =>
+                normalize(friend.name).includes(normalize(searchQuery)) ||
+                normalize(friend.sub).includes(normalize(searchQuery))
             );
 
+            if (filteredFriends.length === 0) {
+                suggestionsListContainer.innerHTML = '<p class="settings-note">Aucun résultat.</p>';
+                return;
+            }
+
             filteredFriends.forEach(friend => {
+                const isAdded = added.includes(friend.id);
                 suggestionsListContainer.insertAdjacentHTML('beforeend', `
                     <div class="suggestion-item">
-                        <img src="${friend.avatar}" alt="${friend.name}" class="suggestion-avatar">
+                        <img src="${escapeHtml(friend.avatar)}" alt="${escapeHtml(friend.name)}" class="suggestion-avatar">
                         <div class="suggestion-info">
-                            <span class="suggestion-name">${friend.name}</span>
-                            <span class="suggestion-sub">${friend.sub}</span>
+                            <span class="suggestion-name">${escapeHtml(friend.name)}</span>
+                            <span class="suggestion-sub">${escapeHtml(friend.sub)}</span>
                         </div>
-                        <button class="btn-add-small">Ajouter</button>
+                        <button type="button" class="btn-add-small${isAdded ? ' added' : ''}" data-id="${friend.id}" aria-pressed="${isAdded}">${isAdded ? 'Ajouté' : 'Ajouter'}</button>
                     </div>
                 `);
             });
-
-            suggestionsListContainer.querySelectorAll('.btn-add-small').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    if(this.innerText === 'Ajouter') {
-                        this.innerText = 'Ajouté';
-                        this.style.backgroundColor = '#d1d5db';
-                        this.style.color = '#fff';
-                    } else {
-                        this.innerText = 'Ajouter';
-                        this.style.backgroundColor = 'var(--primary-color)';
-                    }
-                });
-            });
         };
+
+        if (suggestionsListContainer) {
+            suggestionsListContainer.addEventListener('click', (event) => {
+                const btn = event.target.closest('.btn-add-small');
+                if (!btn) return;
+                const id = Number(btn.dataset.id);
+                const added = getAddedFriends();
+                const friend = mockFriends.find((m) => m.id === id);
+                const isAdded = added.includes(id);
+                store.set('friends', isAdded ? added.filter((x) => x !== id) : [...added, id]);
+                renderAddedFriends();
+                renderFriends(searchFriendInput ? searchFriendInput.value : '');
+                toast(isAdded ? `${friend.name} retiré(e) de tes amis` : `${friend.name} ajouté(e) à tes amis`);
+            });
+        }
 
         if (searchFriendInput) {
             searchFriendInput.addEventListener('input', (event) => renderFriends(event.target.value));
         }
+
+        const btnInvite = document.querySelector('.btn-invite-link');
+        if (btnInvite) {
+            btnInvite.addEventListener('click', () => shareLink('Plan Malin', 'Rejoins-moi sur Plan Malin, la carte des bons plans et du réemploi à Nantes !'));
+        }
+
+        renderAddedFriends();
         renderFriends();
+
+        // Arrivée depuis le profil (icône « ajouter un ami »)
+        if (new URLSearchParams(window.location.search).get('ajouter')) {
+            btnAddFriend.click();
+            window.history.replaceState(null, '', window.location.pathname);
+        }
     }
 
     // ==========================================
@@ -285,44 +520,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const rewardsListContainer = document.getElementById('rewards-dynamic-list');
     
     if (rewardsListContainer) {
-        const rewardsDatabase = [
-            { category: "Bar", name: "La Canaille", address: "6 allée d'Orléans, Nantes", points: 20, offer: "1 shot acheté = 1 shot gratuit", img: "assets/img/la_canaille.webp" },
-            { category: "Bar", name: "Coté Plage", address: "14 Quai Turenne, Nantes", points: 40, offer: "1 verre acheté = 1 verre gratuit", img: "assets/img/cote-plage.webp" },
-            { category: "Bar", name: "Espit Chupitos", address: "Rue de la Paix, Nantes", points: 100, offer: "50% de réduction sur la note totale", img: "assets/img/espit_chupitos_nantes.webp" },
-            { category: "Boîte de nuit", name: "New factory", address: "2 Rue de Rieux, Nantes", points: 50, offer: "Entrée gratuite pour 1 soirée", img: "assets/img/new_factory.png" },
-            { category: "Boîte de nuit", name: "Moda", address: "32 Rue Crucy, Nantes", points: 120, offer: "1 boisson offerte", img: "assets/img/moda.webp" },
-            { category: "Boîte de nuit", name: "WareHouse", address: "21 Quai des Antilles, Nantes", points: 200, offer: "1 entrée pour un showcase", img: "assets/img/warehouse.webp" },
-            { category: "Restaurants", name: "Feeling Good Bakery", address: "1 Rue de la Marne, Nantes", points: 30, offer: "1 cookie acheté = 1 cookie offert", img: "assets/img/feeling_good_bakery.jpg" },
-            { category: "Restaurants", name: "Roadside", address: "1 All. Flesselles, Nantes", points: 80, offer: "1 menu pour 2 à 20€ au lieu de 42€", img: "assets/img/roadside.jpg" },
-            { category: "Restaurants", name: "Myoko", address: "8 Rue J.J. Rousseau, Nantes", points: 180, offer: "1 plat acheté = 1 plat offert", img: "assets/img/myoko.jpg" },
-            { category: "Activités/Loisirs", name: "Bowlcenter", address: "151 Rue du Moulin, Saint-Herblain", points: 60, offer: "1 partie achetée = 1 partie offerte", img: "assets/img/bowling_center.jpg" },
-            { category: "Activités/Loisirs", name: "John Doe Escape Game", address:"13 Rue des Olivettes, Nantes", points : 110 , offer : 'Entrée pour deux au prix d\'une', img : 'assets/img/accueil-john-doe-escape.jpg'},
-            { category:"Activités/Loisirs" , name:"Planet park" , address:"5 rue de la Garde, Nantes" , points : 170 , offer : 'Entrée achetée = Entrée offerte' , img : 'assets/img/planet_park_nantes.jpg'},
-            { category:"Culture" , name:"Pathé Nantes" , address:"12 Pl. du Commerce, Nantes" , points : 70 , offer : 'Place achetée = Place offerte' , img : 'assets/img/cinema_pathe.png'},
-            { category: "Culture", name: "Musée de l'Illusion", address: "3 Rue Contrescarpe, Nantes", points: 140, offer: "Billet d’entrée gratuit", img: "assets/img/musee_illusion.jpg" },
-            { category: "Culture", name: "Théâtre Graslin", address: "Place Graslin, Nantes", points: 190, offer: "1 entrée achetée = 1 entrée gratuite", img: "assets/img/theatre_place_graslin.jpg" },
-            { category: "Culture", name: "Le Stéréolux", address: "4 Bd Léon Bureau, Nantes", points: 200, offer: "Billet à -50%", img: "assets/img/stereolux.webp" },
-            { category: "Sport", name: "Makadam fitness", address: "70 Bd du Massacre, Saint-Herblain", points: 130, offer: "5 séances gratuites", img: "assets/img/makadam_fitness.jpg" },
-            { category: "Sport", name: "Stade de la Beaujoire", address: "333 Rte de Saint-Joseph, Nantes", points: 150, offer: "3 places à 30€", img: "assets/img/stade_de_la_beaujoire.jpg" },
-            { category: "Sport", name: "HBC Nantes", address: "Rue René Viviani, Nantes", points: 160, offer: "2 places gratuites", img: "assets/img/hbc_nantes.png" }
-        ];
+        // Données : voir data.js (const rewardsDatabase)
+
+        let currentRewardCategory = 'Tout';
+        let refreshGauge = () => {};
 
         const renderRewards = (categoryFilter = 'Tout') => {
+            currentRewardCategory = categoryFilter;
             rewardsListContainer.innerHTML = '';
             const filteredRewards = rewardsDatabase.filter(reward => categoryFilter === 'Tout' || reward.category === categoryFilter);
 
             filteredRewards.forEach(reward => {
                 rewardsListContainer.insertAdjacentHTML('beforeend', `
                     <div class="reward-card">
-                        <img src="${reward.img}" alt="${reward.name}" class="reward-img">
+                        <img src="${escapeHtml(reward.img)}" alt="${escapeHtml(reward.name)}" loading="lazy" class="reward-img">
                         <div class="reward-info">
-                            <h3>${reward.name}</h3>
-                            <p class="reward-address">${reward.address}</p>
-                            <p class="reward-offer">${reward.offer}</p>
+                            <h3>${escapeHtml(reward.name)}</h3>
+                            <p class="reward-address">${escapeHtml(reward.address)}</p>
+                            <p class="reward-offer">${escapeHtml(reward.offer)}</p>
                             <p class="reward-points">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-bottom:2px;"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3v19"/><path d="M2 9h20"/></svg> 
                                 ${reward.points} points
                             </p>
+                            <button type="button" class="btn-use" data-reward="${rewardsDatabase.indexOf(reward)}" ${getPoints() < reward.points ? 'disabled' : ''}>${getPoints() < reward.points ? 'Points insuffisants' : 'Utiliser'}</button>
                         </div>
                     </div>
                 `);
@@ -331,17 +551,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const rewardFilterPills = document.querySelectorAll('.rewards-filters .filter-pill');
         rewardFilterPills.forEach(pill => {
+            makeActivable(pill);
+            pill.setAttribute('aria-pressed', pill.classList.contains('active'));
             pill.addEventListener('click', () => {
-                rewardFilterPills.forEach(p => p.classList.remove('active'));
+                rewardFilterPills.forEach(p => {
+                    p.classList.remove('active');
+                    p.setAttribute('aria-pressed', 'false');
+                });
                 pill.classList.add('active');
+                pill.setAttribute('aria-pressed', 'true');
                 renderRewards(pill.getAttribute('data-reward-cat'));
             });
         });
 
         renderRewards();
 
+        // --- BON DE DÉMONSTRATION : "Utiliser" une offre ---
+        const voucherModal = document.getElementById('voucher-modal');
+        const voucherBackdrop = document.getElementById('voucher-backdrop');
+        const closeVoucher = () => {
+            if (voucherModal) voucherModal.classList.remove('active');
+            if (voucherBackdrop) voucherBackdrop.classList.remove('active');
+        };
+        const makeVoucherCode = () => {
+            const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const bytes = crypto.getRandomValues(new Uint8Array(6));
+            return 'PM-' + Array.from(bytes, (b) => alphabet[b % alphabet.length]).join('');
+        };
+
+        rewardsListContainer.addEventListener('click', (event) => {
+            const btn = event.target.closest('.btn-use');
+            if (!btn || btn.disabled || !voucherModal) return;
+            const reward = rewardsDatabase[Number(btn.dataset.reward)];
+            if (!reward || getPoints() < reward.points) return;
+            if (!window.confirm(`Utiliser ${reward.points} points pour « ${reward.offer} » chez ${reward.name} ?`)) return;
+
+            store.set('points', getPoints() - reward.points);
+            const code = makeVoucherCode();
+            store.set('vouchers', [{ name: reward.name, offer: reward.offer, code, date: new Date().toISOString() }, ...store.get('vouchers', [])].slice(0, 30));
+            document.getElementById('voucher-name').textContent = reward.name;
+            document.getElementById('voucher-offer').textContent = reward.offer;
+            document.getElementById('voucher-code').textContent = code;
+            voucherModal.classList.add('active');
+            voucherBackdrop.classList.add('active');
+            refreshGauge();
+            renderRewards(currentRewardCategory);
+        });
+        // Historique : "Mes bons"
+        const vouchersModal = setupSheet('vouchers-modal', 'vouchers-backdrop');
+        const btnMyVouchers = document.getElementById('btn-my-vouchers');
+        if (vouchersModal && btnMyVouchers) {
+            const list = document.getElementById('vouchers-list');
+            btnMyVouchers.addEventListener('click', () => {
+                const vouchers = store.get('vouchers', []);
+                list.innerHTML = '';
+                if (vouchers.length === 0) {
+                    list.innerHTML = '<li class="voucher-empty">Aucun bon pour le moment.</li>';
+                }
+                vouchers.forEach((v) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${escapeHtml(v.name)}</strong>${escapeHtml(v.offer)}<br><code>${escapeHtml(v.code)}</code> <small>· ${escapeHtml(new Date(v.date).toLocaleDateString('fr-FR'))}</small>`;
+                    list.appendChild(li);
+                });
+                vouchersModal.open();
+            });
+            document.getElementById('btn-close-vouchers').addEventListener('click', vouchersModal.close);
+        }
+
+        const btnCloseVoucher = document.getElementById('btn-close-voucher');
+        if (btnCloseVoucher) btnCloseVoucher.addEventListener('click', closeVoucher);
+        if (voucherBackdrop) voucherBackdrop.addEventListener('click', closeVoucher);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeVoucher(); });
+
         // --- JAUGE DYNAMIQUE ET ANIMATION DES POINTS ---
-        const userPoints = 120; // Tes points actuels
+        let userPoints = getPoints(); // Points enregistrés sur l'appareil (120 par défaut)
         const maxPoints = 200;  // Le palier pour une jauge à 100%
         
         const progressFill = document.getElementById('dynamic-progress-fill');
@@ -382,6 +665,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, interval);
             };
 
+            // Mise à jour immédiate après l'utilisation d'une offre
+            refreshGauge = () => {
+                userPoints = getPoints();
+                const percent = Math.min((userPoints / maxPoints) * 100, 100);
+                progressFill.style.strokeDashoffset = circumference - (percent / 100) * circumference;
+                pointsText.innerText = userPoints;
+            };
+
             // On lance l'animation au démarrage de l'appli (si on est déjà sur l'onglet)
             animateJaugeAndPoints();
 
@@ -406,6 +697,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoRewardsBackdrop = document.getElementById('info-rewards-backdrop');
     const btnCloseInfo = document.getElementById('btn-close-info');
 
+    const btnInfoRewards = document.getElementById('btn-info-rewards');
+    if (btnInfoRewards) {
+        makeActivable(btnInfoRewards);
+        btnInfoRewards.setAttribute('aria-label', 'Comment utiliser mes points ?');
+    }
+
     // DÉLÉGATION D'ÉVÉNEMENT : On écoute les clics sur tout le document
     document.addEventListener('click', (event) => {
         // On vérifie si l'élément cliqué (ou son parent) possède l'ID 'btn-info-rewards'
@@ -426,6 +723,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // On garde les écouteurs classiques pour fermer (car ces éléments ne sont pas écrasés par Lucide)
     if (infoRewardsBackdrop) infoRewardsBackdrop.addEventListener('click', closeInfoModal);
     if (btnCloseInfo) btnCloseInfo.addEventListener('click', closeInfoModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeInfoModal(); });
     // ==========================================
     // 8. LOGIQUE DE LA CAMÉRA (Preuve de visite)
     // ==========================================
@@ -437,12 +735,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const videoElement = document.getElementById('camera-stream');
     
     let currentStream = null;
+    let cameraRequestId = 0; // invalide les demandes de flux dépassées (fermeture / bascule rapide)
     let currentFacingMode = 'environment'; // 'environment' = arrière, 'user' = avant (selfie)
 
     if (btnOpenCamera && cameraOverlay && videoElement) {
         
 // Fonction qui allume la caméra selon le mode choisi (Spécial iOS Safari)
         const startCamera = async () => {
+            const requestId = ++cameraRequestId;
             // 1. Éteindre la caméra actuelle
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
@@ -465,10 +765,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 } catch (errFallback) {
                     console.error("Erreur de caméra : ", errFallback);
-                    alert("Impossible de changer de caméra.");
+                    toast("Impossible d'accéder à la caméra. Vérifie l'autorisation du navigateur (HTTPS ou localhost requis).");
                     cameraOverlay.classList.remove('active');
                     return; // On arrête tout si ça plante
                 }
+            }
+
+            // Si l'utilisateur a fermé la caméra ou rebasculé pendant l'attente, on libère ce flux
+            if (requestId !== cameraRequestId) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+                return;
             }
 
             // 4. Connecter le flux vidéo à l'écran
@@ -501,6 +808,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fermer proprement
         const closeCamera = () => {
+            cameraRequestId++;
             cameraOverlay.classList.remove('active');
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
@@ -510,8 +818,21 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (btnCloseCamera) btnCloseCamera.addEventListener('click', closeCamera);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && cameraOverlay.classList.contains('active')) closeCamera(); });
 
-        // Simulation de la capture
+        // Capture réelle : image réduite, enregistrée sur l'appareil (aucun envoi)
+        const grabFrame = () => {
+            if (!videoElement.videoWidth) return null;
+            const scale = Math.min(1, 480 / videoElement.videoWidth);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(videoElement.videoWidth * scale);
+            canvas.height = Math.round(videoElement.videoHeight * scale);
+            const ctx = canvas.getContext('2d');
+            if (currentFacingMode === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg', 0.7);
+        };
+
         if (btnCapturePhoto) {
             btnCapturePhoto.addEventListener('click', () => {
                 const flash = document.createElement('div');
@@ -525,9 +846,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { flash.style.opacity = '0'; }, 50);
                 setTimeout(() => { flash.remove(); }, 250);
 
+                const photo = grabFrame();
                 setTimeout(() => {
-                    alert("✅ Photo validée ! Tu viens de gagner des points !");
+                    if (!photo) {
+                        toast("La caméra n'est pas encore prête, réessaie dans un instant.");
+                        return;
+                    }
+                    const photos = [photo, ...store.get('photos', [])].slice(0, 12);
+                    const saved = store.set('photos', photos);
+                    const total = getPoints() + POINTS_PER_PHOTO;
+                    if (saved) store.set('points', total);
                     closeCamera();
+                    toast(saved
+                        ? `Photo enregistrée ! +${POINTS_PER_PHOTO} points (total : ${total}).`
+                        : "Photo prise, mais l'espace de stockage de l'appareil est plein : elle n'a pas été enregistrée.");
                 }, 400);
             });
         }
@@ -536,16 +868,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 9. LOGIQUE DU PROFIL (Onglets Album / Favoris)
     // ==========================================
+    const statPoints = document.getElementById('stat-points');
+    if (statPoints) statPoints.textContent = getPoints();
+    const albumGrid = document.getElementById('content-album');
+    if (albumGrid) {
+        store.get('photos', []).forEach((src) => {
+            const item = document.createElement('div');
+            item.className = 'photo-item';
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = "Photo prise avec l'appareil";
+            img.style.cssText = 'width:100%; height:100%; object-fit:cover;';
+            item.appendChild(img);
+            albumGrid.prepend(item);
+        });
+    }
+
     const profileTabs = document.querySelectorAll('.profile-tabs .tab');
     
     if (profileTabs.length > 0) {
         profileTabs.forEach(tab => {
+            makeActivable(tab, 'tab');
+            tab.setAttribute('aria-selected', tab.classList.contains('active'));
             tab.addEventListener('click', () => {
                 // 1. On retire la classe 'active' de tous les onglets
-                profileTabs.forEach(t => t.classList.remove('active'));
+                profileTabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
                 
                 // 2. On ajoute 'active' à l'onglet cliqué
                 tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
                 
                 // 3. On récupère la cible (content-album ou content-favoris)
                 const targetId = tab.getAttribute('data-target');
@@ -568,91 +922,173 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 10. MODALE PROFIL AMI (Au clic sur un ami)
     // ==========================================
-    const friendItems = document.querySelectorAll('.friends-list-container .friend-item');
     const friendProfileSheet = document.getElementById('friend-profile-sheet');
-    const friendProfileBackdrop = document.getElementById('friend-profile-backdrop');
-    const friendProfileClose = document.getElementById('friend-profile-close');
+    const friendsListEl = document.querySelector('.friends-list-container');
 
-    // Les éléments texte et image à mettre à jour dans la modale
-    const fpName = document.getElementById('fp-name');
-    const fpAvatar = document.getElementById('fp-avatar');
-    const fpVisites = document.getElementById('fp-visites');
-    const fpTrouvailles = document.getElementById('fp-trouvailles');
-    const fpPoints = document.getElementById('fp-points');
+    if (friendsListEl && friendProfileSheet) {
+        const friendSheet = setupSheet('friend-profile-sheet', 'friend-profile-backdrop');
+        const fpAlbumGrid = document.getElementById('fp-album-grid');
 
-    if (friendItems.length > 0 && friendProfileSheet) {
-        
-        // On écoute le clic sur chaque ami de la liste
-        friendItems.forEach(item => {
-            // S'assure de ne pas écouter les clics sur d'éventuels boutons (ex: supprimer)
-            item.addEventListener('click', (e) => {
-                
-                // 1. On récupère les infos depuis le HTML de l'ami cliqué
-                const name = item.querySelector('.friend-name').innerText;
-                const imgSrc = item.querySelector('img').src;
+        friendsListEl.querySelectorAll('.friend-item').forEach((item) => makeActivable(item));
 
-                // 2. On met à jour l'interface de la modale
-                fpName.innerText = name;
-                fpAvatar.src = imgSrc;
-                
-                // 3. On génère des statistiques aléatoires pour la démo
-                fpVisites.innerText = Math.floor(Math.random() * 15) + 1;    // Entre 1 et 15
-                fpTrouvailles.innerText = Math.floor(Math.random() * 30) + 5; // Entre 5 et 35
-                fpPoints.innerText = Math.floor(Math.random() * 150) + 20;   // Entre 20 et 170
+        // Délégation : fonctionne aussi pour les amis ajoutés dynamiquement
+        friendsListEl.addEventListener('click', (e) => {
+            const item = e.target.closest('.friend-item');
+            if (!item) return;
+            const name = item.querySelector('.friend-name').innerText;
 
-                // ==========================================
-                // 4. NOUVEAU : ALBUM DYNAMIQUE SELON L'AMI
-                // ==========================================
-                const fpAlbumGrid = document.getElementById('fp-album-grid');
-                if (fpAlbumGrid) {
-                    fpAlbumGrid.innerHTML = ''; // On vide l'album précédent
+            document.getElementById('fp-name').innerText = name;
+            document.getElementById('fp-avatar').src = item.querySelector('img').src;
 
-                    let photos = [];
+            // Statistiques de démonstration, stables pour un même ami
+            document.getElementById('fp-visites').innerText = seeded(name + 'v', 15) + 1;
+            document.getElementById('fp-trouvailles').innerText = seeded(name + 't', 30) + 5;
+            document.getElementById('fp-points').innerText = seeded(name + 'p', 150) + 20;
 
-                    // On définit les photos selon le nom de l'ami
-                    if (name === "Lucas Martel") {
-                        photos = [
-                            "assets/img/trouvaille1.jpg",
-                            "assets/img/tee_shirt_noir.jpg",
-                            "assets/img/la_canaille.webp"
-                        ];
-                    } else if (name === "Inès Carvalho") {
-                        photos = [
-                            "assets/img/ticket_tenu.jpg"
-                        ];
-                    } else {
-                        // Photos par défaut pour les autres amis (ex: Théo Bianchi)
-                        photos = [
-                            "assets/img/trouvaille2.jpg",
-                            "assets/img/stade.jpg"
-                        ];
-                    }
-
-                    // On injecte chaque photo dans la grille HTML
-                    photos.forEach(photoUrl => {
-                        fpAlbumGrid.insertAdjacentHTML('beforeend', `
-                            <div class="photo-item">
-                                <img src="${photoUrl}" alt="Trouvaille de ${name}" style="width:100%; height:100%; object-fit:cover;">
-                            </div>
-                        `);
-                    });
+            if (fpAlbumGrid) {
+                fpAlbumGrid.innerHTML = '';
+                let photos;
+                if (name === "Lucas Martel") {
+                    photos = ["assets/img/trouvaille1.jpg", "assets/img/tee_shirt_noir.jpg", "assets/img/la_canaille.webp"];
+                } else if (name === "Inès Carvalho") {
+                    photos = ["assets/img/ticket_tenu.jpg"];
+                } else {
+                    photos = ["assets/img/trouvaille2.jpg", "assets/img/stade.jpg"];
                 }
+                photos.forEach(photoUrl => {
+                    fpAlbumGrid.insertAdjacentHTML('beforeend', `
+                        <div class="photo-item">
+                            <img src="${escapeHtml(photoUrl)}" alt="Trouvaille de ${escapeHtml(name)}" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                    `);
+                });
+            }
 
-                // 5. On rafraîchit les icônes et on ouvre la modale
-                lucide.createIcons();
-                friendProfileSheet.classList.add('active');
-                friendProfileBackdrop.classList.add('active');
-            });
+            refreshIcons();
+            friendSheet.open();
+        });
+    }
+
+    // ==========================================
+    // 11. PROFIL : nom et photo, partage, favoris, réglages
+    // ==========================================
+    const profileNameEl = document.getElementById('profile-name');
+    const profileAvatarImg = document.querySelector('.avatar-large-wrapper img');
+    if (profileNameEl && profileAvatarImg) {
+        const defaultAvatar = profileAvatarImg.getAttribute('src');
+        const applyProfile = () => {
+            const profile = store.get('profile', {});
+            profileNameEl.textContent = profile.name || 'Moi';
+            profileAvatarImg.src = profile.avatar || defaultAvatar;
+        };
+        applyProfile();
+
+        // Partager le profil / l'application
+        const btnShare = document.getElementById('btn-share-profile');
+        if (btnShare) {
+            btnShare.addEventListener('click', () => shareLink('Plan Malin', "Découvre Plan Malin, la carte des bons plans et du réemploi à Nantes !"));
+        }
+
+        // Modifier le profil : pseudo et photo
+        const editSheet = setupSheet('edit-profile-sheet', 'edit-profile-backdrop');
+        const editName = document.getElementById('edit-name');
+        const editAvatar = document.getElementById('edit-avatar');
+        const editPreview = document.getElementById('edit-avatar-preview');
+        let pendingAvatar = null;
+        document.getElementById('btn-edit-profile').addEventListener('click', () => {
+            const profile = store.get('profile', {});
+            editName.value = profile.name || '';
+            editPreview.src = profile.avatar || defaultAvatar;
+            pendingAvatar = null;
+            editAvatar.value = '';
+            editSheet.open();
+        });
+        editAvatar.addEventListener('change', () => {
+            const file = editAvatar.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                toast('Choisis un fichier image.');
+                return;
+            }
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+                // Recadrage carré 200 px pour garder un stockage léger
+                const size = 200;
+                const side = Math.min(img.width, img.height);
+                const canvas = document.createElement('canvas');
+                canvas.width = canvas.height = size;
+                canvas.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, size, size);
+                pendingAvatar = canvas.toDataURL('image/jpeg', 0.8);
+                editPreview.src = pendingAvatar;
+                URL.revokeObjectURL(url);
+            };
+            img.onerror = () => { URL.revokeObjectURL(url); toast("Impossible de lire cette image."); };
+            img.src = url;
+        });
+        document.getElementById('edit-profile-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const profile = store.get('profile', {});
+            const name = editName.value.trim().slice(0, 30);
+            const next = { name, avatar: pendingAvatar || profile.avatar || null };
+            if (store.set('profile', next)) {
+                applyProfile();
+                editSheet.close();
+                toast('Profil mis à jour');
+            } else {
+                toast("Impossible d'enregistrer (stockage plein).");
+            }
         });
 
-        // Fonction pour fermer la modale (glissement vers le bas)
-        const closeFriendProfile = () => {
-            friendProfileSheet.classList.remove('active');
-            friendProfileBackdrop.classList.remove('active');
+        // Favoris : liste des lieux enregistrés depuis la carte
+        const favContainer = document.getElementById('content-favoris');
+        const renderFavorites = () => {
+            if (!favContainer || typeof lieux === 'undefined') return;
+            const keys = store.get('favorites', []);
+            favContainer.innerHTML = '';
+            const found = keys.map((k) => lieux.find((l) => `${l.name}|${l.address}` === k)).filter(Boolean);
+            if (found.length === 0) {
+                favContainer.innerHTML = '<p style="text-align: center; color: var(--text-grey); padding: 40px 20px; width: 100%; font-size: 1.1rem;">Aucun lieu favori pour le moment.<br><small>Appuie sur le cœur d\'une fiche de lieu sur la carte.</small></p>';
+                return;
+            }
+            found.forEach((l) => {
+                const row = document.createElement('div');
+                row.className = 'favorite-item';
+                row.innerHTML = `
+                    <a class="fav-info" href="app.html?lieu=${encodeURIComponent(`${l.name}|${l.address}`)}" style="color:inherit; text-decoration:none;">
+                        <strong>${escapeHtml(l.name)}</strong>
+                        <small>${escapeHtml(l.category)} · ${escapeHtml(l.address)}</small>
+                    </a>
+                    <button type="button" class="fav-btn active" aria-label="Retirer ${escapeHtml(l.name)} des favoris"><i data-lucide="heart"></i></button>`;
+                row.querySelector('button').addEventListener('click', () => {
+                    store.set('favorites', store.get('favorites', []).filter((k) => k !== `${l.name}|${l.address}`));
+                    renderFavorites();
+                    toast('Retiré de tes favoris');
+                });
+                favContainer.appendChild(row);
+            });
+            refreshIcons();
         };
+        renderFavorites();
 
-        // Fermeture au clic sur le fond noir ou la petite poignée grise
-        if(friendProfileBackdrop) friendProfileBackdrop.addEventListener('click', closeFriendProfile);
-        if(friendProfileClose) friendProfileClose.addEventListener('click', closeFriendProfile);
+        // Réglages : gestion des données enregistrées sur l'appareil
+        const settingsSheet = setupSheet('settings-sheet', 'settings-backdrop');
+        const settingsSummary = document.getElementById('settings-summary');
+        const updateSummary = () => {
+            settingsSummary.textContent = `${getPoints()} points · ${store.get('photos', []).length} photo(s) · ${store.get('favorites', []).length} favori(s) · ${store.get('friends', []).length} ami(s) ajouté(s) · ${store.get('suggestions', []).length} suggestion(s) · ${store.get('vouchers', []).length} bon(s)`;
+        };
+        document.getElementById('btn-settings').addEventListener('click', () => { updateSummary(); settingsSheet.open(); });
+        document.getElementById('settings-clear-photos').addEventListener('click', () => {
+            if (!window.confirm('Supprimer toutes tes photos ?')) return;
+            localStorage.removeItem('pm_photos');
+            toast('Photos supprimées');
+            window.setTimeout(() => window.location.reload(), 700);
+        });
+        document.getElementById('settings-reset-all').addEventListener('click', () => {
+            if (!window.confirm('Réinitialiser toutes les données de démonstration (points, photos, favoris, amis, bons, profil) ?')) return;
+            Object.keys(localStorage).filter((k) => k.startsWith('pm_')).forEach((k) => localStorage.removeItem(k));
+            toast('Données réinitialisées');
+            window.setTimeout(() => window.location.reload(), 700);
+        });
     }
 });

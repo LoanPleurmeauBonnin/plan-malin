@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">    <title>Plan Malin - Mes Amis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Plan Malin - Mes Amis</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,7 +60,7 @@
             <button class="btn-primary" id="btn-add-friend">Ajouter des amis</button>
         </div>
 
-        <nav class="bottom-nav">
+        <nav class="bottom-nav" aria-label="Navigation principale">
             <div class="nav-item" data-target="app.html">
                 <i data-lucide="globe"></i>
                 <span>Map</span>
@@ -81,12 +82,12 @@
     </div>
 
     <div class="modal-backdrop" id="add-friend-backdrop"></div>
-        <div class="bottom-sheet" id="add-friend-sheet">
+        <div class="bottom-sheet" id="add-friend-sheet" role="dialog" aria-modal="true" aria-label="Ajouter des amis">
             <div class="sheet-handle" id="add-friend-close"></div>
 
             <div class="search-bar modal-search">
                 <i data-lucide="search" class="icon-grey"></i>
-                <input type="text" id="search-friend-input" placeholder="Recherchez par nom ou pseudo...">
+                <input type="search" id="search-friend-input" placeholder="Recherchez par nom ou pseudo..." aria-label="Rechercher un ami" autocomplete="off">
             </div>
 
             <h3 class="suggestions-title">Suggestions</h3>
@@ -100,7 +101,7 @@
         </div>
 
         <div class="modal-backdrop" id="friend-profile-backdrop"></div>
-        <div class="bottom-sheet" id="friend-profile-sheet">
+        <div class="bottom-sheet" id="friend-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="fp-name">
             <div class="sheet-handle" id="friend-profile-close"></div>
             
             <div class="friend-profile-header">
@@ -135,7 +136,7 @@
             </div>
         </div>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@1.55.0/dist/umd/lucide.min.js" integrity="sha384-SZUFq9Dx112fyzY/iIBEjyd2gu3jY4XVhp+LUNXSpEMB2IEm/TOoMTNH4BHtQ6Hz" crossorigin="anonymous"></script>
     <script src="script.js"></script>
 </body>
 </html>

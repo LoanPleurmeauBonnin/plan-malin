@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">    <title>Plan Malin - Mon Profil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Plan Malin - Mon Profil</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,13 +18,13 @@
         <header class="profile-top-bar">
             <h1>Mon profil</h1>
             <div class="top-bar-actions">
-                <i data-lucide="user-plus"></i>
-                <i data-lucide="settings"></i>
+                <a href="amis.html?ajouter=1" aria-label="Ajouter des amis"><i data-lucide="user-plus"></i></a>
+                <button type="button" id="btn-settings" aria-label="Réglages"><i data-lucide="settings"></i></button>
             </div>
         </header>
 
         <div class="profile-picture-section">
-            <button class="icon-btn" aria-label="Partager le profil">
+            <button class="icon-btn" id="btn-share-profile" aria-label="Partager l'application">
                 <i data-lucide="upload" class="icon-light"></i>
             </button>
             
@@ -31,10 +32,12 @@
                 <img src="assets/img/profil_photo.avif" alt="Photo de profil">
             </div>
 
-            <button class="icon-btn" aria-label="Modifier le profil">
+            <button class="icon-btn" id="btn-edit-profile" aria-label="Modifier le profil">
                 <i data-lucide="pencil" class="icon-light"></i>
             </button>
         </div>
+
+        <h2 class="profile-name" id="profile-name">Moi</h2>
 
         <div class="profile-stats">
             <div class="stat-item">
@@ -46,7 +49,7 @@
                 <span class="stat-label">TROUVAILLES</span>
             </div>
             <div class="stat-item">
-                <span class="stat-num">120</span>
+                <span class="stat-num" id="stat-points">120</span>
                 <span class="stat-label">POINTS</span>
             </div>
         </div>
@@ -75,7 +78,7 @@
                 </p>
             </div>
 
-        <nav class="bottom-nav">
+        <nav class="bottom-nav" aria-label="Navigation principale">
             <div class="nav-item" data-target="app.html">
                 <i data-lucide="globe"></i>
                 <span>Map</span>
@@ -89,14 +92,41 @@
                 <span>Récompenses</span>
             </div>
             <div class="nav-item active" data-target="profil.html">
-                <i data-lucide="circle"></i>
+                <i data-lucide="circle-user"></i>
                 <span>Profil</span>
             </div>
         </nav>
 
     </div>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <div class="modal-backdrop" id="edit-profile-backdrop"></div>
+    <div class="bottom-sheet" id="edit-profile-sheet" role="dialog" aria-modal="true" aria-labelledby="edit-profile-title">
+        <div class="sheet-handle"></div>
+        <h2 class="sheet-title" id="edit-profile-title">Modifier mon profil</h2>
+        <form class="suggest-form" id="edit-profile-form">
+            <img id="edit-avatar-preview" src="" alt="Aperçu de la photo de profil" style="width:96px;height:96px;border-radius:50%;object-fit:cover;align-self:center;">
+            <label for="edit-avatar">Photo</label>
+            <input type="file" id="edit-avatar" accept="image/*">
+            <label for="edit-name">Pseudo</label>
+            <input type="text" id="edit-name" maxlength="30" autocomplete="off" placeholder="Moi">
+            <button type="submit" class="btn-primary" style="margin-top:12px;">Enregistrer</button>
+        </form>
+    </div>
+
+    <div class="modal-backdrop" id="settings-backdrop"></div>
+    <div class="bottom-sheet" id="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="sheet-handle"></div>
+        <h2 class="sheet-title" id="settings-title">Réglages</h2>
+        <p class="settings-note">Tes données (points, photos, favoris, amis, bons, profil) sont enregistrées uniquement sur cet appareil. Rien n'est envoyé sur Internet.</p>
+        <p class="settings-note" id="settings-summary" role="status"></p>
+        <div class="settings-list">
+            <button type="button" class="btn-secondary-outline" id="settings-clear-photos">Supprimer mes photos</button>
+            <button type="button" class="btn-primary btn-danger" id="settings-reset-all">Tout réinitialiser</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/lucide@1.55.0/dist/umd/lucide.min.js" integrity="sha384-SZUFq9Dx112fyzY/iIBEjyd2gu3jY4XVhp+LUNXSpEMB2IEm/TOoMTNH4BHtQ6Hz" crossorigin="anonymous"></script>
+    <script src="data.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -2,70 +2,112 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Plan Malin : la carte interactive des friperies, ressourceries et aides solidaires de Nantes, pensée pour les étudiants.">
     <title>Landing Page - Plan Malin</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="landing-body">
 
     <header class="navbar">
-        <img src="assets/img/logo.png" alt="Logo de Plan Malin" class="logo-img">
-        
-        <div class="menu-btn" aria-label="Menu (inactif)">
+        <a href="index.html" class="logo-link" aria-label="Plan Malin, accueil">
+            <img src="assets/img/logo.png" alt="Logo de Plan Malin" class="logo-img">
+        </a>
+
+        <nav class="nav-links" id="nav-links" aria-label="Navigation du site">
+            <a href="#fonctionnalites">Fonctionnalités</a>
+            <a href="#a-propos">À propos</a>
+            <a href="app.html" class="nav-cta">Ouvrir l'application</a>
+        </nav>
+
+        <button type="button" class="menu-btn" id="menu-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-links">
             <i data-lucide="menu"></i>
-        </div>
+        </button>
     </header>
 
-    <main class="hero-section">
-        
-        <div class="badge">
-            <span class="dot"></span>
-            #1 L'appli nantaise 100% bons plans & réemploi
-        </div>
+    <main>
+        <section class="hero-section">
+            <div class="hero-text">
+                <div class="badge">
+                    <span class="dot"></span>
+                    #1 L'appli nantaise 100% bons plans & réemploi
+                </div>
 
-        <h1>Trouve les meilleures pépites. <br> <span class="text-primary">Économise</span> et <span class="text-primary">réutilise</span>.</h1>
+                <h1>Trouve les meilleures pépites. <br> <span class="text-primary">Économise</span> et <span class="text-primary">réutilise</span>.</h1>
 
-        <p class="description">
-            Découvre la première carte interactive des friperies, ressourceries et réparateurs les moins chers de Nantes. Partage tes trouvailles de seconde main avec tes potes, visite nos boutiques partenaires et débloque des récompenses exclusives !
-        </p>
+                <p class="description">
+                    Découvre la première carte interactive des friperies, ressourceries et réparateurs les moins chers de Nantes. Partage tes trouvailles de seconde main avec tes potes, visite nos boutiques partenaires et débloque des récompenses exclusives !
+                </p>
 
-        <div class="perks">
-            <div class="perk-pill">
-                <i data-lucide="euro"></i>
-                100% Gratuit
+                <div class="perks">
+                    <div class="perk-pill">
+                        <i data-lucide="euro"></i>
+                        100% Gratuit
+                    </div>
+                    <div class="perk-pill">
+                        <i data-lucide="map-pin"></i>
+                        Fait pour les Nantais
+                    </div>
+                </div>
+
+                <div class="cta-group">
+                    <button class="btn-primary" id="btn-download">
+                        <i data-lucide="map"></i>
+                        Ouvrir l'application
+                    </button>
+                </div>
             </div>
-            <div class="perk-pill">
-                <i data-lucide="map-pin"></i>
-                Fait pour les Nantais
-            </div>
-        </div>
 
-        <div class="cta-group">
-            <button class="btn-primary" id="btn-download">
-                <i data-lucide="download"></i>
-                Télécharger gratuitement
-            </button>
-            
-            <div class="btn-secondary">
-                <i data-lucide="play" fill="currentColor"></i>
-                Découvrir en vidéo
+            <div class="app-mockup-container">
+                <div class="phone-frame">
+                    <img src="assets/img/Accueil - Map.png" class="phone-screen" alt="Aperçu de l'application Plan Malin sur smartphone">
+                </div>
             </div>
-        </div>
+        </section>
 
-        <div class="app-mockup-container">
-            <div class="phone-frame">
-                <img src="assets/img/Accueil - Map.png" class="phone-screen" alt="Aperçu de l'application Plan Malin sur smartphone">
+        <section class="features" id="fonctionnalites" aria-labelledby="features-title">
+            <h2 id="features-title">Tout ce qu'il faut pour consommer malin</h2>
+            <div class="feature-grid">
+                <article class="feature-card">
+                    <i data-lucide="map"></i>
+                    <h3>La carte</h3>
+                    <p>39 lieux de réemploi et d'entraide à Nantes, filtrables par catégorie, avec recherche, fiche détaillée et itinéraire.</p>
+                </article>
+                <article class="feature-card">
+                    <i data-lucide="camera"></i>
+                    <h3>Tes trouvailles</h3>
+                    <p>Prends une photo de ta visite, garde-la dans ton album et gagne des points.</p>
+                </article>
+                <article class="feature-card">
+                    <i data-lucide="trophy"></i>
+                    <h3>Les récompenses</h3>
+                    <p>Échange tes points contre des offres chez des partenaires et retrouve tes bons.</p>
+                </article>
+                <article class="feature-card">
+                    <i data-lucide="users"></i>
+                    <h3>Les amis</h3>
+                    <p>Ajoute tes potes, consulte leurs trouvailles et invite-les par lien.</p>
+                </article>
             </div>
-        </div>
+        </section>
 
+        <section class="about" id="a-propos" aria-labelledby="about-title">
+            <h2 id="about-title">À propos</h2>
+            <p>Plan Malin est un projet de cours conçu pour l'association Dernière Main, qui vise à rendre la seconde main accessible aux étudiants nantais. L'application est un prototype : amis, points et offres sont des données de démonstration, enregistrées uniquement sur ton appareil.</p>
+            <a href="app.html" class="btn-primary about-cta">Essayer l'application</a>
+        </section>
     </main>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <footer class="site-footer">
+        <p>Projet de cours · Données de démonstration · Carte © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></p>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@1.55.0/dist/umd/lucide.min.js" integrity="sha384-SZUFq9Dx112fyzY/iIBEjyd2gu3jY4XVhp+LUNXSpEMB2IEm/TOoMTNH4BHtQ6Hz" crossorigin="anonymous"></script>
     <script src="script.js"></script>
 </body>
 </html>
