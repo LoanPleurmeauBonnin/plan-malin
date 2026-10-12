@@ -1,6 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. INITIALISATION GLOBALE
-    lucide.createIcons();
+    // Si la CDN est injoignable (hors-ligne), l'app reste utilisable sans icônes ni carte.
+    const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    const refreshIcons = () => { if (window.lucide) window.lucide.createIcons(); };
+    refreshIcons();
+
+    // Rend un élément non-natif (div cliquable) utilisable au clavier et par les lecteurs d'écran.
+    const makeActivable = (el, role = 'button') => {
+        el.setAttribute('role', role);
+        el.tabIndex = 0;
+        el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                el.click();
+            }
+        });
+    };
+
+    // Stockage local (démo sans serveur) : points, photos, suggestions. Tout reste sur l'appareil.
+    const store = {
+        get(key, fallback) {
+            try {
+                const raw = localStorage.getItem('pm_' + key);
+                return raw === null ? fallback : JSON.parse(raw);
+            } catch (e) { return fallback; }
+        },
+        set(key, value) {
+            try { localStorage.setItem('pm_' + key, JSON.stringify(value)); return true; } catch (e) { return false; }
+        }
+    };
+    const DEFAULT_POINTS = 120;
+    const POINTS_PER_PHOTO = 10;
+    const getPoints = () => store.get('points', DEFAULT_POINTS);
+
+    // Comparaison de texte insensible à la casse et aux accents ("etudiant" trouve "Étudiant").
+    const normalize = (str) => str.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
     // 2. REDIRECTION LANDING PAGE
     const downloadBtn = document.getElementById('btn-download');
@@ -11,6 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. NAVIGATION MULTI-PAGES
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
+        makeActivable(item, 'link');
+        if (item.classList.contains('active')) item.setAttribute('aria-current', 'page');
         item.addEventListener('click', function() {
             const targetPage = this.getAttribute('data-target');
             if (targetPage) {
@@ -26,92 +63,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. LOGIQUE DE LA CARTE (app.html)
     // ==========================================
     const mapContainer = document.getElementById('map');
-    if (mapContainer) {
+    if (mapContainer && window.L) {
         const map = L.map('map', { zoomControl: false }).setView([47.2184, -1.5536], 13);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap', maxZoom: 19
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom: 19
         }).addTo(map);
 
         const markerGroup = L.layerGroup().addTo(map);
 
         // Tes données
-        const lieux = [
-            /* =========================
-            VÊTEMENTS
-            ========================= */
-            { name: "Dernière main", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2154, lng: -1.5509, address: "5 Rue de Strasbourg, Nantes", hours: "Mar-Sam : 14h-19h", price: "2 € - 25 €", link: "https://dernieremain.fr/", desc: "Friperie de seconde main proposant des vêtements pour tous à petits prix en centre-ville." },
-            { name: "Ding Fring", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2157, lng: -1.5583, address: "10 Rue de l'Arche Sèche, Nantes", hours: "Lun : 14h-19h / Mar-Sam : 10h-19h", price: "2 € - 25 €", link: "https://www.instagram.com/dingfring_friperie/", desc: "Vêtements et accessoires de seconde main à prix accessibles dans une démarche économique, écologique et solidaire." },
-            { name: "Frip'in Shop", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2091, lng: -1.5691, address: "5 Rue Charles Brunellière", hours: "Lun-Sam : 10h30-19h", price: "1,50 € - 30 €", link: "https://fripinshop.com/", desc: "Friperie proposant des vêtements de seconde main à prix très accessibles, des basiques aux pièces de marque." },
-            { name: "Frip'in Shop", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2414, lng: -1.5319, address: "15 Rue des Marsauderies", hours: "Lun-Sam : 10h30-19h", price: "1,50 € - 30 €", link: "https://fripinshop.com/", desc: "Friperie proposant des vêtements de seconde main à prix très accessibles, des basiques aux pièces de marque." },
-            { name: "Frip'in Shop", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.1905, lng: -1.5695, address: "Rezé", hours: "Lun-Sam : 10h30-19h", price: "1,50 € - 30 €", link: "https://fripinshop.com/", desc: "Friperie proposant des vêtements de seconde main à prix très accessibles, des basiques aux pièces de marque." },
-            { name: "KILO SHOP NANTES", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2151, lng: -1.5589, address: "15-17 Rue des Vieilles Douves, 44000 Nantes", hours: "Lun-Sam : 10h30-19h", price: "20 € - 60 €/kg", link: "https://www.kilo-shop.com/shop/kawaii-nantes/", desc: "Friperie vendant les vêtements au poids (20 € à 60 €/kg), soit environ 4 à 5 pièces par kilo." },
-            { name: "TransiStore", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2624, lng: -1.5508, address: "14 Rue Kepler, 44240 La Chapelle-sur-Erdre", hours: "Non précisé", price: "Variable", link: "", desc: "Boutique solidaire : vêtements, linge, équipements maison et objets culturels." },
-            { name: "La Boîte à Récup", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2262, lng: -1.5833, address: "112 Boulevard des Anglais, 44100 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Objets déco et articles solidaires, chaque achat soutient une économie sociale." },
-            { name: "L’Autre Cantine – Friperies solidaires", category: "Vêtements", icon: "shopping-bag", class: "pin-clothes", lat: 47.2148, lng: -1.5401, address: "18 Rue de Cornulier, 44000 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Friperie solidaire proposant des vêtements à prix accessibles." },
-
-            /* =========================
-            NOURRITURE
-            ========================= */
-            { name: "StudHelp", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2184, lng: -1.5536, address: "En France (selon disponibilité des dons)", hours: "Selon disponibilité des dons", price: "0 €", link: "https://www.studhelp.fr/l-association-studhelp", desc: "Met en relation des étudiants en difficulté avec des donateurs afin de fournir gratuitement des paniers alimentaires et produits essentiels." },
-            { name: "Cop1", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2066, lng: -1.5591, address: "10 Rue de l’Île Mabon 44200 Nantes - Selon permanences (voir site)", hours: "Selon créneaux d’accompagnement", price: "0 €", link: "https://cop1.fr/a-propos/", desc: "Propose des paniers alimentaires gratuits ainsi qu’un accompagnement étudiant : aide à l’emploi, stages, alternance et accès aux services essentiels." },
-            { name: "Nous Anti-gaspi", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2246, lng: -1.5493, address: "3 Rue Pitre Chevalier, 44000 Nantes", hours: "Selon magasin", price: "2 € - 4 €", link: "https://www.nousantigaspi.com/", desc: "Produits sauvés du gaspillage alimentaire vendus à prix réduits. -10% pour les étudiants les mardis et jeudis." },
-            { name: "Delivraide", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2012, lng: -1.5703, address: "8 Rue de St-Domingue, 44200 Nantes - Livraison à domicile", hours: "Sur demande via l'application", price: "0 €", link: "https://equipagesolidaire.fr/delivraide", desc: "Application solidaire proposant des kits alimentaires gratuits livrés à domicile pour les étudiants vulnérables." },
-            { name: "La SurpreNantes Épicerie", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2457, lng: -1.5518, address: "Chemin de la Censive du Tertre, 44300 Nantes", hours: "Lundi : 17h00 - 18h45", price: "Solidaire", link: "", desc: "Épicerie solidaire étudiante proposant des produits alimentaires." },
-            { name: "Linkee", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2185, lng: -1.5553, address: "37 Rue Saint Léonard, 44000 Nantes", hours: "Selon distributions", price: "Gratuit", link: "", desc: "Organise des distributions alimentaires ouvertes à tous.tes les étudiant.e.s." },
-            { name: "CampuSolidaire", category: "Nourriture", icon: "pizza", class: "pin-food", lat: 47.2165, lng: -1.5835, address: "5 Avenue Pajot, 44100 Nantes", hours: "Mensuel", price: "Gratuit", link: "", desc: "Soutient les étudiants en difficulté en fournissant des ressources essentielles." },
-
-            /* =========================
-            HYGIÈNE
-            ========================= */
-            { name: "Distributeurs gratuits (Ville de Nantes)", category: "Hygiène", icon: "droplets", class: "pin-hygiene", lat: 47.2184, lng: -1.5536, address: "Lieux publics à Nantes", hours: "Selon lieux", price: "Gratuit", link: "", desc: "Distributeurs 'Nouvelles Règles' proposant gratuitement tampons et serviettes." },
-            { name: "InterAsso Nantes", category: "Hygiène", icon: "droplets", class: "pin-hygiene", lat: 47.2450, lng: -1.5521, address: "Chemin de la Censive du Tertre, 44300 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Fédération associative étudiante nantaise." },
-
-            /* =========================
-            LOGEMENT / HÉBERGEMENT
-            ========================= */
-            { name: "100 pour 1", category: "Logement", icon: "home", class: "pin-logement", lat: 47.1866, lng: -1.5298, address: "23 Rue de la Bouquinière, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Apporte des solutions d’hébergement aux personnes en difficulté." },
-            { name: "DAL 44 (Droit au Logement)", category: "Logement", icon: "home", class: "pin-logement", lat: 47.2124, lng: -1.5467, address: "28 Rue Fouré, 44000 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Association défendant le droit au logement." },
-            { name: "Association Lazare", category: "Logement", icon: "home", class: "pin-logement", lat: 47.2189, lng: -1.5523, address: "3 Rue du Refuge, 44000 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Colocations solidaires entre sans-abri et jeunes actifs." },
-            { name: "Nantes’Renoue", category: "Logement", icon: "home", class: "pin-logement", lat: 47.2244, lng: -1.5653, address: "1 Cours des Francs Tireurs, 44000 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Accompagnement social et solidaire." },
-            { name: "AISL (Insertion Solidarité Logement)", category: "Logement", icon: "home", class:"pin-logement" , lat : 47.2567 , lng : -1.5203 , address :"4 Rue François Hennebique, 44300 Nantes" , hours :"Non précisé" , price :"Solidaire" , link :"https://www.aisl.fr/" , desc :"Favorise l’insertion par le logement et l’hébergement." },
-            { name:"La R'source" , category:"Logement" , icon:"home" , class:"pin-logement" , lat : 47.2113 , lng : -1.5650 , address :"5 Rue de Bréa, 44000 Nantes" , hours :"Non précisé" , price :"Gratuit" , link :"https://www.larsource.fr/" , desc :"Lieu dédié aux 16-25 ans sans hébergement stable." },
-
-            /* =========================
-            NUMÉRIQUE
-            ========================= */
-            { name: "ALIS 44", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2391, lng: -1.5199, address: "60 Rue de la Bottière, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Association favorisant l’accès au numérique solidaire." },
-            { name: "Ping", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2064, lng: -1.5596, address: "5 Allée Frida Kahlo, 44100 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Association nantaise autour des cultures numériques." },
-            { name: "Les Nantais Solidaires", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2401, lng: -1.5591, address: "82 Boulevard Gabriel Lauriol, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Initiative solidaire locale." },
-            { name: "Repair-Café Numérique (Maison du Libre)", category: "Numerique", icon: "laptop", class:"pin-numerique" , lat : 47.2298 , lng : -1.5865 , address :"52 Rue du Breil, 44100 Nantes" , hours :"Selon événements" , price :"Gratuit" , link :"https://www.maisondulibre.fr/" , desc :"Ateliers de réparation numérique collaboratifs." },
-
-            /* =========================
-            ETUDE / ACCOMPAGNEMENT
-            ========================= */
-            { name: "La Ressourcerie Culturelle", category: "Etude", icon: "book-open", class: "pin-etude", lat: 46.9832, lng: -1.3213, address: "184 Rue Joseph Gaillard, 85600 Montaigu-Vendée", hours: "Non précisé", price: "Solidaire", link: "", desc: "Structure culturelle solidaire." },
-            { name: "CEMÉA – Pépinière Jeunesse Centre Sud", category: "Etude", icon: "book-open", class: "pin-etude", lat: 47.2034, lng: -1.5415, address: "12 Rue Anatole de Monzie, 44200 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Lieu ressource d'information et d’accompagnement pour les 16-25 ans." },
-            { name: "Info Jeunes Pays de la Loire", category: "Etude", icon: "book-open", class: "pin-etude", lat: 47.2185, lng: -1.5553, address: "37 Rue Saint Léonard, 44000 Nantes", hours: "Non précisé", price: "Gratuit", link: "", desc: "Information, orientation et accompagnement des jeunes." },            
-            
-            /* =========================
-            VIE SOCIALE & ENGAGÉE
-            ========================= */
-            { name: "Ecossolies", category: "VieSociale", icon: "users", class: "pin-sociale", lat: 47.2012, lng: -1.5701, address: "8 Rue Saint-Domingue, 44200 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Réseau de l’économie sociale et solidaire à Nantes." },
-            { name: "CSC Laetitia", category: "VieSociale", icon: "users", class: "pin-sociale", lat: 47.2316, lng: -1.5786, address: "49 Rue Chanoine Larose, 44100 Nantes", hours: "Non précisé", price: "Variable", link: "", desc: "Centre socioculturel proposant des activités et accompagnements." },
-
-            /* =========================
-            MULTISERVICE & DIVERS
-            ========================= */
-            { name: "La Frat’", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2125, lng: -1.5835, address: "3 Rue Amiral du Chaffault, 44100 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Lieu solidaire multi-services." },
-            { name: "Les Eaux Vives Emmaüs – Village solidaire 5 Ponts", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2034, lng: -1.5535, address: "12 Allée Nicole Girard Mangin, 44200 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Village solidaire et accompagnement social." },
-            { name: "Boutique Solidaire / Ressourcerie des Dervallières", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2225, lng: -1.5977, address: "40 Boulevard Jean Ingres, 44100 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Ressourcerie et boutique solidaire." },
-            { name: "Récup’Halveque", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2572, lng: -1.5201, address: "6 Rue François Hennebique, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Structure de réemploi et économie circulaire." },
-            { name: "Coup de Pouce", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2419, lng: -1.5391, address: "80 Rue du Port Boyer, 44300 Nantes", hours: "Non précisé", price: "Solidaire", link: "", desc: "Association d’accompagnement solidaire." },
-            { name: "CROUS Nantes (Service Social)", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2445, lng: -1.5561, address: "2 Boulevard Guy Mollet, 44300 Nantes", hours: "Horaires administratifs", price: "Gratuit", link: "", desc: "Service social accompagnant les étudiants dans leurs démarches." },
-            { name: "C'est deux euros", category: "Multiservice", icon: "layers", class: "pin-multiservice", lat: 47.2162, lng: -1.5588, address: "Rue Guépin, 44000 Nantes", hours: "Lun : 14h-19h / Mar-Sam : 10h30-19h", price: "2 €", link: "https://www.cestdeuxeuros.com/concept", desc: "Magasin proposant une large gamme de produits du quotidien à prix unique et fixe de 2 €." }
-        ];
+        // Données : voir data.js (const lieux)
 
         const bottomSheet = document.getElementById('bottom-sheet');
         const backdrop = document.getElementById('modal-backdrop');
         const closeBtn = document.getElementById('close-sheet');
+        const noResults = document.getElementById('no-results');
 
         let categorieActuelle = 'Tout';
         let rechercheActuelle = '';
@@ -120,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
             markerGroup.clearLayers();
             lieux.forEach(lieu => {
                 const matchCategorie = (categorieActuelle === 'Tout' || lieu.category === categorieActuelle);
-                const matchRecherche = lieu.name.toLowerCase().includes(rechercheActuelle.toLowerCase()) || lieu.desc.toLowerCase().includes(rechercheActuelle.toLowerCase());
+                const matchRecherche = normalize(`${lieu.name} ${lieu.category} ${lieu.desc}`).includes(normalize(rechercheActuelle.trim()));
 
                 if (matchCategorie && matchRecherche) {
                     const customIcon = L.divIcon({
@@ -129,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         iconSize: [24, 24], iconAnchor: [12, 24]
                     });
 
-                    const marker = L.marker([lieu.lat, lieu.lng], { icon: customIcon });
+                    const marker = L.marker([lieu.lat, lieu.lng], { icon: customIcon, title: lieu.name, alt: lieu.name });
 
                     marker.on('click', () => {
                         document.getElementById('sheet-title').textContent = lieu.name;
@@ -160,8 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             };
                         }
 
-                        document.getElementById('sheet-category').innerHTML = `<i data-lucide="${lieu.icon}"></i> <span id="sheet-category-text" style="margin-left:5px;">${lieu.category}</span>`;
-                        lucide.createIcons();
+                        document.getElementById('sheet-category').innerHTML = `<i data-lucide="${lieu.icon}"></i> <span id="sheet-category-text" style="margin-left:5px;"></span>`;
+                        document.getElementById('sheet-category-text').textContent = lieu.category;
+                        refreshIcons();
 
                         if (bottomSheet) bottomSheet.classList.add('active');
                         if (backdrop) backdrop.classList.add('active');
@@ -169,6 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     markerGroup.addLayer(marker);
                 }
             });
+            if (noResults) noResults.hidden = markerGroup.getLayers().length > 0;
         };
 
         const searchInput = document.getElementById('search-input');
@@ -183,9 +151,15 @@ document.addEventListener('DOMContentLoaded', () => {
         filterPills.forEach(pill => {
             // Empêche les filtres de la page récompense d'interférer avec la carte
             if(!pill.closest('.rewards-filters')) {
+                makeActivable(pill);
+                pill.setAttribute('aria-pressed', pill.classList.contains('active'));
                 pill.addEventListener('click', () => {
-                    document.querySelectorAll('.filters-container:not(.rewards-filters) .filter-pill').forEach(p => p.classList.remove('active'));
+                    document.querySelectorAll('.filters-container:not(.rewards-filters) .filter-pill').forEach(p => {
+                        p.classList.remove('active');
+                        p.setAttribute('aria-pressed', 'false');
+                    });
                     pill.classList.add('active');
+                    pill.setAttribute('aria-pressed', 'true');
                     categorieActuelle = pill.getAttribute('data-filter');
                     renderMarkers();
                 });
@@ -198,9 +172,55 @@ document.addEventListener('DOMContentLoaded', () => {
             if (bottomSheet) bottomSheet.classList.remove('active');
             if (backdrop) backdrop.classList.remove('active');
         };
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
         if (closeBtn) closeBtn.addEventListener('click', closeModal);
         if (backdrop) backdrop.addEventListener('click', closeModal);
+    }
+
+    // ==========================================
+    // 4bis. SUGGESTION D'UN NOUVEAU LIEU (app.html, enregistrée localement)
+    // ==========================================
+    const suggestSheet = document.getElementById('suggest-sheet');
+    const suggestBackdrop = document.getElementById('suggest-backdrop');
+    const suggestForm = document.getElementById('suggest-form');
+    if (suggestSheet && suggestBackdrop && suggestForm) {
+        const suggestStatus = document.getElementById('suggest-status');
+        const openSuggest = () => {
+            suggestStatus.textContent = '';
+            suggestSheet.classList.add('active');
+            suggestBackdrop.classList.add('active');
+            document.getElementById('suggest-name').focus();
+        };
+        const closeSuggest = () => {
+            suggestSheet.classList.remove('active');
+            suggestBackdrop.classList.remove('active');
+        };
+        document.getElementById('btn-open-suggest').addEventListener('click', openSuggest);
+        document.getElementById('suggest-close').addEventListener('click', closeSuggest);
+        suggestBackdrop.addEventListener('click', closeSuggest);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSuggest(); });
+
+        suggestForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const data = new FormData(suggestForm);
+            const suggestion = {
+                name: String(data.get('name')).trim(),
+                address: String(data.get('address')).trim(),
+                category: String(data.get('category')),
+                comment: String(data.get('comment')).trim(),
+                date: new Date().toISOString()
+            };
+            if (!suggestion.name || !suggestion.address) {
+                suggestStatus.textContent = "Le nom et l'adresse sont obligatoires.";
+                return;
+            }
+            const saved = store.set('suggestions', [...store.get('suggestions', []), suggestion]);
+            suggestStatus.textContent = saved
+                ? "Merci ! Ta suggestion est enregistrée sur cet appareil (démo : rien n'est envoyé)."
+                : "Impossible d'enregistrer la suggestion (stockage indisponible).";
+            if (saved) suggestForm.reset();
+        });
     }
 
     // ==========================================
@@ -223,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         addFriendBackdrop.addEventListener('click', closeFriendModal);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFriendModal(); });
         if (addFriendClose) addFriendClose.addEventListener('click', closeFriendModal);
 
         const mockFriends = [
@@ -242,17 +263,17 @@ document.addEventListener('DOMContentLoaded', () => {
             suggestionsListContainer.innerHTML = '';
 
             const filteredFriends = mockFriends.filter(friend => 
-                friend.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                friend.sub.toLowerCase().includes(searchQuery.toLowerCase())
+                normalize(friend.name).includes(normalize(searchQuery)) || 
+                normalize(friend.sub).includes(normalize(searchQuery))
             );
 
             filteredFriends.forEach(friend => {
                 suggestionsListContainer.insertAdjacentHTML('beforeend', `
                     <div class="suggestion-item">
-                        <img src="${friend.avatar}" alt="${friend.name}" class="suggestion-avatar">
+                        <img src="${escapeHtml(friend.avatar)}" alt="${escapeHtml(friend.name)}" class="suggestion-avatar">
                         <div class="suggestion-info">
-                            <span class="suggestion-name">${friend.name}</span>
-                            <span class="suggestion-sub">${friend.sub}</span>
+                            <span class="suggestion-name">${escapeHtml(friend.name)}</span>
+                            <span class="suggestion-sub">${escapeHtml(friend.sub)}</span>
                         </div>
                         <button class="btn-add-small">Ajouter</button>
                     </div>
@@ -285,44 +306,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const rewardsListContainer = document.getElementById('rewards-dynamic-list');
     
     if (rewardsListContainer) {
-        const rewardsDatabase = [
-            { category: "Bar", name: "La Canaille", address: "6 allée d'Orléans, Nantes", points: 20, offer: "1 shot acheté = 1 shot gratuit", img: "assets/img/la_canaille.webp" },
-            { category: "Bar", name: "Coté Plage", address: "14 Quai Turenne, Nantes", points: 40, offer: "1 verre acheté = 1 verre gratuit", img: "assets/img/cote-plage.webp" },
-            { category: "Bar", name: "Espit Chupitos", address: "Rue de la Paix, Nantes", points: 100, offer: "50% de réduction sur la note totale", img: "assets/img/espit_chupitos_nantes.webp" },
-            { category: "Boîte de nuit", name: "New factory", address: "2 Rue de Rieux, Nantes", points: 50, offer: "Entrée gratuite pour 1 soirée", img: "assets/img/new_factory.png" },
-            { category: "Boîte de nuit", name: "Moda", address: "32 Rue Crucy, Nantes", points: 120, offer: "1 boisson offerte", img: "assets/img/moda.webp" },
-            { category: "Boîte de nuit", name: "WareHouse", address: "21 Quai des Antilles, Nantes", points: 200, offer: "1 entrée pour un showcase", img: "assets/img/warehouse.webp" },
-            { category: "Restaurants", name: "Feeling Good Bakery", address: "1 Rue de la Marne, Nantes", points: 30, offer: "1 cookie acheté = 1 cookie offert", img: "assets/img/feeling_good_bakery.jpg" },
-            { category: "Restaurants", name: "Roadside", address: "1 All. Flesselles, Nantes", points: 80, offer: "1 menu pour 2 à 20€ au lieu de 42€", img: "assets/img/roadside.jpg" },
-            { category: "Restaurants", name: "Myoko", address: "8 Rue J.J. Rousseau, Nantes", points: 180, offer: "1 plat acheté = 1 plat offert", img: "assets/img/myoko.jpg" },
-            { category: "Activités/Loisirs", name: "Bowlcenter", address: "151 Rue du Moulin, Saint-Herblain", points: 60, offer: "1 partie achetée = 1 partie offerte", img: "assets/img/bowling_center.jpg" },
-            { category: "Activités/Loisirs", name: "John Doe Escape Game", address:"13 Rue des Olivettes, Nantes", points : 110 , offer : 'Entrée pour deux au prix d\'une', img : 'assets/img/accueil-john-doe-escape.jpg'},
-            { category:"Activités/Loisirs" , name:"Planet park" , address:"5 rue de la Garde, Nantes" , points : 170 , offer : 'Entrée achetée = Entrée offerte' , img : 'assets/img/planet_park_nantes.jpg'},
-            { category:"Culture" , name:"Pathé Nantes" , address:"12 Pl. du Commerce, Nantes" , points : 70 , offer : 'Place achetée = Place offerte' , img : 'assets/img/cinema_pathe.png'},
-            { category: "Culture", name: "Musée de l'Illusion", address: "3 Rue Contrescarpe, Nantes", points: 140, offer: "Billet d’entrée gratuit", img: "assets/img/musee_illusion.jpg" },
-            { category: "Culture", name: "Théâtre Graslin", address: "Place Graslin, Nantes", points: 190, offer: "1 entrée achetée = 1 entrée gratuite", img: "assets/img/theatre_place_graslin.jpg" },
-            { category: "Culture", name: "Le Stéréolux", address: "4 Bd Léon Bureau, Nantes", points: 200, offer: "Billet à -50%", img: "assets/img/stereolux.webp" },
-            { category: "Sport", name: "Makadam fitness", address: "70 Bd du Massacre, Saint-Herblain", points: 130, offer: "5 séances gratuites", img: "assets/img/makadam_fitness.jpg" },
-            { category: "Sport", name: "Stade de la Beaujoire", address: "333 Rte de Saint-Joseph, Nantes", points: 150, offer: "3 places à 30€", img: "assets/img/stade_de_la_beaujoire.jpg" },
-            { category: "Sport", name: "HBC Nantes", address: "Rue René Viviani, Nantes", points: 160, offer: "2 places gratuites", img: "assets/img/hbc_nantes.png" }
-        ];
+        // Données : voir data.js (const rewardsDatabase)
+
+        let currentRewardCategory = 'Tout';
+        let refreshGauge = () => {};
 
         const renderRewards = (categoryFilter = 'Tout') => {
+            currentRewardCategory = categoryFilter;
             rewardsListContainer.innerHTML = '';
             const filteredRewards = rewardsDatabase.filter(reward => categoryFilter === 'Tout' || reward.category === categoryFilter);
 
             filteredRewards.forEach(reward => {
                 rewardsListContainer.insertAdjacentHTML('beforeend', `
                     <div class="reward-card">
-                        <img src="${reward.img}" alt="${reward.name}" class="reward-img">
+                        <img src="${escapeHtml(reward.img)}" alt="${escapeHtml(reward.name)}" loading="lazy" class="reward-img">
                         <div class="reward-info">
-                            <h3>${reward.name}</h3>
-                            <p class="reward-address">${reward.address}</p>
-                            <p class="reward-offer">${reward.offer}</p>
+                            <h3>${escapeHtml(reward.name)}</h3>
+                            <p class="reward-address">${escapeHtml(reward.address)}</p>
+                            <p class="reward-offer">${escapeHtml(reward.offer)}</p>
                             <p class="reward-points">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-bottom:2px;"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3v19"/><path d="M2 9h20"/></svg> 
                                 ${reward.points} points
                             </p>
+                            <button type="button" class="btn-use" data-reward="${rewardsDatabase.indexOf(reward)}" ${getPoints() < reward.points ? 'disabled' : ''}>${getPoints() < reward.points ? 'Points insuffisants' : 'Utiliser'}</button>
                         </div>
                     </div>
                 `);
@@ -331,17 +337,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const rewardFilterPills = document.querySelectorAll('.rewards-filters .filter-pill');
         rewardFilterPills.forEach(pill => {
+            makeActivable(pill);
+            pill.setAttribute('aria-pressed', pill.classList.contains('active'));
             pill.addEventListener('click', () => {
-                rewardFilterPills.forEach(p => p.classList.remove('active'));
+                rewardFilterPills.forEach(p => {
+                    p.classList.remove('active');
+                    p.setAttribute('aria-pressed', 'false');
+                });
                 pill.classList.add('active');
+                pill.setAttribute('aria-pressed', 'true');
                 renderRewards(pill.getAttribute('data-reward-cat'));
             });
         });
 
         renderRewards();
 
+        // --- BON DE DÉMONSTRATION : "Utiliser" une offre ---
+        const voucherModal = document.getElementById('voucher-modal');
+        const voucherBackdrop = document.getElementById('voucher-backdrop');
+        const closeVoucher = () => {
+            if (voucherModal) voucherModal.classList.remove('active');
+            if (voucherBackdrop) voucherBackdrop.classList.remove('active');
+        };
+        const makeVoucherCode = () => {
+            const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const bytes = crypto.getRandomValues(new Uint8Array(6));
+            return 'PM-' + Array.from(bytes, (b) => alphabet[b % alphabet.length]).join('');
+        };
+
+        rewardsListContainer.addEventListener('click', (event) => {
+            const btn = event.target.closest('.btn-use');
+            if (!btn || btn.disabled || !voucherModal) return;
+            const reward = rewardsDatabase[Number(btn.dataset.reward)];
+            if (!reward || getPoints() < reward.points) return;
+            if (!window.confirm(`Utiliser ${reward.points} points pour « ${reward.offer} » chez ${reward.name} ?`)) return;
+
+            store.set('points', getPoints() - reward.points);
+            document.getElementById('voucher-name').textContent = reward.name;
+            document.getElementById('voucher-offer').textContent = reward.offer;
+            document.getElementById('voucher-code').textContent = makeVoucherCode();
+            voucherModal.classList.add('active');
+            voucherBackdrop.classList.add('active');
+            refreshGauge();
+            renderRewards(currentRewardCategory);
+        });
+        const btnCloseVoucher = document.getElementById('btn-close-voucher');
+        if (btnCloseVoucher) btnCloseVoucher.addEventListener('click', closeVoucher);
+        if (voucherBackdrop) voucherBackdrop.addEventListener('click', closeVoucher);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeVoucher(); });
+
         // --- JAUGE DYNAMIQUE ET ANIMATION DES POINTS ---
-        const userPoints = 120; // Tes points actuels
+        let userPoints = getPoints(); // Points enregistrés sur l'appareil (120 par défaut)
         const maxPoints = 200;  // Le palier pour une jauge à 100%
         
         const progressFill = document.getElementById('dynamic-progress-fill');
@@ -382,6 +428,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, interval);
             };
 
+            // Mise à jour immédiate après l'utilisation d'une offre
+            refreshGauge = () => {
+                userPoints = getPoints();
+                const percent = Math.min((userPoints / maxPoints) * 100, 100);
+                progressFill.style.strokeDashoffset = circumference - (percent / 100) * circumference;
+                pointsText.innerText = userPoints;
+            };
+
             // On lance l'animation au démarrage de l'appli (si on est déjà sur l'onglet)
             animateJaugeAndPoints();
 
@@ -406,6 +460,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoRewardsBackdrop = document.getElementById('info-rewards-backdrop');
     const btnCloseInfo = document.getElementById('btn-close-info');
 
+    const btnInfoRewards = document.getElementById('btn-info-rewards');
+    if (btnInfoRewards) {
+        makeActivable(btnInfoRewards);
+        btnInfoRewards.setAttribute('aria-label', 'Comment utiliser mes points ?');
+    }
+
     // DÉLÉGATION D'ÉVÉNEMENT : On écoute les clics sur tout le document
     document.addEventListener('click', (event) => {
         // On vérifie si l'élément cliqué (ou son parent) possède l'ID 'btn-info-rewards'
@@ -426,6 +486,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // On garde les écouteurs classiques pour fermer (car ces éléments ne sont pas écrasés par Lucide)
     if (infoRewardsBackdrop) infoRewardsBackdrop.addEventListener('click', closeInfoModal);
     if (btnCloseInfo) btnCloseInfo.addEventListener('click', closeInfoModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeInfoModal(); });
     // ==========================================
     // 8. LOGIQUE DE LA CAMÉRA (Preuve de visite)
     // ==========================================
@@ -437,12 +498,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const videoElement = document.getElementById('camera-stream');
     
     let currentStream = null;
+    let cameraRequestId = 0; // invalide les demandes de flux dépassées (fermeture / bascule rapide)
     let currentFacingMode = 'environment'; // 'environment' = arrière, 'user' = avant (selfie)
 
     if (btnOpenCamera && cameraOverlay && videoElement) {
         
 // Fonction qui allume la caméra selon le mode choisi (Spécial iOS Safari)
         const startCamera = async () => {
+            const requestId = ++cameraRequestId;
             // 1. Éteindre la caméra actuelle
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
@@ -465,10 +528,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 } catch (errFallback) {
                     console.error("Erreur de caméra : ", errFallback);
-                    alert("Impossible de changer de caméra.");
+                    alert("Impossible d'accéder à la caméra. Vérifie l'autorisation du navigateur (la caméra exige aussi HTTPS ou localhost).");
                     cameraOverlay.classList.remove('active');
                     return; // On arrête tout si ça plante
                 }
+            }
+
+            // Si l'utilisateur a fermé la caméra ou rebasculé pendant l'attente, on libère ce flux
+            if (requestId !== cameraRequestId) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+                return;
             }
 
             // 4. Connecter le flux vidéo à l'écran
@@ -501,6 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Fermer proprement
         const closeCamera = () => {
+            cameraRequestId++;
             cameraOverlay.classList.remove('active');
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
@@ -510,8 +581,21 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (btnCloseCamera) btnCloseCamera.addEventListener('click', closeCamera);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && cameraOverlay.classList.contains('active')) closeCamera(); });
 
-        // Simulation de la capture
+        // Capture réelle : image réduite, enregistrée sur l'appareil (aucun envoi)
+        const grabFrame = () => {
+            if (!videoElement.videoWidth) return null;
+            const scale = Math.min(1, 480 / videoElement.videoWidth);
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(videoElement.videoWidth * scale);
+            canvas.height = Math.round(videoElement.videoHeight * scale);
+            const ctx = canvas.getContext('2d');
+            if (currentFacingMode === 'user') { ctx.translate(canvas.width, 0); ctx.scale(-1, 1); }
+            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg', 0.7);
+        };
+
         if (btnCapturePhoto) {
             btnCapturePhoto.addEventListener('click', () => {
                 const flash = document.createElement('div');
@@ -525,8 +609,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => { flash.style.opacity = '0'; }, 50);
                 setTimeout(() => { flash.remove(); }, 250);
 
+                const photo = grabFrame();
                 setTimeout(() => {
-                    alert("✅ Photo validée ! Tu viens de gagner des points !");
+                    if (!photo) {
+                        alert("La caméra n'est pas encore prête, réessaie dans un instant.");
+                        return;
+                    }
+                    const photos = [photo, ...store.get('photos', [])].slice(0, 12);
+                    const saved = store.set('photos', photos);
+                    const total = getPoints() + POINTS_PER_PHOTO;
+                    if (saved) store.set('points', total);
+                    alert(saved
+                        ? `✅ Photo enregistrée sur cet appareil ! +${POINTS_PER_PHOTO} points (total : ${total}).`
+                        : "Photo prise, mais l'espace de stockage de l'appareil est plein : elle n'a pas été enregistrée.");
                     closeCamera();
                 }, 400);
             });
@@ -536,16 +631,38 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 9. LOGIQUE DU PROFIL (Onglets Album / Favoris)
     // ==========================================
+    const statPoints = document.getElementById('stat-points');
+    if (statPoints) statPoints.textContent = getPoints();
+    const albumGrid = document.getElementById('content-album');
+    if (albumGrid) {
+        store.get('photos', []).forEach((src) => {
+            const item = document.createElement('div');
+            item.className = 'photo-item';
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = "Photo prise avec l'appareil";
+            img.style.cssText = 'width:100%; height:100%; object-fit:cover;';
+            item.appendChild(img);
+            albumGrid.prepend(item);
+        });
+    }
+
     const profileTabs = document.querySelectorAll('.profile-tabs .tab');
     
     if (profileTabs.length > 0) {
         profileTabs.forEach(tab => {
+            makeActivable(tab, 'tab');
+            tab.setAttribute('aria-selected', tab.classList.contains('active'));
             tab.addEventListener('click', () => {
                 // 1. On retire la classe 'active' de tous les onglets
-                profileTabs.forEach(t => t.classList.remove('active'));
+                profileTabs.forEach(t => {
+                    t.classList.remove('active');
+                    t.setAttribute('aria-selected', 'false');
+                });
                 
                 // 2. On ajoute 'active' à l'onglet cliqué
                 tab.classList.add('active');
+                tab.setAttribute('aria-selected', 'true');
                 
                 // 3. On récupère la cible (content-album ou content-favoris)
                 const targetId = tab.getAttribute('data-target');
@@ -584,6 +701,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // On écoute le clic sur chaque ami de la liste
         friendItems.forEach(item => {
+            makeActivable(item);
             // S'assure de ne pas écouter les clics sur d'éventuels boutons (ex: supprimer)
             item.addEventListener('click', (e) => {
                 
@@ -632,14 +750,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     photos.forEach(photoUrl => {
                         fpAlbumGrid.insertAdjacentHTML('beforeend', `
                             <div class="photo-item">
-                                <img src="${photoUrl}" alt="Trouvaille de ${name}" style="width:100%; height:100%; object-fit:cover;">
+                                <img src="${escapeHtml(photoUrl)}" alt="Trouvaille de ${escapeHtml(name)}" loading="lazy" style="width:100%; height:100%; object-fit:cover;">
                             </div>
                         `);
                     });
                 }
 
                 // 5. On rafraîchit les icônes et on ouvre la modale
-                lucide.createIcons();
+                refreshIcons();
                 friendProfileSheet.classList.add('active');
                 friendProfileBackdrop.classList.add('active');
             });
@@ -654,5 +772,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Fermeture au clic sur le fond noir ou la petite poignée grise
         if(friendProfileBackdrop) friendProfileBackdrop.addEventListener('click', closeFriendProfile);
         if(friendProfileClose) friendProfileClose.addEventListener('click', closeFriendProfile);
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFriendProfile(); });
     }
 });

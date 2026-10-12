@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">    <title>Plan Malin - Mon Profil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Plan Malin - Mon Profil</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +47,7 @@
                 <span class="stat-label">TROUVAILLES</span>
             </div>
             <div class="stat-item">
-                <span class="stat-num">120</span>
+                <span class="stat-num" id="stat-points">120</span>
                 <span class="stat-label">POINTS</span>
             </div>
         </div>
@@ -75,7 +76,7 @@
                 </p>
             </div>
 
-        <nav class="bottom-nav">
+        <nav class="bottom-nav" aria-label="Navigation principale">
             <div class="nav-item" data-target="app.html">
                 <i data-lucide="globe"></i>
                 <span>Map</span>
@@ -89,14 +90,14 @@
                 <span>Récompenses</span>
             </div>
             <div class="nav-item active" data-target="profil.html">
-                <i data-lucide="circle"></i>
+                <i data-lucide="circle-user"></i>
                 <span>Profil</span>
             </div>
         </nav>
 
     </div>
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@1.55.0/dist/umd/lucide.min.js" integrity="sha384-SZUFq9Dx112fyzY/iIBEjyd2gu3jY4XVhp+LUNXSpEMB2IEm/TOoMTNH4BHtQ6Hz" crossorigin="anonymous"></script>
     <script src="script.js"></script>
 </body>
 </html>

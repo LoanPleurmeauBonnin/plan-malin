@@ -2,7 +2,7 @@
     --bg-color: #ffffff;
     --primary-color: #501282; /* Ton nouveau violet ! */
     --text-dark: #111827;
-    --text-grey: #9ca3af;
+    --text-grey: #6b7280; /* AA sur fond blanc (4,8:1) ; était #9ca3af (2,5:1) */
     --bg-grey: #f3f4f6;
     --badge-red-text: #e17c76;
     --badge-red-dot: #ef4444;
@@ -1407,3 +1407,106 @@ h1 {
 #friend-profile-sheet .photo-grid-container {
     padding: 0 20px 40px 20px;
 }
+/* ==========================================
+   ACCESSIBILITÉ & ROBUSTESSE
+   ========================================== */
+:focus-visible {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.no-results {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 900;
+    margin: 0;
+    padding: 12px 18px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    color: var(--text-grey);
+    font-family: 'Cabin', sans-serif;
+    text-align: center;
+}
+
+.no-results[hidden] {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+/* ==========================================
+   DÉMOS LOCALES : bon, suggestion de lieu
+   ========================================== */
+.btn-use {
+    margin-top: 8px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--primary-color);
+    color: white;
+    font-family: 'Cabin', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-use:disabled {
+    background: var(--bg-grey);
+    color: var(--text-grey);
+    cursor: not-allowed;
+}
+
+.voucher-partner { font-weight: 700; font-size: 1.1rem; text-align: center; margin: 12px 0 4px; }
+.voucher-offer { text-align: center; margin: 0 0 16px; }
+.voucher-code {
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: var(--primary-color);
+    background: var(--bg-grey);
+    border-radius: 12px;
+    padding: 14px;
+    margin: 0 0 12px;
+}
+.voucher-note { text-align: center; color: var(--text-grey); font-size: 0.85rem; margin: 0 0 20px; }
+
+.fab-suggest {
+    position: fixed;
+    bottom: calc(169px + env(safe-area-inset-bottom));
+    right: 26px;
+    width: 48px;
+    height: 48px;
+    background: white;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    z-index: 900;
+}
+
+.suggest-form { display: flex; flex-direction: column; gap: 6px; max-height: 60vh; overflow-y: auto; }
+.suggest-form label { font-size: 0.85rem; font-weight: 600; margin-top: 6px; }
+.suggest-form input,
+.suggest-form select,
+.suggest-form textarea {
+    font-family: 'Cabin', sans-serif;
+    font-size: 1rem;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: white;
+}
+.suggest-status { min-height: 1.2em; margin: 6px 0; font-size: 0.9rem; color: var(--primary-color); }
