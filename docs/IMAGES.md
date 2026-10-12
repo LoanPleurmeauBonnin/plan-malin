@@ -24,7 +24,7 @@ Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20
 | `trouvaille1.jpg` | Album d'un ami | Photo de ticket de caisse, source non documentée |
 | `trouvaille2.jpg` | Album d'un ami | Visuel d'aspect généré, source non documentée |
 | `tee_shirt_noir.jpg` | Album d'un ami | Photo produit, source non documentée |
-| `pull_1977.jpg`, `t_shirt2.jpg` | Non utilisées | **Supprimées** du projet (restent dans l'historique Git) |
+| `pull_1977.jpg`, `t_shirt2.jpg` | Non utilisées | **Supprimées** du projet et de l'historique Git |
 
 ## D. Photos de lieux et de partenaires : RETIRÉES
 
