@@ -29,7 +29,7 @@ Aucune ne contenait de métadonnée de copyright ou de provenance (pas d'EXIF, d
 
 Un test vérifie que les fichiers retirés ne reviennent pas.
 
-**Historique Git** : `trouvaille1.jpg`, `tee_shirt_noir.jpg` et `profil_photo.avif` ont été purgés de l'historique (seconde réécriture, 12 octobre 2026). `ticket_tenu.jpg` et `trouvaille2.jpg` y figurent encore ; les effacer demanderait une nouvelle réécriture avec `push --force`.
+**Historique Git purgé** : les cinq fichiers retirés (`trouvaille1.jpg`, `tee_shirt_noir.jpg`, `profil_photo.avif`, `ticket_tenu.jpg`, `trouvaille2.jpg`) ont été effacés de tout l'historique (deux réécritures + `push --force`, 12 octobre 2026), avec les mêmes limites que pour les photos de partenaires (section D). Aucune sauvegarde locale n'a été conservée.
 
 ## D. Photos de lieux et de partenaires : RETIRÉES
 
