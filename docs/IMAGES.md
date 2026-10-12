@@ -33,7 +33,11 @@ Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20
 - Albums des amis : les photos de lieux ont été retirées de leurs albums.
 - Un test vérifie qu'aucune offre ne référence de photo.
 
-**Limite** : ces fichiers restent consultables dans l'**historique Git** public (anciens commits). Les retirer complètement demande de réécrire l'historique (`git filter-repo` puis `push --force`), ce qui n'a pas été fait sans ton accord ; il resterait aussi les éventuelles copies faites par des tiers et les anciennes captures d'écran.
+**Historique Git purgé** : ces 20 photos, ainsi que `pull_1977.jpg`, `t_shirt2.jpg` et les anciennes versions de deux captures d'écran qui en montraient des vignettes, ont été effacées de tout l'historique du dépôt (réécriture + `push --force`, 12 octobre 2026). Limites :
+- Les identifiants de tous les commits ont changé ; les clones existants doivent être refaits.
+- GitHub peut conserver quelques jours des copies en cache ou des objets accessibles par leur ancien identifiant de commit ; un ayant droit exigeant leur suppression immédiate peut demander un nettoyage au support GitHub.
+- Une copie faite par un tiers pendant la période où le dépôt était public (quelques heures) ne peut pas être rappelée.
+- Une sauvegarde de l'ancien historique existe en local uniquement (hors dépôt), à supprimer si tu ne veux plus aucune copie.
 
 ## E. Images distantes (non versionnées)
 
@@ -45,6 +49,5 @@ Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20
 
 ## Risque et options
 
-Le dépôt et le site sont **publics** : un ayant droit pourrait demander le retrait des images restantes du groupe C (origine inconnue), et des photos du groupe D encore présentes dans l'historique Git. Pour un projet de cours à but non commercial le risque est limité, mais il existe. Pour les images restantes (groupes A, B, C) :
+Le dépôt et le site sont **publics** : un ayant droit pourrait demander le retrait des images restantes du groupe C (origine inconnue), et d'éventuelles copies conservées par des tiers. Pour un projet de cours à but non commercial le risque est limité, mais il existe. Pour les images restantes (groupes A, B, C) :
 1. **Documenter** la source et la licence de chacune (ou la remplacer par une image dont tu détiens les droits).
-2. Éventuellement **purger l'historique Git** des photos du groupe D (réécriture d'historique, à décider).
