@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Trouvaille : livre">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1d4ed8"/>
+      <stop offset="1" stop-color="#60a5fa"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="url(#g)"/>
+  <path d="M100 52c-14-10-34-12-56-8v100c22-4 42-2 56 8 14-10 34-12 56-8V44c-22-4-42-2-56 8z" fill="#ffffff" fill-opacity="0.92"/>
+  <path d="M100 52v100" stroke="#1d4ed8" stroke-width="5" stroke-opacity="0.5"/>
+</svg>

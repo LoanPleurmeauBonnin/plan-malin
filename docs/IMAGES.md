@@ -15,21 +15,21 @@ Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20
 |---|---|---|
 | `perso1.jpg`, `perso2.jpg`, `perso3.jpg` | Avatars des amis | Filigrane visible « this-person-does-not-exist.com » : visages synthétiques, pas de personnes réelles (pas de droit à l'image). Conditions d'utilisation du site non vérifiées. |
 
-## C. Cinq images d'origine non documentée (analyse du 12 octobre 2026)
+## C. Cinq images d'origine non documentée : toutes remplacées (analyse du 12 octobre 2026)
 
-Aucune ne contient de métadonnée de copyright ou de provenance (pas d'EXIF, de XMP ni de marqueur C2PA). L'analyse reposait sur leur contenu visuel, **sans preuve**. Les trois les plus exposées ont été **remplacées** ; les deux générées par IA sont conservées.
+Aucune ne contenait de métadonnée de copyright ou de provenance (pas d'EXIF, de XMP ni de marqueur C2PA). L'analyse reposait sur leur contenu visuel, **sans preuve**. Les cinq ont été **remplacées par des illustrations vectorielles** créées pour le projet, sans image tierce.
 
-| Fichier | Constat | Statut |
+| Fichier retiré | Constat | Remplacé par |
 |---|---|---|
-| `trouvaille1.jpg` | Vraie photographie d'un ticket de caisse réel (restaurant parisien, téléphone et SIRET lisibles) | **Remplacé** par `trouvaille-ticket.svg` |
-| `tee_shirt_noir.jpg` | Photo produit de catalogue sur fond blanc, typique d'un site marchand | **Remplacé** par `trouvaille-vetement.svg` |
-| `profil_photo.avif` | Photo de banque d'images (étudiant souriant tenant un cahier) | **Remplacé** par `avatar-defaut.svg` |
-| `ticket_tenu.jpg` | Générée par IA : icône ✦ typique de Google Gemini, texte incohérent. Si tu l'as générée toi-même, tu peux l'utiliser selon les conditions du service | Conservée, origine à confirmer |
-| `trouvaille2.jpg` | Générée par IA : texte illisible, sac « anaco », décor de synthèse. Même remarque | Conservée, origine à confirmer |
+| `trouvaille1.jpg` | Vraie photographie d'un ticket de caisse réel (téléphone et SIRET lisibles) | `trouvaille-ticket.svg` |
+| `tee_shirt_noir.jpg` | Photo produit de catalogue sur fond blanc | `trouvaille-vetement.svg` |
+| `profil_photo.avif` | Photo de banque d'images | `avatar-defaut.svg` |
+| `ticket_tenu.jpg` | Générée par IA (icône ✦ typique de Google Gemini, texte incohérent) | `trouvaille-sac.svg` |
+| `trouvaille2.jpg` | Générée par IA (texte illisible, décor de synthèse) | `trouvaille-livre.svg` |
 
-Les trois remplaçants (`avatar-defaut.svg`, `trouvaille-vetement.svg`, `trouvaille-ticket.svg`) sont des illustrations vectorielles simples créées pour le projet : elles ne reprennent aucune image tierce. Un test vérifie que les fichiers retirés ne reviennent pas.
+Un test vérifie que les fichiers retirés ne reviennent pas.
 
-**Historique Git purgé** : ces trois fichiers et les anciennes versions de la capture `profil-favoris.png` (qui montrait la photo de profil de banque d'images) ont été effacés de tout l'historique (seconde réécriture + `push --force`, 12 octobre 2026), avec les mêmes limites que pour les photos de partenaires (section D). Aucune sauvegarde locale n'a été conservée.
+**Historique Git** : `trouvaille1.jpg`, `tee_shirt_noir.jpg` et `profil_photo.avif` ont été purgés de l'historique (seconde réécriture, 12 octobre 2026). `ticket_tenu.jpg` et `trouvaille2.jpg` y figurent encore ; les effacer demanderait une nouvelle réécriture avec `push --force`.
 
 ## D. Photos de lieux et de partenaires : RETIRÉES
 

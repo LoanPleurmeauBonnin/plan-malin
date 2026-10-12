@@ -962,9 +962,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (name === "Lucas Martel") {
                     photos = ["assets/img/trouvaille-vetement.svg", "assets/img/trouvaille-ticket.svg"];
                 } else if (name === "Inès Carvalho") {
-                    photos = ["assets/img/ticket_tenu.jpg"];
+                    photos = ["assets/img/trouvaille-sac.svg"];
                 } else {
-                    photos = ["assets/img/trouvaille2.jpg"];
+                    photos = ["assets/img/trouvaille-livre.svg"];
                 }
                 photos.forEach(photoUrl => {
                     fpAlbumGrid.insertAdjacentHTML('beforeend', `
