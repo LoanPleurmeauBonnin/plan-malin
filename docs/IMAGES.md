@@ -24,7 +24,7 @@ Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20
 | `trouvaille1.jpg` | Album d'un ami | Photo de ticket de caisse, source non documentée |
 | `trouvaille2.jpg` | Album d'un ami | Visuel d'aspect généré, source non documentée |
 | `tee_shirt_noir.jpg` | Album d'un ami | Photo produit, source non documentée |
-| `pull_1977.jpg`, `t_shirt2.jpg` | **Non utilisées** | Peuvent être supprimées sans effet |
+| `pull_1977.jpg`, `t_shirt2.jpg` | Non utilisées | **Supprimées** du projet (restent dans l'historique Git) |
 
 ## D. Photos de lieux et de partenaires : RETIRÉES
 
@@ -47,5 +47,4 @@ Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20
 
 Le dépôt et le site sont **publics** : un ayant droit pourrait demander le retrait des images restantes du groupe C (origine inconnue), et des photos du groupe D encore présentes dans l'historique Git. Pour un projet de cours à but non commercial le risque est limité, mais il existe. Pour les images restantes (groupes A, B, C) :
 1. **Documenter** la source et la licence de chacune (ou la remplacer par une image dont tu détiens les droits).
-2. **Supprimer** `pull_1977.jpg` et `t_shirt2.jpg`, inutilisées.
-3. Éventuellement **purger l'historique Git** des photos du groupe D (réécriture d'historique, à décider).
+2. Éventuellement **purger l'historique Git** des photos du groupe D (réécriture d'historique, à décider).
