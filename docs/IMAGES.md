@@ -9,11 +9,11 @@ Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20
 | `logo.png` | Logo PoM | Création présumée de l'équipe du projet |
 | `Accueil - Map.png` | Téléphone de la landing page | Maquette de conception, création présumée de l'équipe |
 
-## B. Visages générés par IA
+## B. Visages générés par IA : remplacés
 
-| Fichiers | Usage | Remarque |
+| Fichiers retirés | Usage | Remarque |
 |---|---|---|
-| `perso1.jpg`, `perso2.jpg`, `perso3.jpg` | Avatars des amis | Filigrane visible « this-person-does-not-exist.com » : visages synthétiques, pas de personnes réelles (pas de droit à l'image). Conditions d'utilisation du site non vérifiées. |
+| `perso1.jpg`, `perso2.jpg`, `perso3.jpg` | Avatars des trois amis de la liste | Filigrane visible « this-person-does-not-exist.com » : visages synthétiques dont les conditions d'utilisation n'avaient pas pu être vérifiées. **Remplacés** par `avatar-lucas.svg`, `avatar-ines.svg` et `avatar-theo.svg` (initiales sur dégradé de couleur, créées pour le projet). |
 
 ## C. Cinq images d'origine non documentée : toutes remplacées (analyse du 12 octobre 2026)
 
@@ -44,12 +44,21 @@ Un test vérifie que les fichiers retirés ne reviennent pas.
 - Une copie faite par un tiers pendant la période où le dépôt était public (quelques heures) ne peut pas être rappelée.
 - Une sauvegarde de l'ancien historique existe en local uniquement (hors dépôt), à supprimer si tu ne veux plus aucune copie.
 
+## Bilan : ce qui reste dans `assets/img/`
+
+| Fichier | Statut |
+|---|---|
+| `logo.png`, `Accueil - Map.png` | Créations présumées de l'équipe : **droits à confirmer par l'auteur** |
+| `avatar-*.svg`, `trouvaille-*.svg` (9 fichiers) | Illustrations vectorielles créées pour le projet, sans image tierce |
+
+Les trois avatars `perso*.jpg` ont été retirés du projet ; ils figurent encore dans l'historique Git (une réécriture supplémentaire serait nécessaire pour les effacer).
+
 ## E. Images distantes (non versionnées)
 
 | Source | Usage | Conditions |
 |---|---|---|
 | `images.unsplash.com` | Deux photos de l'album du profil | Licence Unsplash : utilisation libre, attribution non obligatoire |
-| `i.pravatar.cc` | Avatars des suggestions d'amis | Service d'avatars de démonstration ; vérifier ses conditions pour un usage durable |
+| `i.pravatar.cc` | Avatars des 6 suggestions d'amis | Service d'avatars de démonstration (photos de personnes réelles) ; ses conditions d'utilisation n'ont pas été vérifiées, à remplacer par des avatars locaux pour un usage durable |
 | OpenStreetMap | Fond de carte | © OpenStreetMap contributors (ODbL), attribution déjà affichée sur la carte |
 
 ## Risque et options
