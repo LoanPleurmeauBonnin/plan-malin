@@ -15,16 +15,21 @@ Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20
 |---|---|---|
 | `perso1.jpg`, `perso2.jpg`, `perso3.jpg` | Avatars des amis | Filigrane visible « this-person-does-not-exist.com » : visages synthétiques, pas de personnes réelles (pas de droit à l'image). Conditions d'utilisation du site non vérifiées. |
 
-## C. Photos de stock ou générées, origine inconnue (à confirmer)
+## C. Cinq images d'origine non documentée (analyse du 12 octobre 2026)
 
-| Fichier | Usage | Remarque |
-|---|---|---|
-| `profil_photo.avif` | Photo de profil par défaut | Photo de type banque d'images (étudiant avec cahier), source non documentée |
-| `ticket_tenu.jpg` | Album d'un ami | Icône ✦ en bas à droite, typique d'un générateur d'images IA |
-| `trouvaille1.jpg` | Album d'un ami | Photo de ticket de caisse, source non documentée |
-| `trouvaille2.jpg` | Album d'un ami | Visuel d'aspect généré, source non documentée |
-| `tee_shirt_noir.jpg` | Album d'un ami | Photo produit, source non documentée |
-| `pull_1977.jpg`, `t_shirt2.jpg` | Non utilisées | **Supprimées** du projet et de l'historique Git |
+Aucune ne contient de métadonnée de copyright ou de provenance (pas d'EXIF, de XMP ni de marqueur C2PA). L'analyse repose donc sur leur contenu visuel, **sans preuve** :
+
+| Fichier | Usage | Constat | Risque |
+|---|---|---|---|
+| `ticket_tenu.jpg` | Album d'un ami | **Généré par IA** : icône ✦ (étincelle) en bas à droite, typique de Google Gemini, et texte du ticket incohérent (« UNNERAL GROCERPK »). Si tu l'as généré toi-même, tu peux l'utiliser selon les conditions du service ; sinon, origine à confirmer. | Faible à moyen |
+| `trouvaille2.jpg` | Album d'un ami | **Généré par IA** : texte illisible sur le ticket, sac « anaco », visage et décor de synthèse. Même remarque. | Faible à moyen |
+| `trouvaille1.jpg` | Album d'un ami | **Vraie photographie** d'un ticket de caisse réel (restaurant parisien, avec son numéro de téléphone et son SIRET lisibles). Auteur et licence inconnus. | **Moyen à élevé** : droit d'auteur du photographe, données d'une entreprise réelle |
+| `tee_shirt_noir.jpg` | Album d'un ami | **Photo produit de catalogue** sur fond blanc (maillot en mesh), typique d'un site marchand. Source inconnue. | **Moyen à élevé** : droit d'auteur du site marchand |
+| `profil_photo.avif` | Photo de profil par défaut | **Photo de banque d'images** (étudiant souriant tenant un cahier), comme on en trouve sur Freepik ou Adobe Stock. Source inconnue. | **Moyen à élevé** : les banques d'images imposent licence ou attribution |
+
+**Ce qui permettrait de conclure** : savoir qui a créé ou téléchargé chaque fichier, et où. Les trois derniers sont les plus exposés. Les fichiers générés par IA sont moins problématiques si tu en es l'auteur de la requête, mais le statut juridique des images IA reste incertain.
+
+Options pour ces cinq images : fournir la source et la licence ; les remplacer par des images dont tu détiens les droits (photos que tu prends toi-même, ou images libres de droits avec attribution) ; ou les neutraliser comme les photos de partenaires (pictogrammes, images générées par toi).
 
 ## D. Photos de lieux et de partenaires : RETIRÉES
 
@@ -49,5 +54,4 @@ Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20
 
 ## Risque et options
 
-Le dépôt et le site sont **publics** : un ayant droit pourrait demander le retrait des images restantes du groupe C (origine inconnue), et d'éventuelles copies conservées par des tiers. Pour un projet de cours à but non commercial le risque est limité, mais il existe. Pour les images restantes (groupes A, B, C) :
-1. **Documenter** la source et la licence de chacune (ou la remplacer par une image dont tu détiens les droits).
+Le dépôt et le site sont **publics** : un ayant droit pourrait demander le retrait des images restantes du groupe C (origine inconnue), et d'éventuelles copies conservées par des tiers. Pour un projet de cours à but non commercial le risque est limité, mais il existe. Pour les images restantes (groupes A, B, C) : documenter la source et la licence de chacune, ou la remplacer.
