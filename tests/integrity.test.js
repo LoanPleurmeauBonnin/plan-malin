@@ -151,3 +151,11 @@ test('aucune image distante : toutes les images de l\'interface sont locales', (
     assert.ok(!/(unsplash|pravatar)/i.test(content), `${f}: référence à un service d'images tiers`);
   }
 });
+
+test('les repères de la carte sont activables au clavier (Entrée / Espace) et les fenêtres gèrent le focus', () => {
+  const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
+  assert.ok(script.includes("marker.on('keypress'"), 'repères non activables au clavier');
+  assert.ok(script.includes('const trapTab'), 'piège de focus absent');
+  const css = fs.readFileSync(path.join(root, 'style.css'), 'utf8');
+  assert.ok(/\.bottom-sheet:not\(\.active\)[\s\S]{0,120}visibility:\s*hidden/.test(css), 'fenêtres fermées non masquées aux lecteurs d\'écran');
+});

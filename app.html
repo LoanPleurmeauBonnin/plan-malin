@@ -19,40 +19,6 @@
 <body class="app-body">
 
     <div class="app-container" role="main">
-        
-        <div id="map"></div>
-
-        <button class="fab-locate" id="btn-locate" aria-label="Me localiser sur la carte">
-            <i data-lucide="locate-fixed"></i>
-        </button>
-
-        <button class="fab-camera" id="btn-open-camera" aria-label="Ouvrir la caméra">
-                <i data-lucide="camera"></i>
-        </button>
-
-            <button class="fab-suggest" id="btn-open-suggest" aria-label="Suggérer un lieu">
-            <i data-lucide="plus"></i>
-        </button>
-
-        <div class="camera-overlay" id="camera-overlay">
-                <video id="camera-stream" autoplay playsinline></video>
-                
-                <div class="camera-controls-top" style="display: flex; justify-content: space-between; width: 100%; padding: 0 20px;">
-                    <button class="icon-btn-camera" id="btn-close-camera" aria-label="Fermer la caméra">
-                        <i data-lucide="x"></i>
-                    </button>
-                    <button class="icon-btn-camera" id="btn-switch-camera" aria-label="Changer de caméra">
-                        <i data-lucide="switch-camera"></i>
-                    </button>
-                </div>
-                
-                <div class="camera-controls-bottom">
-                    <button class="capture-btn" id="btn-capture-photo" aria-label="Prendre la photo">
-                        <div class="capture-btn-inner"></div>
-                    </button>
-                </div>
-            </div>
-
         <div class="top-overlay">
             <div class="search-bar">
                 <i data-lucide="search" class="icon-grey"></i>
@@ -92,6 +58,40 @@
             </div>
         </div>
 
+        
+
+        <button class="fab-locate" id="btn-locate" aria-label="Me localiser sur la carte">
+            <i data-lucide="locate-fixed"></i>
+        </button>
+
+        <button class="fab-camera" id="btn-open-camera" aria-label="Ouvrir la caméra">
+                <i data-lucide="camera"></i>
+        </button>
+
+            <button class="fab-suggest" id="btn-open-suggest" aria-label="Suggérer un lieu">
+            <i data-lucide="plus"></i>
+        </button>
+
+        <div class="camera-overlay" id="camera-overlay" role="dialog" aria-modal="true" aria-label="Appareil photo">
+                <video id="camera-stream" autoplay playsinline></video>
+                
+                <div class="camera-controls-top" style="display: flex; justify-content: space-between; width: 100%; padding: 0 20px;">
+                    <button class="icon-btn-camera" id="btn-close-camera" aria-label="Fermer la caméra">
+                        <i data-lucide="x"></i>
+                    </button>
+                    <button class="icon-btn-camera" id="btn-switch-camera" aria-label="Changer de caméra">
+                        <i data-lucide="switch-camera"></i>
+                    </button>
+                </div>
+                
+                <div class="camera-controls-bottom">
+                    <button class="capture-btn" id="btn-capture-photo" aria-label="Prendre la photo">
+                        <div class="capture-btn-inner"></div>
+                    </button>
+                </div>
+            </div>
+
+
         <p class="no-results" id="no-results" role="status" hidden>Aucun lieu ne correspond à ta recherche.</p>
 
         <nav class="bottom-nav" aria-label="Navigation principale">
@@ -100,6 +100,8 @@
             <div class="nav-item" data-target="recompenses.html"><i data-lucide="trophy"></i><span>Récompenses</span></div>
             <div class="nav-item" data-target="profil.html"><i data-lucide="circle-user"></i><span>Profil</span></div>
         </nav>
+
+        <div id="map" role="region" aria-label="Carte des lieux : chaque lieu est un bouton"></div>
 
         <div class="modal-backdrop" id="filters-backdrop"></div>
         <div class="bottom-sheet" id="filters-sheet" role="dialog" aria-modal="true" aria-labelledby="filters-title">

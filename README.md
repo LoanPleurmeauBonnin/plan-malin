@@ -88,12 +88,12 @@ Prérequis : Node.js 20 ou plus.
 npm test
 ```
 
-Les 18 tests, exécutés aussi par GitHub Actions à chaque envoi sur `main`, vérifient l'intégrité des données et des pages : champs obligatoires des lieux, catégories reliées à un filtre, coordonnées dans la zone nantaise, liens `https`, ressources locales existantes, navigation, CDN versionnées avec SRI, zoom non bloqué, identifiants utilisés par `script.js` présents dans les pages, boutons icônes nommés, nombre de lieux annoncé sur la landing page, CSP stricte et favicon sur chaque page, aucun script inline, `rel="noopener"` sur les liens externes, non-retour des images retirées, absence d'image distante. Il n'existe pas de test automatisé du comportement dans le navigateur : ce comportement a été vérifié par des scripts Chromium ponctuels (voir [docs/AUDIT.md](docs/AUDIT.md)).
+Les 19 tests, exécutés aussi par GitHub Actions à chaque envoi sur `main`, vérifient l'intégrité des données et des pages : champs obligatoires des lieux, catégories reliées à un filtre, coordonnées dans la zone nantaise, liens `https`, ressources locales existantes, navigation, CDN versionnées avec SRI, zoom non bloqué, identifiants utilisés par `script.js` présents dans les pages, boutons icônes nommés, nombre de lieux annoncé sur la landing page, CSP stricte et favicon sur chaque page, aucun script inline, `rel="noopener"` sur les liens externes, non-retour des images retirées, absence d'image distante, activation clavier des repères et masquage des fenêtres fermées. Il n'existe pas de test automatisé du comportement dans le navigateur : ce comportement a été vérifié par des scripts Chromium ponctuels (voir [docs/AUDIT.md](docs/AUDIT.md)).
 
 ## Sécurité et accessibilité
 
 - **Sécurité** : Content Security Policy sur chaque page, bibliothèques CDN en version fixée avec contrôle d'intégrité, échappement des contenus dynamiques, aucune donnée envoyée à un serveur. Politique de signalement et limites dans [SECURITY.md](SECURITY.md).
-- **Accessibilité** : navigation au clavier, rôles et noms ARIA, contrastes AA, zoom autorisé. Un audit automatisé axe-core (WCAG 2.0/2.1 A et AA, bonnes pratiques) donne **0 violation** sur les 5 pages et les fenêtres principales ouvertes ; un audit automatique ne remplace pas un test avec un lecteur d'écran, non réalisé.
+- **Accessibilité** : navigation au clavier, rôles et noms ARIA, contrastes AA, zoom autorisé. Un audit automatisé axe-core (WCAG 2.0/2.1 A et AA, bonnes pratiques) donne **0 violation** sur les 5 pages et les fenêtres principales ouvertes ; les fenêtres gèrent le focus (entrée, piège, retour) et les lieux de la carte s'ouvrent à Entrée ou Espace ; l'arbre d'accessibilité et le parcours clavier ont été vérifiés par script, mais **la synthèse vocale d'un vrai lecteur d'écran n'a pas été testée**.
 
 ## Structure du dépôt
 

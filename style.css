@@ -438,7 +438,7 @@ h1 {
     padding: 20px 24px 34px 24px;
     z-index: 1000;
     transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.2, 1); /* Animation fluide type iOS */
+    transition: transform 0.3s cubic-bezier(0.1, 0.8, 0.2, 1), visibility 0.3s; /* Animation fluide type iOS */
     box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
     overflow-y: auto;
 }
@@ -1854,3 +1854,29 @@ h1 {
 .reward-icon.cat-loisirs { background: linear-gradient(135deg, #0f766e, #2dd4bf); }
 .reward-icon.cat-culture { background: linear-gradient(135deg, #1d4ed8, #60a5fa); }
 .reward-icon.cat-sport { background: linear-gradient(135deg, #15803d, #4ade80); }
+
+/* ==========================================
+   LECTEURS D'ÉCRAN ET CLAVIER
+   ========================================== */
+/* Une fenêtre fermée n'est ni lue ni atteignable au clavier (la transition garde l'animation de fermeture) */
+.bottom-sheet:not(.active),
+.center-modal:not(.active),
+.camera-overlay:not(.active) {
+    visibility: hidden;
+}
+
+.bottom-sheet.active,
+.center-modal.active,
+.camera-overlay.active {
+    visibility: visible;
+}
+
+.center-modal { transition: all 0.3s cubic-bezier(0.1, 0.8, 0.2, 1), visibility 0.3s; }
+.camera-overlay { transition: opacity 0.3s ease, visibility 0.3s; }
+
+.search-bar:focus-within {
+    outline: 3px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+[role="dialog"]:focus { outline: none; }

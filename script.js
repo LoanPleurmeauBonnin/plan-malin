@@ -103,6 +103,43 @@ document.addEventListener('DOMContentLoaded', () => {
         return h % modulo;
     };
 
+    // Fenêtres (role="dialog") : le focus y entre à l'ouverture, reste piégé dedans (Tab / Maj+Tab)
+    // et revient à l'élément qui les a ouvertes à la fermeture.
+    const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    document.querySelectorAll('[role="dialog"]').forEach((dialog) => {
+        dialog.tabIndex = -1;
+        let opener = null;
+        let wasOpen = false;
+        const focusables = () => [...dialog.querySelectorAll(FOCUSABLE)].filter((el) => el.getClientRects().length > 0);
+        const trapTab = (e) => {
+            if (e.key !== 'Tab') return;
+            const items = focusables();
+            if (items.length === 0) { e.preventDefault(); return; }
+            const first = items[0];
+            const last = items[items.length - 1];
+            const active = document.activeElement;
+            if (e.shiftKey && (active === first || active === dialog)) { e.preventDefault(); last.focus(); }
+            else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+        };
+        new MutationObserver(() => {
+            const open = dialog.classList.contains('active');
+            if (open && !wasOpen) {
+                wasOpen = true;
+                const current = document.activeElement;
+                opener = current && current !== document.body && !dialog.contains(current) ? current : null;
+                dialog.addEventListener('keydown', trapTab);
+                window.setTimeout(() => { if (!dialog.contains(document.activeElement)) dialog.focus({ preventScroll: true }); }, 60);
+            } else if (!open && wasOpen) {
+                wasOpen = false;
+                dialog.removeEventListener('keydown', trapTab);
+                const target = opener && document.contains(opener) && opener.getClientRects().length > 0
+                    ? opener
+                    : document.querySelector('[role="main"] input, [role="main"] button, [role="main"] a[href]');
+                if (target) target.focus({ preventScroll: true });
+            }
+        }).observe(dialog, { attributes: true, attributeFilter: ['class'] });
+    });
+
     // Menu de la landing page (mobile)
     const menuToggle = document.getElementById('menu-toggle');
     const navLinks = document.getElementById('nav-links');
@@ -115,12 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
         menuToggle.addEventListener('click', () => setMenu(!navLinks.classList.contains('open')));
         navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
-    }
-
-    // 2. REDIRECTION LANDING PAGE
-    const downloadBtn = document.getElementById('btn-download');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', () => { window.location.href = 'app.html'; });
     }
 
     // 3. NAVIGATION MULTI-PAGES
@@ -232,6 +263,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const marker = L.marker([lieu.lat, lieu.lng], { icon: customIcon, title: lieu.name, alt: lieu.name });
                     marker.on('click', () => openLieu(lieu));
+                    // Leaflet ne transforme pas Entrée en clic : on ouvre la fiche à Entrée ou Espace (repère = bouton)
+                    marker.on('keypress', (e) => {
+                        const key = e.originalEvent.key;
+                        if (key === 'Enter' || key === ' ') {
+                            e.originalEvent.preventDefault();
+                            openLieu(lieu);
+                        }
+                    });
                     markerGroup.addLayer(marker);
                 }
             });
@@ -438,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 item.dataset.added = '1';
                 item.innerHTML = `
                     <div class="avatar-wrapper">
-                        <img src="${escapeHtml(friend.avatar)}" alt="${escapeHtml(friend.name)}">
+                        <img src="${escapeHtml(friend.avatar)}" alt="">
                         <span class="status-dot offline"></span>
                     </div>
                     <div class="friend-info">
@@ -469,12 +508,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isAdded = added.includes(friend.id);
                 suggestionsListContainer.insertAdjacentHTML('beforeend', `
                     <div class="suggestion-item">
-                        <img src="${escapeHtml(friend.avatar)}" alt="${escapeHtml(friend.name)}" class="suggestion-avatar">
+                        <img src="${escapeHtml(friend.avatar)}" alt="" class="suggestion-avatar">
                         <div class="suggestion-info">
                             <span class="suggestion-name">${escapeHtml(friend.name)}</span>
                             <span class="suggestion-sub">${escapeHtml(friend.sub)}</span>
                         </div>
-                        <button type="button" class="btn-add-small${isAdded ? ' added' : ''}" data-id="${friend.id}" aria-pressed="${isAdded}">${isAdded ? 'Ajouté' : 'Ajouter'}</button>
+                        <button type="button" class="btn-add-small${isAdded ? ' added' : ''}" data-id="${friend.id}" aria-pressed="${isAdded}" aria-label="${isAdded ? 'Retirer ' + escapeHtml(friend.name) + ' de mes amis' : 'Ajouter ' + escapeHtml(friend.name) + ' à mes amis'}">${isAdded ? 'Ajouté' : 'Ajouter'}</button>
                     </div>
                 `);
             });
@@ -549,10 +588,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             <p class="reward-address">${escapeHtml(reward.address)}</p>
                             <p class="reward-offer">${escapeHtml(reward.offer)}</p>
                             <p class="reward-points">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-bottom:2px;"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3v19"/><path d="M2 9h20"/></svg> 
+                                <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-bottom:2px;"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3v19"/><path d="M2 9h20"/></svg> 
                                 ${reward.points} points
                             </p>
-                            <button type="button" class="btn-use" data-reward="${rewardsDatabase.indexOf(reward)}" ${getPoints() < reward.points ? 'disabled' : ''}>${getPoints() < reward.points ? 'Points insuffisants' : 'Utiliser'}</button>
+                            <button type="button" class="btn-use" data-reward="${rewardsDatabase.indexOf(reward)}" aria-label="${escapeHtml(getPoints() < reward.points ? 'Points insuffisants pour : ' : 'Utiliser ' + reward.points + ' points pour : ')}${escapeHtml(reward.offer)} chez ${escapeHtml(reward.name)}" ${getPoints() < reward.points ? 'disabled' : ''}>${getPoints() < reward.points ? 'Points insuffisants' : 'Utiliser'}</button>
                         </div>
                     </div>
                 `);
