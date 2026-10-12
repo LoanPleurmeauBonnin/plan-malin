@@ -41,11 +41,11 @@ test('les liens externes sont en https', () => {
   for (const l of lieux.filter((x) => x.link)) assert.match(l.link, /^https:\/\//, l.name);
 });
 
-test('les offres de récompenses sont valides et leurs images existent', () => {
+test('les offres de récompenses sont valides', () => {
   for (const r of rewardsDatabase) {
     assert.ok(r.points > 0 && Number.isInteger(r.points), `${r.name}: points invalides`);
     assert.ok(r.name && r.address && r.offer && r.category, `${r.name}: champ manquant`);
-    assert.ok(fs.existsSync(path.join(root, r.img)), `${r.name}: image absente (${r.img})`);
+    assert.ok(!('img' in r), `${r.name}: pas de photo de partenaire (droits non documentés, voir docs/IMAGES.md)`);
   }
 });
 
@@ -109,5 +109,12 @@ test('les boutons icônes des pages applicatives ont un nom accessible', () => {
     for (const m of html.matchAll(/<button\b([^>]*)>\s*<i data-lucide[^>]*><\/i>\s*<\/button>/g)) {
       assert.match(m[1], /aria-label=/, `${p}: bouton icône sans aria-label`);
     }
+  }
+});
+
+test('chaque catégorie de récompense a un pictogramme défini dans script.js', () => {
+  const script = fs.readFileSync(path.join(root, 'script.js'), 'utf8');
+  for (const cat of new Set(rewardsDatabase.map((r) => r.category))) {
+    assert.ok(script.includes(`'${cat}': {`), `pictogramme manquant pour "${cat}"`);
   }
 });

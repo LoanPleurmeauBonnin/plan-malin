@@ -522,6 +522,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (rewardsListContainer) {
         // Données : voir data.js (const rewardsDatabase)
 
+        // Pictogramme par catégorie à la place de photos de partenaires (droits non documentés)
+        const REWARD_STYLES = {
+            'Bar': { icon: 'wine', cls: 'cat-bar' },
+            'Boîte de nuit': { icon: 'music-4', cls: 'cat-nuit' },
+            'Restaurants': { icon: 'utensils-crossed', cls: 'cat-resto' },
+            'Activités/Loisirs': { icon: 'balloon', cls: 'cat-loisirs' },
+            'Culture': { icon: 'book-text', cls: 'cat-culture' },
+            'Sport': { icon: 'volleyball', cls: 'cat-sport' }
+        };
+
         let currentRewardCategory = 'Tout';
         let refreshGauge = () => {};
 
@@ -533,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
             filteredRewards.forEach(reward => {
                 rewardsListContainer.insertAdjacentHTML('beforeend', `
                     <div class="reward-card">
-                        <img src="${escapeHtml(reward.img)}" alt="${escapeHtml(reward.name)}" loading="lazy" class="reward-img">
+                        <div class="reward-icon ${REWARD_STYLES[reward.category] ? REWARD_STYLES[reward.category].cls : ''}" aria-hidden="true"><i data-lucide="${REWARD_STYLES[reward.category] ? REWARD_STYLES[reward.category].icon : 'gift'}"></i></div>
                         <div class="reward-info">
                             <h3>${escapeHtml(reward.name)}</h3>
                             <p class="reward-address">${escapeHtml(reward.address)}</p>
@@ -547,6 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `);
             });
+            refreshIcons();
         };
 
         const rewardFilterPills = document.querySelectorAll('.rewards-filters .filter-pill');
@@ -949,11 +960,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 fpAlbumGrid.innerHTML = '';
                 let photos;
                 if (name === "Lucas Martel") {
-                    photos = ["assets/img/trouvaille1.jpg", "assets/img/tee_shirt_noir.jpg", "assets/img/la_canaille.webp"];
+                    photos = ["assets/img/trouvaille1.jpg", "assets/img/tee_shirt_noir.jpg"];
                 } else if (name === "Inès Carvalho") {
                     photos = ["assets/img/ticket_tenu.jpg"];
                 } else {
-                    photos = ["assets/img/trouvaille2.jpg", "assets/img/stade.jpg"];
+                    photos = ["assets/img/trouvaille2.jpg"];
                 }
                 photos.forEach(photoUrl => {
                     fpAlbumGrid.insertAdjacentHTML('beforeend', `

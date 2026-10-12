@@ -27,7 +27,7 @@ Réellement implémentées (chaque bouton visible fait quelque chose) :
 | `index.html` | Landing page responsive (deux colonnes sur ordinateur, menu déroulant sur mobile) : présentation, fonctionnalités, à propos ; le bouton ouvre l'application. |
 | `app.html` | Carte Leaflet de 39 lieux en 8 catégories : filtres par catégorie, recherche (sans casse ni accents), **filtres avancés** (gratuit, avec site, favoris), **géolocalisation**, fiche détaillée avec **favori** (cœur), site web et itinéraire « Y aller ». **Suggérer un lieu** (formulaire enregistré sur l'appareil) et **caméra** (vraie photo, +10 points). |
 | `amis.html` | Liste d'amis, fiche d'un ami (album, statistiques stables), **ajout d'amis persistant** depuis les suggestions, **invitation par lien** (partage natif ou copie). |
-| `recompenses.html` | Jauge de points, 19 offres filtrables ; **« Utiliser »** déduit les points et crée un bon de démonstration ; **« Mes bons »** liste l'historique ; modale d'aide. |
+| `recompenses.html` | Jauge de points, 19 offres filtrables, illustrées par un pictogramme par catégorie ; **« Utiliser »** déduit les points et crée un bon de démonstration ; **« Mes bons »** liste l'historique ; modale d'aide. |
 | `profil.html` | Points à jour, **pseudo et photo modifiables**, **partage** de l'appli, onglet **Album** (photos prises) et onglet **Favoris** (lien vers la fiche sur la carte), **ajout d'ami** (raccourci) et **réglages** (résumé des données, suppression des photos, réinitialisation). |
 
 Il n'y a pas de serveur : points, photos, favoris, amis, bons, suggestions et profil sont stockés dans le navigateur de l'appareil (`localStorage`) et ne sont jamais envoyés. Les amis, avatars, statistiques d'ami et offres reposent sur **des données de démonstration** (voir [Limites connues](#limites-connues)).
@@ -85,7 +85,7 @@ Prérequis : Node.js 20 ou plus.
 npm test
 ```
 
-Les 13 tests vérifient l'intégrité des données et des pages : champs obligatoires des lieux, catégories reliées à un filtre, coordonnées dans la zone nantaise, liens `https`, images et ressources locales existantes, navigation, CDN versionnées avec SRI, zoom non bloqué, identifiants utilisés par `script.js` présents dans les pages, boutons icônes nommés, nombre de lieux annoncé sur la landing page. Il n'existe pas de test automatisé du comportement dans le navigateur ; ce comportement a été vérifié manuellement (voir [docs/AUDIT.md](docs/AUDIT.md)).
+Les 14 tests vérifient l'intégrité des données et des pages : champs obligatoires des lieux, catégories reliées à un filtre, coordonnées dans la zone nantaise, liens `https`, ressources locales existantes, navigation, CDN versionnées avec SRI, zoom non bloqué, identifiants utilisés par `script.js` présents dans les pages, boutons icônes nommés, nombre de lieux annoncé sur la landing page. Il n'existe pas de test automatisé du comportement dans le navigateur ; ce comportement a été vérifié manuellement (voir [docs/AUDIT.md](docs/AUDIT.md)).
 
 ## Structure du dépôt
 
@@ -130,4 +130,4 @@ docs/             cahier des charges, audit, récapitulatif, captures (docs/imag
 
 ## Licence
 
-Code sous licence [MIT](LICENSE) © 2026 Loan Pleurmeau Bonnin. La licence ne couvre pas les contenus tiers : photos et visuels des partenaires (`assets/img/`), logo, avatars et photos distantes (pravatar, Unsplash), fond de carte © OpenStreetMap, et les marques citées appartiennent à leurs propriétaires respectifs. L'origine et le statut de chaque image sont détaillés dans [docs/IMAGES.md](docs/IMAGES.md) : les droits des photos de lieux et de partenaires ne sont pas documentés.
+Code sous licence [MIT](LICENSE) © 2026 Loan Pleurmeau Bonnin. La licence ne couvre pas les contenus tiers : images restantes (`assets/img/`), logo, avatars et photos distantes (pravatar, Unsplash), fond de carte © OpenStreetMap, et les marques citées appartiennent à leurs propriétaires respectifs. L'origine et le statut de chaque image sont détaillés dans [docs/IMAGES.md](docs/IMAGES.md) : les photos de partenaires ont été retirées ; l'origine de quelques images restantes n'est pas documentée.

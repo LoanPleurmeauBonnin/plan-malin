@@ -1,6 +1,6 @@
 # Images : origine et droits
 
-Inventaire des 32 fichiers de `assets/img/`, établi le 12 octobre 2026 à partir de leur contenu visuel, de leurs métadonnées (aucune information de copyright n'est présente dans les fichiers) et de leur usage dans le code. **Les droits réels ne peuvent pas être prouvés depuis le dépôt** : le statut « à confirmer » signifie qu'aucune licence ni autorisation n'est documentée. La licence MIT du dépôt ne couvre que le code.
+Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20 photos du groupe D ont ensuite été retirées** (voir la section D). Établi à partir de leur contenu visuel, de leurs métadonnées (aucune information de copyright n'est présente dans les fichiers) et de leur usage dans le code. **Les droits réels ne peuvent pas être prouvés depuis le dépôt** : le statut « à confirmer » signifie qu'aucune licence ni autorisation n'est documentée. La licence MIT du dépôt ne couvre que le code.
 
 ## A. Créations du projet (droits à confirmer par l'auteur)
 
@@ -26,17 +26,14 @@ Inventaire des 32 fichiers de `assets/img/`, établi le 12 octobre 2026 à parti
 | `tee_shirt_noir.jpg` | Album d'un ami | Photo produit, source non documentée |
 | `pull_1977.jpg`, `t_shirt2.jpg` | **Non utilisées** | Peuvent être supprimées sans effet |
 
-## D. Photos de lieux et de partenaires (risque principal : droits d'auteur de tiers)
+## D. Photos de lieux et de partenaires : RETIRÉES
 
-Utilisées sur la page Récompenses (et `stade.jpg` dans l'album d'un ami). Aucune autorisation ni mention de source n'est présente dans le dépôt : elles proviennent vraisemblablement des sites des établissements ou de moteurs de recherche, donc protégées par le droit d'auteur du photographe ou de l'établissement.
+20 photos (`accueil-john-doe-escape.jpg`, `bowling_center.jpg`, `cinema_pathe.png`, `cote-plage.webp`, `espit_chupitos_nantes.webp`, `feeling_good_bakery.jpg`, `hbc_nantes.png`, `la_canaille.webp`, `makadam_fitness.jpg`, `moda.webp`, `musee_illusion.jpg`, `myoko.jpg`, `new_factory.png`, `planet_park_nantes.jpg`, `roadside.jpg`, `stade_de_la_beaujoire.jpg`, `stereolux.webp`, `theatre_place_graslin.jpg`, `warehouse.webp`, `stade.jpg`) provenaient vraisemblablement de sites tiers, sans autorisation ni source documentée (logo en surimpression, miniatures de recherche d'images, possible capture de vue cartographique). Elles ont été **supprimées du projet** :
+- Page Récompenses : un pictogramme sur dégradé de couleur par catégorie (bar, boîte de nuit, restaurant, loisirs, culture, sport) remplace chaque photo ; le champ `img` a disparu de `data.js`.
+- Albums des amis : les photos de lieux ont été retirées de leurs albums.
+- Un test vérifie qu'aucune offre ne référence de photo.
 
-`accueil-john-doe-escape.jpg`, `bowling_center.jpg`, `cinema_pathe.png`, `cote-plage.webp`, `espit_chupitos_nantes.webp`, `feeling_good_bakery.jpg`, `hbc_nantes.png`, `la_canaille.webp`, `makadam_fitness.jpg`, `moda.webp`, `musee_illusion.jpg`, `myoko.jpg`, `new_factory.png`, `planet_park_nantes.jpg`, `roadside.jpg`, `stade_de_la_beaujoire.jpg`, `stereolux.webp`, `theatre_place_graslin.jpg`, `warehouse.webp`, `stade.jpg`
-
-Points d'attention :
-- `moda.webp` porte un logo en surimpression, signe d'une image reprise d'un site tiers.
-- `hbc_nantes.png` et `new_factory.png` sont des miniatures de 103 × 76 px, typiques d'une capture de résultats de recherche d'images.
-- `warehouse.webp` ressemble à une capture de vue cartographique ; les conditions de Google interdisent la réutilisation de ce type de capture hors de leurs services.
-- `stade.jpg` et `theatre_place_graslin.jpg` pourraient venir de Wikimedia Commons : si c'est le cas, la licence Creative Commons exige une attribution (auteur, licence). Non vérifié.
+**Limite** : ces fichiers restent consultables dans l'**historique Git** public (anciens commits). Les retirer complètement demande de réécrire l'historique (`git filter-repo` puis `push --force`), ce qui n'a pas été fait sans ton accord ; il resterait aussi les éventuelles copies faites par des tiers et les anciennes captures d'écran.
 
 ## E. Images distantes (non versionnées)
 
@@ -48,11 +45,7 @@ Points d'attention :
 
 ## Risque et options
 
-Le dépôt et le site sont **publics** : un ayant droit pourrait demander le retrait des images du groupe D, voire de C. Pour un projet de cours à but non commercial le risque est limité, mais il existe. Par ordre de prudence :
-
-1. **Documenter ou obtenir l'accord** : retrouver la source de chaque image, conserver la licence ou l'autorisation, ajouter les attributions exigées (Creative Commons).
-2. **Remplacer** les photos du groupe D par des images dont tu détiens les droits (photos prises sur place) ou libres de droits (Wikimedia Commons, Unsplash, Pexels) avec leur attribution.
-3. **Neutraliser** : remplacer les photos de partenaires par des pictogrammes ou dégradés aux couleurs de la catégorie, sans photo tierce.
-4. **Supprimer** les deux images inutilisées (groupe C).
-
-Les images retirées du dossier restent présentes dans l'historique Git ; pour les effacer complètement, il faudrait réécrire l'historique, ce qui n'a pas été fait.
+Le dépôt et le site sont **publics** : un ayant droit pourrait demander le retrait des images restantes du groupe C (origine inconnue), et des photos du groupe D encore présentes dans l'historique Git. Pour un projet de cours à but non commercial le risque est limité, mais il existe. Pour les images restantes (groupes A, B, C) :
+1. **Documenter** la source et la licence de chacune (ou la remplacer par une image dont tu détiens les droits).
+2. **Supprimer** `pull_1977.jpg` et `t_shirt2.jpg`, inutilisées.
+3. Éventuellement **purger l'historique Git** des photos du groupe D (réécriture d'historique, à décider).

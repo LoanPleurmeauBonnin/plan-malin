@@ -1834,3 +1834,23 @@ h1 {
 .voucher-empty { color: var(--text-grey); text-align: center; padding: 20px 0; }
 
 .btn-add-small.added { background-color: #d1d5db; color: #374151; }
+
+/* Pictogrammes de récompenses (remplacent les photos de partenaires) */
+.reward-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 16px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.reward-icon .lucide { width: 36px; height: 36px; }
+.reward-icon.cat-bar { background: linear-gradient(135deg, #7c3aed, #a78bfa); }
+.reward-icon.cat-nuit { background: linear-gradient(135deg, #1e1b4b, #6d28d9); }
+.reward-icon.cat-resto { background: linear-gradient(135deg, #c2410c, #fb923c); }
+.reward-icon.cat-loisirs { background: linear-gradient(135deg, #0f766e, #2dd4bf); }
+.reward-icon.cat-culture { background: linear-gradient(135deg, #1d4ed8, #60a5fa); }
+.reward-icon.cat-sport { background: linear-gradient(135deg, #15803d, #4ade80); }
