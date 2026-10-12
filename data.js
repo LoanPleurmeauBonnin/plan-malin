@@ -45,7 +45,7 @@ const lieux = [
     NUMÉRIQUE
     ========================= */
     { name: "ALIS 44", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2391, lng: -1.5199, address: "60 Rue de la Bottière, 44300 Nantes", hours: "Lun-Ven : 9h-12h30 / 14h-17h30 (sauf mercredi après-midi)", price: "Solidaire", link: "https://alis44.org", desc: "Association favorisant l’accès au numérique solidaire." },
-    { name: "Ping", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2064, lng: -1.5596, address: "5 Allée Frida Kahlo, 44200 Nantes", hours: "Non précisé", price: "Variable", link: "https://metropole.nantes.fr/mes-services-mon-quotidien/espace-associations-nantaises/annuaire-des-associations-nantaises/ping", desc: "Association nantaise autour des cultures numériques." },
+    { name: "Ping", category: "Numerique", icon: "laptop", class: "pin-numerique", lat: 47.2064, lng: -1.5596, address: "5 Allée Frida Kahlo, 44200 Nantes", hours: "Non publiés : appeler le 02 40 16 86 78", price: "Variable", link: "https://info.pingbase.net/", desc: "Association nantaise autour des cultures numériques." },
     { name: "Repair-Café Numérique (Maison du Libre)", category: "Numerique", icon: "laptop", class:"pin-numerique" , lat : 47.2298 , lng : -1.5865 , address :"52 Rue du Breil, 44100 Nantes" , hours :"Selon événements" , price :"Gratuit" , link :"https://www.maisondulibre.fr/" , desc :"Ateliers de réparation numérique collaboratifs." },
 
     /* =========================
