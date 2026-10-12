@@ -118,3 +118,8 @@ test('chaque catégorie de récompense a un pictogramme défini dans script.js',
     assert.ok(script.includes(`'${cat}': {`), `pictogramme manquant pour "${cat}"`);
   }
 });
+
+test('les images retirées pour droits non documentés ne reviennent pas (docs/IMAGES.md)', () => {
+  const retirees = ['trouvaille1.jpg', 'tee_shirt_noir.jpg', 'profil_photo.avif', 'la_canaille.webp', 'warehouse.webp', 'stade.jpg'];
+  for (const f of retirees) assert.ok(!fs.existsSync(path.join(root, 'assets/img', f)), `${f} ne doit pas être présent`);
+});

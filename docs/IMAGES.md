@@ -17,19 +17,19 @@ Inventaire initial des 32 fichiers de `assets/img/` (12 octobre 2026) ; **les 20
 
 ## C. Cinq images d'origine non documentée (analyse du 12 octobre 2026)
 
-Aucune ne contient de métadonnée de copyright ou de provenance (pas d'EXIF, de XMP ni de marqueur C2PA). L'analyse repose donc sur leur contenu visuel, **sans preuve** :
+Aucune ne contient de métadonnée de copyright ou de provenance (pas d'EXIF, de XMP ni de marqueur C2PA). L'analyse reposait sur leur contenu visuel, **sans preuve**. Les trois les plus exposées ont été **remplacées** ; les deux générées par IA sont conservées.
 
-| Fichier | Usage | Constat | Risque |
-|---|---|---|---|
-| `ticket_tenu.jpg` | Album d'un ami | **Généré par IA** : icône ✦ (étincelle) en bas à droite, typique de Google Gemini, et texte du ticket incohérent (« UNNERAL GROCERPK »). Si tu l'as généré toi-même, tu peux l'utiliser selon les conditions du service ; sinon, origine à confirmer. | Faible à moyen |
-| `trouvaille2.jpg` | Album d'un ami | **Généré par IA** : texte illisible sur le ticket, sac « anaco », visage et décor de synthèse. Même remarque. | Faible à moyen |
-| `trouvaille1.jpg` | Album d'un ami | **Vraie photographie** d'un ticket de caisse réel (restaurant parisien, avec son numéro de téléphone et son SIRET lisibles). Auteur et licence inconnus. | **Moyen à élevé** : droit d'auteur du photographe, données d'une entreprise réelle |
-| `tee_shirt_noir.jpg` | Album d'un ami | **Photo produit de catalogue** sur fond blanc (maillot en mesh), typique d'un site marchand. Source inconnue. | **Moyen à élevé** : droit d'auteur du site marchand |
-| `profil_photo.avif` | Photo de profil par défaut | **Photo de banque d'images** (étudiant souriant tenant un cahier), comme on en trouve sur Freepik ou Adobe Stock. Source inconnue. | **Moyen à élevé** : les banques d'images imposent licence ou attribution |
+| Fichier | Constat | Statut |
+|---|---|---|
+| `trouvaille1.jpg` | Vraie photographie d'un ticket de caisse réel (restaurant parisien, téléphone et SIRET lisibles) | **Remplacé** par `trouvaille-ticket.svg` |
+| `tee_shirt_noir.jpg` | Photo produit de catalogue sur fond blanc, typique d'un site marchand | **Remplacé** par `trouvaille-vetement.svg` |
+| `profil_photo.avif` | Photo de banque d'images (étudiant souriant tenant un cahier) | **Remplacé** par `avatar-defaut.svg` |
+| `ticket_tenu.jpg` | Générée par IA : icône ✦ typique de Google Gemini, texte incohérent. Si tu l'as générée toi-même, tu peux l'utiliser selon les conditions du service | Conservée, origine à confirmer |
+| `trouvaille2.jpg` | Générée par IA : texte illisible, sac « anaco », décor de synthèse. Même remarque | Conservée, origine à confirmer |
 
-**Ce qui permettrait de conclure** : savoir qui a créé ou téléchargé chaque fichier, et où. Les trois derniers sont les plus exposés. Les fichiers générés par IA sont moins problématiques si tu en es l'auteur de la requête, mais le statut juridique des images IA reste incertain.
+Les trois remplaçants (`avatar-defaut.svg`, `trouvaille-vetement.svg`, `trouvaille-ticket.svg`) sont des illustrations vectorielles simples créées pour le projet : elles ne reprennent aucune image tierce. Un test vérifie que les fichiers retirés ne reviennent pas.
 
-Options pour ces cinq images : fournir la source et la licence ; les remplacer par des images dont tu détiens les droits (photos que tu prends toi-même, ou images libres de droits avec attribution) ; ou les neutraliser comme les photos de partenaires (pictogrammes, images générées par toi).
+**Historique Git** : contrairement aux photos de partenaires, ces trois fichiers (`trouvaille1.jpg`, `tee_shirt_noir.jpg`, `profil_photo.avif`) **restent dans l'historique public** ; les effacer demanderait une nouvelle réécriture d'historique avec `push --force`.
 
 ## D. Photos de lieux et de partenaires : RETIRÉES
 

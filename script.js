@@ -960,7 +960,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fpAlbumGrid.innerHTML = '';
                 let photos;
                 if (name === "Lucas Martel") {
-                    photos = ["assets/img/trouvaille1.jpg", "assets/img/tee_shirt_noir.jpg"];
+                    photos = ["assets/img/trouvaille-vetement.svg", "assets/img/trouvaille-ticket.svg"];
                 } else if (name === "Inès Carvalho") {
                     photos = ["assets/img/ticket_tenu.jpg"];
                 } else {
