@@ -1,5 +1,7 @@
 # Plan Malin
 
+**[▶ Essayer l'application en ligne](https://loanpleurmeaubonnin.github.io/plan-malin/)** · hébergée gratuitement sur GitHub Pages, à ouvrir de préférence sur mobile.
+
 Prototype web mobile d'une **carte interactive du réemploi et des bons plans étudiants à Nantes** : friperies, aides alimentaires, hygiène, logement, numérique, accompagnement. Les lieux se filtrent par catégorie et se trouvent par recherche, et une fiche détaillée s'ouvre sur chacun.
 
 Projet de cours réalisé pour l'association *Dernière Main* (le cahier des charges d'origine est conservé dans [docs/CAHIER-DES-CHARGES.md](docs/CAHIER-DES-CHARGES.md)). L'application est un **prototype front-end statique** : pas de serveur, pas de compte, pas de base de données.
@@ -64,6 +66,8 @@ Le visuel `assets/img/Accueil - Map.png`, affiché dans le téléphone de la lan
 - Tests : module `node:test` natif de Node.js, sans dépendance.
 
 ## Lancer le projet
+
+Version en ligne : <https://loanpleurmeaubonnin.github.io/plan-malin/>. Pour la lancer en local :
 
 Prérequis : un navigateur récent, une connexion Internet (CDN et fond de carte) et un serveur HTTP statique quelconque. Python 3 ou Node.js suffit.
 
