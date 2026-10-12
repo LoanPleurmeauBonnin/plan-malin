@@ -1,0 +1,88 @@
+// Contrôles d'intégrité des données et des pages. Sans dépendance : `npm test` (Node >= 20).
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const { lieux, rewardsDatabase } = require('../data.js');
+
+const root = path.join(__dirname, '..');
+const pages = fs.readdirSync(root).filter((f) => f.endsWith('.html'));
+
+// Catégories proposées par les filtres de app.html (attribut data-filter)
+const appHtml = fs.readFileSync(path.join(root, 'app.html'), 'utf8');
+const filtres = [...appHtml.matchAll(/data-filter="([^"]+)"/g)].map((m) => m[1]).filter((f) => f !== 'Tout');
+
+// Zone approximative de Nantes Métropole
+const BBOX = { latMin: 47.1, latMax: 47.32, lngMin: -1.7, lngMax: -1.4 };
+// Aucun lieu hors zone n'est toléré : les structures hors métropole sont retirées
+const HORS_NANTES_CONNUS = new Set();
+
+test('chaque lieu a les champs requis', () => {
+  for (const l of lieux) {
+    for (const k of ['name', 'category', 'icon', 'class', 'address', 'hours', 'price', 'desc']) {
+      assert.ok(typeof l[k] === 'string' && l[k].trim(), `${l.name}: champ "${k}" manquant`);
+    }
+    assert.ok(Number.isFinite(l.lat) && Number.isFinite(l.lng), `${l.name}: coordonnées invalides`);
+  }
+});
+
+test('chaque catégorie de lieu correspond à un filtre de la carte', () => {
+  for (const l of lieux) assert.ok(filtres.includes(l.category), `${l.name}: catégorie "${l.category}" sans filtre`);
+});
+
+test('les coordonnées sont dans la zone nantaise (hors exceptions documentées)', () => {
+  for (const l of lieux) {
+    if (HORS_NANTES_CONNUS.has(l.name)) continue;
+    assert.ok(l.lat > BBOX.latMin && l.lat < BBOX.latMax && l.lng > BBOX.lngMin && l.lng < BBOX.lngMax, `${l.name}: hors zone`);
+  }
+});
+
+test('les liens externes sont en https', () => {
+  for (const l of lieux.filter((x) => x.link)) assert.match(l.link, /^https:\/\//, l.name);
+});
+
+test('les offres de récompenses sont valides et leurs images existent', () => {
+  for (const r of rewardsDatabase) {
+    assert.ok(r.points > 0 && Number.isInteger(r.points), `${r.name}: points invalides`);
+    assert.ok(r.name && r.address && r.offer && r.category, `${r.name}: champ manquant`);
+    assert.ok(fs.existsSync(path.join(root, r.img)), `${r.name}: image absente (${r.img})`);
+  }
+});
+
+test('les catégories de récompenses correspondent aux filtres de recompenses.html', () => {
+  const html = fs.readFileSync(path.join(root, 'recompenses.html'), 'utf8');
+  const cats = [...html.matchAll(/data-reward-cat="([^"]+)"/g)].map((m) => m[1]).filter((c) => c !== 'Tout');
+  for (const r of rewardsDatabase) assert.ok(cats.includes(r.category), `${r.name}: catégorie "${r.category}"`);
+});
+
+test('toutes les ressources locales référencées existent', () => {
+  const sources = [...pages.map((p) => [p, fs.readFileSync(path.join(root, p), 'utf8')]), ['script.js', fs.readFileSync(path.join(root, 'script.js'), 'utf8')]];
+  for (const [name, content] of sources) {
+    for (const m of content.matchAll(/(?:src|href)="([^"#?]+)"|["'`](assets\/[^"'`$]+)["'`]/g)) {
+      const ref = m[1] || m[2];
+      if (/^(https?:|mailto:)/.test(ref) || ref.includes('${')) continue; // URL distantes et gabarits dynamiques
+      assert.ok(fs.existsSync(path.join(root, ref)), `${name}: ressource introuvable (${ref})`);
+    }
+  }
+});
+
+test('les cibles de navigation existent', () => {
+  for (const p of pages) {
+    const html = fs.readFileSync(path.join(root, p), 'utf8');
+    for (const m of html.matchAll(/data-target="([^"]+\.html)"/g)) assert.ok(pages.includes(m[1]), `${p}: cible ${m[1]}`);
+  }
+});
+
+test('les CDN externes sont versionnées et protégées par SRI', () => {
+  for (const p of pages) {
+    const html = fs.readFileSync(path.join(root, p), 'utf8');
+    for (const m of html.matchAll(/<(?:script|link)[^>]+unpkg\.com[^>]*>/g)) {
+      assert.ok(!m[0].includes('@latest'), `${p}: version flottante`);
+      assert.match(m[0], /integrity="sha384-/, `${p}: SRI manquant`);
+    }
+  }
+});
+
+test('les pages ne bloquent pas le zoom (WCAG 1.4.4)', () => {
+  for (const p of pages) assert.ok(!/user-scalable=no/.test(fs.readFileSync(path.join(root, p), 'utf8')), p);
+});
