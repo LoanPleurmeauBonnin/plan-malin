@@ -29,7 +29,7 @@ Aucune ne contenait de métadonnée de copyright ou de provenance (pas d'EXIF, d
 
 Un test vérifie que les fichiers retirés ne reviennent pas.
 
-**Historique Git purgé** : les cinq fichiers retirés (`trouvaille1.jpg`, `tee_shirt_noir.jpg`, `profil_photo.avif`, `ticket_tenu.jpg`, `trouvaille2.jpg`) ont été effacés de tout l'historique (deux réécritures + `push --force`, 12 octobre 2026), avec les mêmes limites que pour les photos de partenaires (section D). Aucune sauvegarde locale n'a été conservée.
+**Historique Git purgé** : les cinq fichiers retirés (`trouvaille1.jpg`, `tee_shirt_noir.jpg`, `profil_photo.avif`, `ticket_tenu.jpg`, `trouvaille2.jpg`) ont été effacés de tout l'historique (réécritures successives + `push --force`, 12 octobre 2026), avec les mêmes limites que pour les photos de partenaires (section D). Aucune sauvegarde locale n'a été conservée.
 
 ## D. Photos de lieux et de partenaires : RETIRÉES
 
@@ -51,7 +51,7 @@ Un test vérifie que les fichiers retirés ne reviennent pas.
 | `logo.png`, `Accueil - Map.png` | Créations présumées de l'équipe : **droits à confirmer par l'auteur** |
 | `avatar-*.svg`, `trouvaille-*.svg` (9 fichiers) | Illustrations vectorielles créées pour le projet, sans image tierce |
 
-Les trois avatars `perso*.jpg` ont été retirés du projet ; ils figurent encore dans l'historique Git (une réécriture supplémentaire serait nécessaire pour les effacer).
+Les trois avatars `perso*.jpg` ont été retirés du projet et **purgés de l'historique Git** (troisième réécriture + `push --force`, 12 octobre 2026), ainsi que les anciennes versions de la capture `amis.png` qui les montraient. Aucune sauvegarde locale n'a été conservée.
 
 ## E. Images distantes (non versionnées)
 
