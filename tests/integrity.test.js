@@ -123,3 +123,23 @@ test('les images retirées pour droits non documentés ne reviennent pas (docs/I
   const retirees = ['trouvaille1.jpg', 'tee_shirt_noir.jpg', 'profil_photo.avif', 'la_canaille.webp', 'warehouse.webp', 'stade.jpg'];
   for (const f of retirees) assert.ok(!fs.existsSync(path.join(root, 'assets/img', f)), `${f} ne doit pas être présent`);
 });
+
+test('chaque page déclare une CSP stricte, un favicon existant et aucun script inline', () => {
+  for (const p of pages) {
+    const html = fs.readFileSync(path.join(root, p), 'utf8');
+    const csp = html.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/);
+    assert.ok(csp, `${p}: CSP manquante`);
+    assert.ok(/default-src 'self'/.test(csp[1]) && /object-src 'none'/.test(csp[1]), `${p}: CSP trop permissive`);
+    assert.ok(!/script-src[^;]*'unsafe-(inline|eval)'/.test(csp[1]), `${p}: script inline autorisé`);
+    const icon = html.match(/rel="icon"[^>]*href="([^"]+)"/);
+    assert.ok(icon && fs.existsSync(path.join(root, icon[1])), `${p}: favicon manquant`);
+    for (const m of html.matchAll(/<script(?![^>]*\ssrc=)[^>]*>/g)) assert.fail(`${p}: script inline interdit par la CSP : ${m[0].slice(0, 80)}`);
+  }
+});
+
+test('les liens target="_blank" portent rel="noopener"', () => {
+  for (const p of pages) {
+    const html = fs.readFileSync(path.join(root, p), 'utf8');
+    for (const m of html.matchAll(/<a\s[^>]*target="_blank"[^>]*>/g)) assert.match(m[0], /rel="[^"]*noopener/, `${p}: ${m[0]}`);
+  }
+});

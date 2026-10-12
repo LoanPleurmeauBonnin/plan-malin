@@ -1,5 +1,7 @@
 # Plan Malin
 
+[![Tests](https://github.com/LoanPleurmeauBonnin/plan-malin/actions/workflows/tests.yml/badge.svg)](https://github.com/LoanPleurmeauBonnin/plan-malin/actions/workflows/tests.yml) [![Licence MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+
 **[▶ Essayer l'application en ligne](https://loanpleurmeaubonnin.github.io/plan-malin/)** · hébergée gratuitement sur GitHub Pages, à ouvrir de préférence sur mobile.
 
 Prototype web mobile d'une **carte interactive du réemploi et des bons plans étudiants à Nantes** : friperies, aides alimentaires, hygiène, logement, numérique, accompagnement. Les lieux se filtrent par catégorie et se trouvent par recherche, et une fiche détaillée s'ouvre sur chacun.
@@ -13,6 +15,7 @@ Projet de cours réalisé pour l'association *Dernière Main* (le cahier des cha
 - [Stack technique](#stack-technique)
 - [Lancer le projet](#lancer-le-projet)
 - [Tests](#tests)
+- [Sécurité et accessibilité](#sécurité-et-accessibilité)
 - [Structure du dépôt](#structure-du-dépôt)
 - [Choix techniques](#choix-techniques)
 - [Limites connues](#limites-connues)
@@ -85,7 +88,12 @@ Prérequis : Node.js 20 ou plus.
 npm test
 ```
 
-Les 15 tests vérifient l'intégrité des données et des pages : champs obligatoires des lieux, catégories reliées à un filtre, coordonnées dans la zone nantaise, liens `https`, ressources locales existantes, navigation, CDN versionnées avec SRI, zoom non bloqué, identifiants utilisés par `script.js` présents dans les pages, boutons icônes nommés, nombre de lieux annoncé sur la landing page. Il n'existe pas de test automatisé du comportement dans le navigateur ; ce comportement a été vérifié manuellement (voir [docs/AUDIT.md](docs/AUDIT.md)).
+Les 17 tests, exécutés aussi par GitHub Actions à chaque envoi sur `main`, vérifient l'intégrité des données et des pages : champs obligatoires des lieux, catégories reliées à un filtre, coordonnées dans la zone nantaise, liens `https`, ressources locales existantes, navigation, CDN versionnées avec SRI, zoom non bloqué, identifiants utilisés par `script.js` présents dans les pages, boutons icônes nommés, nombre de lieux annoncé sur la landing page, CSP stricte et favicon sur chaque page, aucun script inline, `rel="noopener"` sur les liens externes, non-retour des images retirées. Il n'existe pas de test automatisé du comportement dans le navigateur : ce comportement a été vérifié par des scripts Chromium ponctuels (voir [docs/AUDIT.md](docs/AUDIT.md)).
+
+## Sécurité et accessibilité
+
+- **Sécurité** : Content Security Policy sur chaque page, bibliothèques CDN en version fixée avec contrôle d'intégrité, échappement des contenus dynamiques, aucune donnée envoyée à un serveur. Politique de signalement et limites dans [SECURITY.md](SECURITY.md).
+- **Accessibilité** : navigation au clavier, rôles et noms ARIA, contrastes AA, zoom autorisé. Un audit automatisé axe-core (WCAG 2.0/2.1 A et AA, bonnes pratiques) donne **0 violation** sur les 5 pages et les fenêtres principales ouvertes ; un audit automatique ne remplace pas un test avec un lecteur d'écran, non réalisé.
 
 ## Structure du dépôt
 
@@ -99,7 +107,10 @@ script.js         logique de toutes les pages (sections numérotées, gardées p
 data.js           données : lieux de la carte et offres de récompenses
 style.css         styles (mobile first)
 assets/img/       images
-tests/            tests d'intégrité
+tests/            tests d'intégrité (npm test)
+.github/workflows/ intégration continue (tests)
+SECURITY.md       politique de sécurité
+LICENSE           licence MIT
 docs/             cahier des charges, audit, récapitulatif, captures (docs/images/)
 ```
 
@@ -115,7 +126,7 @@ docs/             cahier des charges, audit, récapitulatif, captures (docs/imag
 - **Bons et points** : le bon généré par « Utiliser » n'a aucune valeur chez les partenaires. Les points (120 au départ, +10 par photo) vivent dans le navigateur ; vider les données du site les remet à 120.
 - **Suggestions de lieux, amis, favoris** : enregistrés sur l'appareil uniquement. Aucun envoi ni modération : rien n'alimente la carte pour les autres utilisateurs, et les amis suggérés sont fictifs (le « temps réel » et le vrai réseau d'amis demandent un backend).
 - **Photos** : la caméra exige HTTPS ou `localhost`. Les photos sont réduites (480 px) et limitées aux 12 dernières ; aucune vérification qu'elles prouvent une visite.
-- **Données de lieux** : 15 lieux sur 39 n'ont pas d'horaires, 6 horaires sont à confirmer (mention « à vérifier »), 5 lieux n'ont pas de site. Les horaires et sites ajoutés proviennent de recherches web (annuaire de Nantes Métropole, sites des structures) et peuvent être périmés. Plusieurs coordonnées sont approximatives. Détail dans [docs/AUDIT.md](docs/AUDIT.md).
+- **Données de lieux** : 14 lieux sur 39 n'ont pas d'horaires, 6 horaires sont à confirmer (mention « à vérifier »), 5 lieux n'ont pas de site et 3 structures sont signalées « informations non confirmées » (introuvables dans les sources consultées). Les horaires et sites ajoutés proviennent de recherches web (annuaire de Nantes Métropole, sites des structures) et peuvent être périmés. Plusieurs coordonnées sont approximatives. Détail dans [docs/AUDIT.md](docs/AUDIT.md).
 - **Statistiques du profil** : « visites » (15) et « trouvailles » (42) sont fixes ; seuls les points évoluent.
 - **Landing page** : certaines formulations (« #1 », « boutiques partenaires ») relèvent du discours de présentation.
 - Avatars d'amis et photos de profil chargés depuis des sites tiers (`pravatar.cc`, `unsplash.com`), choix conservé pour la démo.

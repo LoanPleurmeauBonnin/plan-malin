@@ -545,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="reward-card">
                         <div class="reward-icon ${REWARD_STYLES[reward.category] ? REWARD_STYLES[reward.category].cls : ''}" aria-hidden="true"><i data-lucide="${REWARD_STYLES[reward.category] ? REWARD_STYLES[reward.category].icon : 'gift'}"></i></div>
                         <div class="reward-info">
-                            <h3>${escapeHtml(reward.name)}</h3>
+                            <h3 aria-level="2">${escapeHtml(reward.name)}</h3>
                             <p class="reward-address">${escapeHtml(reward.address)}</p>
                             <p class="reward-offer">${escapeHtml(reward.offer)}</p>
                             <p class="reward-points">

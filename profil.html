@@ -2,6 +2,10 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://images.unsplash.com https://i.pravatar.cc; connect-src 'self'; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="theme-color" content="#501282">
+    <link rel="icon" type="image/png" href="assets/img/logo.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Plan Malin - Mon Profil</title>
     
@@ -13,15 +17,15 @@
 </head>
 <body class="app-body white-bg">
 
-    <div class="app-container">
+    <div class="app-container" role="main">
         
-        <header class="profile-top-bar">
+        <div class="profile-top-bar">
             <h1>Mon profil</h1>
             <div class="top-bar-actions">
                 <a href="amis.html?ajouter=1" aria-label="Ajouter des amis"><i data-lucide="user-plus"></i></a>
                 <button type="button" id="btn-settings" aria-label="Réglages"><i data-lucide="settings"></i></button>
             </div>
-        </header>
+        </div>
 
         <div class="profile-picture-section">
             <button class="icon-btn" id="btn-share-profile" aria-label="Partager l'application">
@@ -54,7 +58,7 @@
             </div>
         </div>
 
-<div class="profile-tabs">
+<div class="profile-tabs" role="tablist" aria-label="Contenu du profil">
                 <div class="tab active" id="tab-album" data-target="content-album">
                     <i data-lucide="grid-3x3"></i> Album
                 </div>

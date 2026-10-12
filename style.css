@@ -2,9 +2,9 @@
     --bg-color: #ffffff;
     --primary-color: #501282; /* Ton nouveau violet ! */
     --text-dark: #111827;
-    --text-grey: #6b7280; /* AA sur fond blanc (4,8:1) ; était #9ca3af (2,5:1) */
+    --text-grey: #5b6472; /* AA sur blanc et sur gris clair (≥ 5:1) ; était #9ca3af (2,5:1) */
     --bg-grey: #f3f4f6;
-    --badge-red-text: #e17c76;
+    --badge-red-text: #b4443d; /* AA sur le fond gris du badge ; était #e17c76 (2,6:1) */
     --badge-red-dot: #ef4444;
 }
 
@@ -390,7 +390,7 @@ h1 {
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    color: #cbd5e1; /* Gris clair */
+    color: var(--text-grey);
     cursor: pointer;
     font-size: 0.75rem;
     font-weight: 600;
@@ -631,7 +631,7 @@ h1 {
 
 .friend-status {
     font-size: 0.9rem;
-    color: #9ca3af;
+    color: var(--text-grey);
 }
 
 /* Conteneur du bouton Ajouter un ami */
@@ -767,7 +767,7 @@ h1 {
     font-weight: 600;
     color: var(--primary-color);
     cursor: pointer;
-    opacity: 0.6; /* Un peu transparent quand inactif */
+    opacity: 0.75; /* Un peu transparent quand inactif (contraste AA conservé) */
     transition: opacity 0.2s ease;
 }
 
@@ -1011,7 +1011,7 @@ h1 {
 }
 
 .suggestion-sub {
-    color: #d1d5db; /* Gris clair */
+    color: var(--text-grey);
     font-size: 0.85rem;
 }
 
