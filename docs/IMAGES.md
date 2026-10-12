@@ -29,7 +29,7 @@ Aucune ne contient de métadonnée de copyright ou de provenance (pas d'EXIF, de
 
 Les trois remplaçants (`avatar-defaut.svg`, `trouvaille-vetement.svg`, `trouvaille-ticket.svg`) sont des illustrations vectorielles simples créées pour le projet : elles ne reprennent aucune image tierce. Un test vérifie que les fichiers retirés ne reviennent pas.
 
-**Historique Git** : contrairement aux photos de partenaires, ces trois fichiers (`trouvaille1.jpg`, `tee_shirt_noir.jpg`, `profil_photo.avif`) **restent dans l'historique public** ; les effacer demanderait une nouvelle réécriture d'historique avec `push --force`.
+**Historique Git purgé** : ces trois fichiers et les anciennes versions de la capture `profil-favoris.png` (qui montrait la photo de profil de banque d'images) ont été effacés de tout l'historique (seconde réécriture + `push --force`, 12 octobre 2026), avec les mêmes limites que pour les photos de partenaires (section D). Aucune sauvegarde locale n'a été conservée.
 
 ## D. Photos de lieux et de partenaires : RETIRÉES
 
