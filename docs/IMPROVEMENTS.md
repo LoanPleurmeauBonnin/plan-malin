@@ -1,38 +1,66 @@
 # Améliorations apportées
 
-Récapitulatif des changements (identifiants et détails dans [AUDIT.md](AUDIT.md)). Aucun commit n'a été fait : les changements sont dans le répertoire de travail.
+Récapitulatif, par thème, de ce qui a été changé depuis le projet d'origine. Les identifiants (A-01…) renvoient aux constats de [AUDIT.md](AUDIT.md), qui détaille les vérifications. Tout est sur la branche `main`.
 
-| Changement | Fichiers | Bénéfice | Vérification |
-|---|---|---|---|
-| Lucide (1.55.0) et Leaflet (1.9.4) en version fixée avec SRI (A-01) | `*.html` | Plus de code tiers flottant exécuté | `npm test` ; chargement sans erreur dans le navigateur |
-| Zoom autorisé (A-02) | `*.html` | Accessibilité (WCAG 1.4.4) | `npm test` |
-| Clavier, rôles et états ARIA, noms accessibles, Échap ferme les fenêtres, focus visible (A-03) | `script.js`, `app.html`, `amis.html`, `recompenses.html`, `style.css` | Utilisable au clavier et au lecteur d'écran | Contrôlé par script dans le navigateur (`aria-pressed`, `aria-selected`, `tabIndex`, Échap) ; pas de test au lecteur d'écran |
-| Navigation conservée si une CDN est injoignable (A-04) | `script.js` | Navigation utilisable hors-ligne (sans carte ni icônes) | Lecture du code, non testé hors-ligne |
-| Caméra : flux libéré si fermeture pendant la demande, message d'erreur clair (A-05) | `script.js` | Caméra bien éteinte, message compréhensible | Lecture du code, non testé |
-| Échappement HTML des gabarits, `textContent` pour la catégorie (A-06) | `script.js` | Prêt pour des données non maîtrisées | Parcours des pages sans régression |
-| Recherche insensible aux accents et incluant la catégorie ; message « aucun résultat » ; titre et alt des marqueurs | `script.js`, `app.html`, `style.css` | Recherche plus tolérante, meilleur retour utilisateur | « etudiant » : 9 résultats ; « zzzz » : 0 et message |
-| Images compressées (≤ 1000 px, qualité 80) et `loading="lazy"` (A-09) | `assets/img/` (16 fichiers), `script.js` | 11,6 Mo → 1,5 Mo sur ces fichiers (mesuré sur disque) | 0 image cassée sur la page Récompenses ; rendu non relu image par image. Les originaux des images conservées restent dans l'historique ; ceux des photos de partenaires ont été purgés |
-| Gris secondaire plus contrasté (A-12) | `style.css` | Texte plus lisible (≈ 4,8:1) | Calcul du ratio, pas de revue visuelle |
-| **Fond de carte réparé** : CARTO exige désormais une clé API, passage aux tuiles OpenStreetMap avec attribution (A-13) ; icône de profil `circle-user` homogène | `script.js`, `profil.html`, `recompenses.html` | La carte s'affiche de nouveau ; cohérence visuelle | Capture avant (« API KEY REQUIRED ») et après (carte lisible) ; téléchargement direct d'une tuile |
-| Lieu hors zone retiré ; horaires, sites et adresse complétés après recherche web sur 21 lieux ; mention « à vérifier » quand les sources divergent (A-07, A-08) | `data.js`, `tests/` | Fiches plus utiles et honnêtes | `npm test` ; reste 15 lieux sans horaires, voir AUDIT |
-| Démos locales : bon d'offre avec déduction de points, suggestion de lieu, vraie capture photo + points, points partagés avec le profil ; bouton vidéo sans action retiré (A-10, A-16) | `script.js`, `app.html`, `recompenses.html`, `profil.html`, `index.html`, `style.css` | Les fonctionnalités annoncées existent (en local) ; l'aide de la page Récompenses est enfin exacte | Test de bout en bout Chromium avec caméra simulée : voir AUDIT §4 |
-| **Tous les boutons sont fonctionnels** (A-19) : menu de la landing page, filtres avancés (gratuit / site / favoris), favoris (cœur + onglet du profil + lien direct vers la fiche), géolocalisation, partage et invitation par lien, ajout d'amis persistant, édition du pseudo et de la photo, réglages (résumé, suppression des photos, réinitialisation), historique « Mes bons », message non bloquant à la place des `alert()` | `script.js`, `app.html`, `amis.html`, `profil.html`, `recompenses.html`, `style.css` | Chaque élément cliquable a une utilité réelle ; l'utilisateur garde la main sur ses données | Test de bout en bout Chromium (voir AUDIT §4) |
-| **Application en colonne de mobile sur PC / tablette**, landing page responsive en deux colonnes (A-20) | `style.css`, `index.html` | Même taille d'application sur mobile et ordinateur ; landing page lisible sur tous les écrans | Mesures de géométrie et captures aux 3 tailles (AUDIT §4) |
-| **Photos de partenaires retirées** (20 fichiers) et remplacées par des pictogrammes par catégorie sur la page Récompenses ; albums d'amis allégés (A-21) | `assets/img/`, `data.js`, `script.js`, `style.css`, `tests/` | Plus de photo tierce sans droits documentés dans la version publiée ; images plus légères | `npm test` 14/14 ; 19 offres affichées avec pictogramme dans les 6 catégories, aucune requête en échec ; historique Git purgé de ces photos (vérifié : aucun chemin ni gros blob résiduel sur `main`) |
-| **Cinq images d'origine non documentée remplacées** par des illustrations vectorielles (avatar par défaut, T-shirt, ticket, sac, livre) et **trois avatars d'amis générés par IA remplacés** par des avatars à initiales : photo de ticket réel, photo produit de catalogue et photo de banque d'images retirées du projet (A-21) | `assets/img/`, `profil.html`, `script.js`, `tests/` | Moins de contenu tiers sans droits documentés | `npm test` 15/15 ; navigateur : avatar et albums chargés, aucune requête en échec ; historique Git purgé pour tous les fichiers retirés, avatars compris (clone neuf vérifié) |
-| **Durcissement** : CSP par page, politique de référent, favicon et métadonnées de partage, `rel="noopener"` ; `SECURITY.md` et signalement privé de vulnérabilités activé sur GitHub (A-22) | `*.html`, `SECURITY.md` | Scripts non prévus bloqués par le navigateur ; procédure de signalement claire | Script étranger et script inline bloqués (Chromium) ; tests `npm test` |
-| **Accessibilité** : contrastes AA (gris, badge, navigation, statuts), rôles `tablist`/`dialog`, titres, zone `main`, bannières (A-23) | `style.css`, `*.html`, `script.js` | 0 violation axe-core (5 pages + 3 fenêtres) | Audit axe-core avant/après |
-| **Intégration continue** (GitHub Actions) et métadonnées `package.json` (licence, dépôt, auteur) | `.github/workflows/tests.yml`, `package.json` | Les tests tournent à chaque envoi sur `main` | Exécution de la CI (voir ci-dessous) |
-| Données : horaires de La R'ssource, mentions « informations non confirmées » pour 3 structures introuvables (A-08) | `data.js` | Fiches plus honnêtes | `npm test` |
-| **Avatars `pravatar` remplacés** par six avatars locaux à initiales ; `i.pravatar.cc` retiré de la CSP ; audit axe étendu à 9 autres états (fenêtres d'ajout d'ami, fiche ami, aide, mes bons, bon, édition, réglages, favoris) : 0 violation ; gris clair des titres de suggestions corrigé (A-15, A-23) | `script.js`, `*.html`, `style.css`, `assets/img/` | Moins de requêtes tierces, plus de photos de personnes réelles d'un service externe | Test navigateur (6 avatars chargés, ajout d'ami, fiche) ; requêtes externes restantes : polices, unpkg, tuiles OSM, Unsplash |
-| **Photos Unsplash remplacées** par deux illustrations locales ; plus aucune image distante, `images.unsplash.com` retiré de la CSP ; icônes upload/édition du profil au contraste ≥ 3:1 (A-15) | `profil.html`, `*.html`, `style.css`, `tests/` | Aucune dépendance à un service d'images tiers | `npm test` 18/18 ; navigateur : seuls Google Fonts, unpkg et OSM sont contactés, aucune erreur |
-| **Horaires des lieux restants** (A-08) : horaires de permanence de l'AISL et du café des 5Ponts (à vérifier) ; pour 8 structures sans horaires publiés, contact officiel (téléphone ou e-mail) à la place de « Non précisé » ; liens vers les sites officiels (AISL, Ecossolies, CSC Laetitia, InterAsso, 100 pour 1) | `data.js` | Fiches plus utiles, sans horaire inventé | `npm test` ; sources : pages officielles et annuaire de Nantes Métropole |
-| **Trois structures introuvables retirées** de la carte (Nantes'Renoue, Les Nantais Solidaires, Coup de Pouce) : 36 lieux restants, compteur de la landing page mis à jour (A-08) | `data.js`, `index.html`, `README.md` | Aucune fiche invérifiable sur une carte publique | `npm test` (le test vérifie le nombre de lieux annoncé) ; test navigateur : 36 marqueurs, filtre « gratuit » 13 lieux, aucune erreur |
-| **Horaire de Ping remplacé** : aucun horaire régulier n'est publié (annuaire de la Ville, site de l'association), la fiche indique désormais le téléphone officiel et le site `info.pingbase.net` à la place de « Non précisé » (A-08) | `data.js` | Plus aucun lieu « Non précisé » | `npm test` ; pages officielles consultées |
-| **Lecteurs d'écran et clavier** (A-24) : fenêtres fermées masquées, gestion du focus (entrée, piège, retour), repères de la carte activables à Entrée/Espace (bug : Entrée n'ouvrait pas la fiche), noms de boutons explicites (« Utiliser 20 points pour : … chez … », « Ajouter Emma Dubois à mes amis »), avatars décoratifs, ordre de lecture, focus visible sur la recherche | `script.js`, `style.css`, `app.html`, `amis.html`, `recompenses.html`, `index.html` | Utilisable au clavier et mieux restitué par les lecteurs d'écran | Arbre d'accessibilité et parcours clavier (Chromium), axe-core 0 violation sur 17 états ; pas de synthèse vocale |
-| Données extraites dans `data.js` (A-14) | `data.js`, `script.js`, `app.html`, `recompenses.html` | Données modifiables et testables séparément | `npm test`, parcours des pages |
-| 19 tests d'intégrité sans dépendance, `package.json` (A-11) | `tests/`, `package.json` | Détecte image manquante, catégorie sans filtre, CDN flottante… | `npm test` : 19/19 |
-| `.gitignore`, suppression des `.DS_Store` (A-18) | `.gitignore` | Dépôt plus propre | — |
-| Nouveau README avec 5 captures réelles ; énoncé d'origine déplacé | `README.md`, `docs/CAHIER-DES-CHARGES.md`, `docs/images/` | Présentation fidèle du projet réel | Chiffres et commandes du README vérifiés ; captures relues |
+## Sécurité
 
-Les éléments non corrigés (données restant à vérifier, persistance serveur, ressources tierces conservées, droits des images) sont listés dans la section 5 de [AUDIT.md](AUDIT.md).
+| Changement | Vérification |
+|---|---|
+| Lucide (1.55.0) et Leaflet (1.9.4) en version fixée avec contrôle d'intégrité SRI, au lieu de `@latest` (A-01) | `npm test` ; chargement sans erreur dans le navigateur |
+| Content Security Policy sur chaque page, politique de référent, `rel="noopener"` sur le lien externe, favicon (A-22) | Un script étranger et un script inline sont bloqués par Chromium ; `npm test` |
+| Échappement HTML des contenus injectés, `textContent` quand c'est possible (A-06) | Parcours des pages sans régression |
+| `SECURITY.md` et signalement privé de vulnérabilités activé sur GitHub | Page « Security » du dépôt |
+
+## Fiabilité
+
+| Changement | Vérification |
+|---|---|
+| **Fond de carte réparé** : CARTO exige désormais une clé API (tuiles « API KEY REQUIRED »), passage aux tuiles OpenStreetMap avec attribution (A-13) | Captures avant/après ; carte lisible en ligne |
+| La navigation reste utilisable si une CDN est injoignable (A-04) | Lecture du code ; non testé hors-ligne |
+| Caméra : flux libéré si on ferme pendant la demande d'accès, message d'erreur clair (A-05) | Lecture du code ; non testé sur un vrai appareil |
+
+## Accessibilité
+
+| Changement | Vérification |
+|---|---|
+| Zoom autorisé, contrastes AA (gris, badge, navigation, statuts, icônes), rôles `tablist` / `dialog`, ordre des titres, zone `main` (A-02, A-12, A-23) | Audit axe-core : 0 violation sur 17 états (5 pages et leurs fenêtres ouvertes) |
+| Clavier : Échap ferme les fenêtres, focus visible, rôles et états ARIA (A-03) | Script Chromium (`aria-pressed`, `aria-selected`, `tabIndex`) |
+| **Lecteurs d'écran et clavier** (A-24) : fenêtres fermées masquées, focus géré (entrée, piège, retour à l'ouvreur), repères de la carte ouverts à Entrée/Espace (Entrée ne marchait pas), noms de boutons explicites, avatars décoratifs, ordre de lecture, focus visible sur la recherche | Arbre d'accessibilité et parcours clavier (Chromium). **Pas de test avec synthèse vocale** |
+
+## Fonctionnalités et affichage
+
+| Changement | Vérification |
+|---|---|
+| Fonctionnalités annoncées mais absentes, maintenant réelles en local : « Utiliser » une offre (points déduits, bon fictif, historique « Mes bons »), suggestion de lieu, vraie capture photo (+10 points) (A-10, A-16) | Test de bout en bout Chromium (caméra simulée) |
+| **Tous les boutons font quelque chose** (A-19) : menu de la landing page, filtres avancés, favoris (cœur, onglet du profil, lien direct), géolocalisation, partage et invitation par lien, ajout d'amis persistant, édition du pseudo et de la photo, réglages. Messages non bloquants à la place des `alert()` | Test de bout en bout Chromium |
+| Recherche insensible aux accents et à la casse, message « aucun résultat » | « etudiant » trouve les lieux accentués |
+| **Application en colonne de la taille d'un mobile** sur PC et tablette ; landing page responsive (deux colonnes sur ordinateur, menu déroulant sur mobile) (A-20) | Mesures de géométrie et captures aux trois tailles |
+
+## Données
+
+| Changement | Vérification |
+|---|---|
+| Lieu hors zone (Vendée) retiré ; trois structures introuvables ou à l'adresse inexacte retirées (Nantes'Renoue, Les Nantais Solidaires, Coup de Pouce) : **36 lieux** restants (A-07, A-08) | `npm test` (zone nantaise, nombre annoncé sur la landing page) |
+| Horaires, sites et contacts complétés par recherche web et pages officielles. Là où aucun horaire n'est publié, la fiche donne le contact officiel ; les horaires douteux portent la mention « à vérifier » (A-08) | Plus aucun lieu « Non précisé » ; 9 structures avec contact seul, 8 horaires à vérifier, 1 lieu sans site |
+| Données séparées de la logique dans `data.js` (A-14) | `npm test` |
+
+## Images et droits
+
+| Changement | Vérification |
+|---|---|
+| Photos de partenaires (20), images de stock ou générées par IA d'origine non documentée (5), avatars générés par IA (3), avatars `pravatar` (6) et photos Unsplash (2) **remplacés** par des illustrations vectorielles locales et des pictogrammes (A-15, A-21) | Plus aucune image distante (test) ; poids total de `assets/` : 170 Ko |
+| Fichiers retirés **purgés de l'historique Git** (réécritures successives, `push --force`) | Clone neuf du dépôt distant : aucun résidu |
+| Droits de `logo.png` et `Accueil - Map.png` | **À confirmer par l'auteur** ([IMAGES.md](IMAGES.md)) |
+
+## Outillage et documentation
+
+| Changement | Vérification |
+|---|---|
+| 19 tests d'intégrité sans dépendance (`npm test`) et GitHub Actions à chaque envoi sur `main` ; métadonnées `package.json` (A-11) | CI verte |
+| `.gitignore`, suppression des `.DS_Store` (A-18) | Dépôt sans fichier parasite |
+| Licence MIT | `LICENSE`, reconnue par GitHub |
+| README (captures réelles, installation, limites), énoncé d'origine conservé dans `docs/CAHIER-DES-CHARGES.md`, [IMAGES.md](IMAGES.md), [SECURITY.md](../SECURITY.md) | Commandes et chiffres vérifiés |
+
+## Ce qui reste
+
+Voir la section 5 de [AUDIT.md](AUDIT.md) : horaires à confirmer auprès des structures, test avec un vrai lecteur d'écran, caméra et géolocalisation sur un vrai téléphone, droits du logo et de la maquette, persistance côté serveur (hors périmètre d'un prototype statique).
